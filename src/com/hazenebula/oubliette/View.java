@@ -20,18 +20,20 @@ public class View extends GridPane {
         getRowConstraints().add(rc);
 
         ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setHgrow(Priority.SOMETIMES);
+        cc1.setHgrow(Priority.NEVER);
+        cc1.setPercentWidth(20);
         ColumnConstraints cc2 = new ColumnConstraints();
-        cc2.setHgrow(Priority.NEVER);
+        cc2.setHgrow(Priority.ALWAYS);
         ColumnConstraints cc3 = new ColumnConstraints();
-        cc3.setHgrow(Priority.SOMETIMES);
+        cc3.setHgrow(Priority.NEVER);
+        cc3.setPercentWidth(20);
         getColumnConstraints().addAll(cc1, cc2, cc3);
 
         leftBar = new GridPane();
         grid = new Grid();
         toolPane = new ToolPane(grid);
 
-        leftBar.setBackground(new Background(new BackgroundFill(Field.BLANK.getColor(), null, null)));
+        leftBar.setBackground(new Background(new BackgroundFill(Field.BLANK.color(), null, null)));
         Button b = new Button("abc");
         b.setOnAction(e -> grid.drawGrid());
         leftBar.add(b, 0, 0);
