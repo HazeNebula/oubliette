@@ -11,7 +11,7 @@ public enum Field {
         this.color = color;
     }
 
-    public Color getColor() {
+    public Color color() {
         return color;
     }
 }

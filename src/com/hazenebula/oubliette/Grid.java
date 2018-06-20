@@ -68,7 +68,7 @@ public class Grid extends ScrollPane {
                 double yPos = y * (scale.get() / 100.0d) *
                         (SQUARE_SIZE + GRID_SIZE);
 
-                gc.setFill(fieldGrid[x][y].getColor());
+                gc.setFill(fieldGrid[x][y].color());
                 gc.fillRect(xPos + 1, yPos + 1, SQUARE_SIZE, SQUARE_SIZE);
             }
         }
