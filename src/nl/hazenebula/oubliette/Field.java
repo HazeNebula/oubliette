@@ -3,8 +3,8 @@ package nl.hazenebula.oubliette;
 import javafx.scene.paint.Color;
 
 public enum Field {
-    EMPTY(Grid.FRONT_COLOR, "Empty"),
-    FILLED(Grid.BACK_COLOR, "Filled");
+    EMPTY(Color.rgb(255, 255, 255), "Empty"),
+    FILLED(Color.rgb(51, 153, 204), "Filled");
 
     private Color color;
     private String str;
