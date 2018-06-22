@@ -6,6 +6,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 public class Grid extends ScrollPane {
     private static final int GRID_SIZE = 1;
@@ -18,10 +19,13 @@ public class Grid extends ScrollPane {
 
     private Field curField;
     private Brush curBrush;
+    private Color gridColor;
 
     // todo: add tool to draw with wall objects
     // todo: add tool to draw with objects
     public Grid() {
+        setStyle("-fx-focus-color: transparent;");
+
         fieldGrid = new Field[100][100];
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
@@ -37,12 +41,13 @@ public class Grid extends ScrollPane {
 
         canvas = new Canvas(fieldGrid.length * (size.get() + GRID_SIZE),
                 fieldGrid[0].length * (size.get() + GRID_SIZE));
+        canvas.setStyle("-fx-focus-color: transparent;");
 
         setContent(canvas);
-        drawFullGrid();
 
         curBrush = Brush.FIELD;
         curField = Field.EMPTY;
+        gridColor = Field.FILLED.color();
 
         canvas.addEventHandler(MouseEvent.ANY, new MouseDrawHandler(e -> {
             if (curBrush == Brush.FIELD) {
@@ -53,6 +58,8 @@ public class Grid extends ScrollPane {
                 drawField(x, y);
             }
         }));
+
+        drawFullGrid();
     }
 
     public void drawField(int x, int y) {
@@ -70,7 +77,7 @@ public class Grid extends ScrollPane {
     public void drawFullGrid() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.setFill(Field.FILLED.color());
+        gc.setFill(gridColor);
 
         // draw grid lines
         for (int x = 0; x < fieldGrid.length; ++x) {
@@ -102,5 +109,9 @@ public class Grid extends ScrollPane {
 
     public void setFieldColor(Field field) {
         curField = field;
+    }
+
+    public void setGridColor(Color color) {
+        gridColor = color;
     }
 }
