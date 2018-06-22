@@ -1,8 +1,7 @@
 package nl.hazenebula.oubliette;
 
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.paint.Color;
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Rectangle;
 
 public class FieldColorButton extends ToggleButton {
@@ -14,9 +13,8 @@ public class FieldColorButton extends ToggleButton {
         this.field = field;
 
         setGraphic(new Rectangle(0.9d * size, 0.9d * size, field.color()));
+        setTooltip(new Tooltip(field.toString()));
 
-        setOnAction(e -> {
-            grid.setFieldColor(field);
-        });
+        setOnAction(e -> grid.setFieldColor(field));
     }
 }
