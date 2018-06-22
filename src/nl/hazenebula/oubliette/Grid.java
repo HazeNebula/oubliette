@@ -29,11 +29,7 @@ public class Grid extends ScrollPane {
         fieldGrid = new Field[100][100];
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
-//                if (x % 2 == 0 && y % 2 != 0) {
-//                    fieldGrid[x][y] = Field.FILLED;
-//                } else {
-                    fieldGrid[x][y] = Field.EMPTY;
-//                }
+                fieldGrid[x][y] = Field.FILLED;
             }
         }
 
