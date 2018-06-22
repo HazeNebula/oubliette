@@ -19,6 +19,7 @@ public class Grid extends ScrollPane {
     private Field[][] fieldGrid;
 
     private Canvas canvas;
+    private Field curField;
 
     // todo: add tool to draw with fields
     // todo: add tool to draw with wall objects
@@ -28,9 +29,9 @@ public class Grid extends ScrollPane {
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
                 if (x % 2 == 0 && y % 2 != 0) {
-                    fieldGrid[x][y] = Field.BLANK;
+                    fieldGrid[x][y] = Field.EMPTY;
                 } else {
-                    fieldGrid[x][y] = Field.OPEN;
+                    fieldGrid[x][y] = Field.FILLED;
                 }
             }
         }
@@ -43,6 +44,7 @@ public class Grid extends ScrollPane {
                         * (scale.get() / 100));
 
         setContent(canvas);
+        drawGrid();
     }
 
     public void drawGrid() {
@@ -79,5 +81,9 @@ public class Grid extends ScrollPane {
         // todo: draw wall objects
 
         // todo: draw objects
+    }
+
+    public void setFieldColor(Field field) {
+        curField = field;
     }
 }

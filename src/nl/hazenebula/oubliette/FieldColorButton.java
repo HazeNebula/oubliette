@@ -1,17 +1,22 @@
 package nl.hazenebula.oubliette;
 
-import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class FieldColorButton extends Button {
-    private final Color color;
+public class FieldColorButton extends ToggleButton {
+    private final Field field;
 
-    public FieldColorButton(Field field, double size) {
+    public FieldColorButton(Field field, double size, Grid grid) {
         super();
 
-        color = field.color();
+        this.field = field;
 
-        setGraphic(new Rectangle(0.9d * size, 0.9d * size, color));
+        setGraphic(new Rectangle(0.9d * size, 0.9d * size, field.color()));
+
+        setOnAction(e -> {
+            grid.setFieldColor(field);
+        });
     }
 }
