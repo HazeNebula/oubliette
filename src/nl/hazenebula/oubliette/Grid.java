@@ -19,7 +19,9 @@ public class Grid extends ScrollPane {
     private Field[][] fieldGrid;
 
     private Canvas canvas;
+
     private Field curField;
+    private Brush curBrush;
 
     // todo: add tool to draw with fields
     // todo: add tool to draw with wall objects
