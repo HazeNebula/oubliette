@@ -7,7 +7,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
-public class View extends GridPane {
+public class MainPane extends GridPane {
     private MenuBar menuBar;
     private GridPane leftBar;
     private Grid grid;
@@ -17,7 +17,7 @@ public class View extends GridPane {
     // todo: add minimap to left bar
     // todo: add scale controls to left bar
 
-    public View() {
+    public MainPane() {
         RowConstraints rc = new RowConstraints();
         rc.setVgrow(Priority.ALWAYS);
 
@@ -33,7 +33,9 @@ public class View extends GridPane {
         cc3.setPercentWidth(20);
         getColumnConstraints().addAll(cc1, cc2, cc3);
 
+        // todo: add file saving functionality
         MenuItem saveFile = new MenuItem("Save File");
+        // todo: add png export functionality
         MenuItem pngExport = new MenuItem("Export as PNG");
         Menu file = new Menu("File", null, saveFile, pngExport);
 
