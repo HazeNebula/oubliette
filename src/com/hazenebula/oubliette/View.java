@@ -1,9 +1,14 @@
 package com.hazenebula.oubliette;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 public class View extends GridPane {
+    private MenuBar menuBar;
     private GridPane leftBar;
     private Grid grid;
     private ToolPane toolPane;
@@ -11,7 +16,6 @@ public class View extends GridPane {
     // todo: add left bar
     // todo: add minimap to left bar
     // todo: add scale controls to left bar
-    // todo: add menu bar
 
     public View() {
         RowConstraints rc = new RowConstraints();
@@ -29,17 +33,22 @@ public class View extends GridPane {
         cc3.setPercentWidth(20);
         getColumnConstraints().addAll(cc1, cc2, cc3);
 
+        Menu file = new Menu("File", null, new MenuItem("Save File"),
+                new MenuItem("Export as PNG"));
+        menuBar = new MenuBar(file);
+
         leftBar = new GridPane();
         grid = new Grid();
         toolPane = new ToolPane(grid);
 
-        leftBar.setBackground(new Background(new BackgroundFill(Field.BLANK.color(), null, null)));
+        leftBar.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
         Button b = new Button("abc");
         b.setOnAction(e -> grid.drawGrid());
         leftBar.add(b, 0, 0);
 
-        add(leftBar, 0, 0);
-        add(grid, 1, 0);
-        add(toolPane, 2, 0);
+        add(menuBar, 0, 0);
+        add(leftBar, 0, 1);
+        add(grid, 1, 1);
+        add(toolPane, 2, 1);
     }
 }
