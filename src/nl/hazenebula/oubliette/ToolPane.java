@@ -21,7 +21,7 @@ public class ToolPane extends TabPane {
 
         this.grid = grid;
 
-        FieldColorPane fieldBrushes = new FieldColorPane();
+        FieldColorPane fieldBrushes = new FieldColorPane(grid);
         Tab fieldTab = new Tab("Field Brushes", fieldBrushes);
         getTabs().add(fieldTab);
     }
