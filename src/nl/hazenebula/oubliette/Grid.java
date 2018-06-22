@@ -1,4 +1,4 @@
-package com.hazenebula.oubliette;
+package nl.hazenebula.oubliette;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -11,7 +11,7 @@ public class Grid extends ScrollPane {
     public static final Color BACK_COLOR = Color.rgb(255, 255, 255);
     public static final Color FRONT_COLOR = Color.rgb(51, 153, 204);
 
-    private static final double SQUARE_SIZE = 25.0d;
+    private static final double SQUARE_SIZE = 20.0d;
     private static final double GRID_SIZE = 1.0d;
 
     private final IntegerProperty scale;
@@ -20,6 +20,9 @@ public class Grid extends ScrollPane {
 
     private Canvas canvas;
 
+    // todo: add tool to draw with fields
+    // todo: add tool to draw with wall objects
+    // todo: add tool to draw with objects
     public Grid() {
         fieldGrid = new Field[100][100];
         for (int x = 0; x < fieldGrid.length; ++x) {

@@ -1,4 +1,4 @@
-package com.hazenebula.oubliette;
+package nl.hazenebula.oubliette;
 
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;

@@ -1,4 +1,4 @@
-package com.hazenebula.oubliette;
+package nl.hazenebula.oubliette;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;

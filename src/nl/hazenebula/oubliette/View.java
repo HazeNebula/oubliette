@@ -1,4 +1,4 @@
-package com.hazenebula.oubliette;
+package nl.hazenebula.oubliette;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;

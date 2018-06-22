@@ -1,4 +1,4 @@
-package com.hazenebula.oubliette;
+package nl.hazenebula.oubliette;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
