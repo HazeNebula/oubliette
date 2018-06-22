@@ -3,15 +3,23 @@ package nl.hazenebula.oubliette;
 import javafx.scene.paint.Color;
 
 public enum Field {
-    BLANK(Grid.FRONT_COLOR), OPEN(Grid.BACK_COLOR);
+    EMPTY(Grid.FRONT_COLOR, "Empty"),
+    FILLED(Grid.BACK_COLOR, "Filled");
 
     private Color color;
+    private String str;
 
-    Field(Color color) {
+    Field(Color color, String str) {
         this.color = color;
+        this.str = str;
     }
 
     public Color color() {
         return color;
+    }
+
+    @Override
+    public String toString() {
+        return str;
     }
 }
