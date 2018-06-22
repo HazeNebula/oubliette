@@ -43,7 +43,7 @@ public class View extends GridPane {
 
         leftBar.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
         Button b = new Button("abc");
-        b.setOnAction(e -> grid.drawGrid());
+        b.setOnAction(e -> grid.drawFullGrid());
         leftBar.add(b, 0, 0);
 
         add(menuBar, 0, 0);
