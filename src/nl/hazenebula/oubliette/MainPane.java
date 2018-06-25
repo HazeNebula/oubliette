@@ -1,11 +1,20 @@
 package nl.hazenebula.oubliette;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 public class MainPane extends GridPane {
     private MenuBar menuBar;
@@ -13,11 +22,11 @@ public class MainPane extends GridPane {
     private Grid grid;
     private ToolPane toolPane;
 
-    // todo: add left bar
+    // hightodo: add left bar
     // todo: add minimap to left bar
     // todo: add scale controls to left bar
 
-    public MainPane() {
+    public MainPane(Stage primaryStage) {
         RowConstraints rc = new RowConstraints();
         rc.setVgrow(Priority.ALWAYS);
 
@@ -35,8 +44,28 @@ public class MainPane extends GridPane {
 
         // todo: add file saving functionality
         MenuItem saveFile = new MenuItem("Save File");
-        // todo: add png export functionality
+        // lowtodo: add separate window that lets user change file resolution
         MenuItem pngExport = new MenuItem("Export as PNG");
+        pngExport.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
+            fc.setInitialFileName("map.png");
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                    "Portable Network Graphics", ".png"));
+
+            File file = fc.showSaveDialog(primaryStage);
+            if (file != null) {
+                WritableImage img = grid.snapshot();
+
+                try {
+                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png",
+                            file);
+                } catch (IOException ex) {
+                    System.err.println("Could not save file " +
+                            file.toString());
+                }
+            }
+        });
         Menu file = new Menu("File", null, saveFile, pngExport);
 
         MenuItem blueGrid = new MenuItem("Blue");

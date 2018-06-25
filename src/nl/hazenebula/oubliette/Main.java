@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
-        MainPane mainPane = new MainPane();
+        MainPane mainPane = new MainPane(primaryStage);
 
         primaryStage.setTitle("Main");
         primaryStage.setScene(new Scene(mainPane, 1280, 960));
