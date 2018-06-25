@@ -2,6 +2,8 @@ package nl.hazenebula.oubliette;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,6 +20,8 @@ public class Grid extends ScrollPane {
     private Field[][] fieldGrid;
 
     private Canvas canvas;
+    private double hoffset;
+    private double voffset;
 
     private Field curField;
     private Brush curBrush;
@@ -47,14 +51,40 @@ public class Grid extends ScrollPane {
         curField = Field.EMPTY;
         gridColor = Field.FILLED.color();
 
-        // fixme: must check for array bounds
-        canvas.addEventHandler(MouseEvent.ANY, new MouseDrawHandler(e -> {
-            if (curBrush == Brush.FIELD) {
-                int x = (int)(e.getX() / (size.get() + GRID_SIZE));
-                int y = (int)(e.getY() / (size.get() + GRID_SIZE));
+        hvalueProperty().addListener((observable, oldValue, newValue) -> {
+            double hmin = getHmin();
+            double hmax = getHmax();
+            double hvalue = getHvalue();
+            double contentWidth = canvas.getLayoutBounds().getWidth();
+            double viewportWidth = getViewportBounds().getWidth();
 
-                fieldGrid[x][y] = curField;
-                drawField(x, y);
+            hoffset = Math.max(0, contentWidth - viewportWidth) *
+                    (hvalue - hmin) / (hmax - hmin);
+        });
+        vvalueProperty().addListener((observable, oldValue, newValue) -> {
+            double vmin = getVmin();
+            double vmax = getVmax();
+            double vvalue = getVvalue();
+            double contentHeight = canvas.getLayoutBounds().getHeight();
+            double viewportHeight = getViewportBounds().getHeight();
+
+            voffset = Math.max(0, contentHeight - viewportHeight) *
+                    (vvalue - vmin) / (vmax - vmin);
+        });
+
+        canvas.addEventHandler(MouseEvent.ANY, new MouseDrawHandler(e -> {
+            Bounds bounds = new BoundingBox(hoffset, voffset,
+                    getViewportBounds().getWidth(),
+                    getViewportBounds().getHeight());
+
+            if (bounds.contains(e.getX(), e.getY())) {
+                if (curBrush == Brush.FIELD) {
+                    int x = (int)(e.getX() / (size.get() + GRID_SIZE));
+                    int y = (int)(e.getY() / (size.get() + GRID_SIZE));
+
+                    fieldGrid[x][y] = curField;
+                    drawField(x, y);
+                }
             }
         }));
 
