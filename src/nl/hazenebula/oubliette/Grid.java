@@ -2,9 +2,11 @@ package nl.hazenebula.oubliette;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -29,7 +31,7 @@ public class Grid extends ScrollPane {
         fieldGrid = new Field[100][100];
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
-                fieldGrid[x][y] = Field.FILLED;
+                fieldGrid[x][y] = Field.EMPTY;
             }
         }
 
@@ -45,6 +47,7 @@ public class Grid extends ScrollPane {
         curField = Field.EMPTY;
         gridColor = Field.FILLED.color();
 
+        // fixme: must check for array bounds
         canvas.addEventHandler(MouseEvent.ANY, new MouseDrawHandler(e -> {
             if (curBrush == Brush.FIELD) {
                 int x = (int)(e.getX() / (size.get() + GRID_SIZE));
@@ -109,5 +112,9 @@ public class Grid extends ScrollPane {
 
     public void setGridColor(Color color) {
         gridColor = color;
+    }
+
+    public WritableImage snapshot() {
+        return canvas.snapshot(new SnapshotParameters(), null);
     }
 }
