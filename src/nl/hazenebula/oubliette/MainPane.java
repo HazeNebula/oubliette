@@ -1,12 +1,14 @@
 package nl.hazenebula.oubliette;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -18,7 +20,7 @@ import java.nio.file.Paths;
 
 public class MainPane extends GridPane {
     private MenuBar menuBar;
-    private GridPane leftBar;
+    private MapBar mapBar;
     private Grid grid;
     private ToolPane toolPane;
 
@@ -88,18 +90,12 @@ public class MainPane extends GridPane {
 
         menuBar = new MenuBar(file, options);
 
-        leftBar = new GridPane();
         grid = new Grid();
         toolPane = new ToolPane(grid);
-
-        leftBar.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
-                null, null)));
-        Button b = new Button("abc");
-        b.setOnAction(e -> grid.drawFullGrid());
-        leftBar.add(b, 0, 0);
+        mapBar = new MapBar(grid);
 
         add(menuBar, 0, 0, 3, 1);
-        add(leftBar, 0, 1);
+        add(mapBar, 0, 1);
         add(grid, 1, 1);
         add(toolPane, 2, 1);
     }
