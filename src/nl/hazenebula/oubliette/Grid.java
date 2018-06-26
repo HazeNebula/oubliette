@@ -4,7 +4,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
@@ -145,6 +144,6 @@ public class Grid extends ScrollPane {
     }
 
     public WritableImage snapshot() {
-        return canvas.snapshot(new SnapshotParameters(), null);
+        return canvas.snapshot(null, null);
     }
 }
