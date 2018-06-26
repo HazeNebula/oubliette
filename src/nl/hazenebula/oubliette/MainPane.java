@@ -24,10 +24,6 @@ public class MainPane extends GridPane {
     private Grid grid;
     private ToolPane toolPane;
 
-    // hightodo: add left bar
-    // todo: add minimap to left bar
-    // todo: add scale controls to left bar
-
     public MainPane(Stage primaryStage) {
         RowConstraints rc = new RowConstraints();
         rc.setVgrow(Priority.ALWAYS);
