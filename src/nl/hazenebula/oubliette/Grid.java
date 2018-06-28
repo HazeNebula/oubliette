@@ -13,6 +13,9 @@ import javafx.scene.paint.Color;
 
 public class Grid extends ScrollPane {
     private static final int GRID_SIZE = 1;
+    public static final int MAX_SQUARE_SIZE = 50;
+    public static final int MIN_SQUARE_SIZE = 10;
+    public static final int INIT_SQUARE_SIZE = 20;
 
     private final IntegerProperty size;
 
@@ -141,6 +144,16 @@ public class Grid extends ScrollPane {
 
     public void setGridColor(Color color) {
         gridColor = color;
+    }
+
+    public void setGridSize(int newSize) {
+        if (newSize >= MIN_SQUARE_SIZE && newSize <= MAX_SQUARE_SIZE) {
+            size.set(newSize);
+
+            canvas.setWidth(fieldGrid.length * (size.get() + GRID_SIZE));
+            canvas.setHeight(fieldGrid[0].length * (size.get() + GRID_SIZE));
+            drawFullGrid();
+        }
     }
 
     public WritableImage snapshot() {
