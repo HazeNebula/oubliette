@@ -1,5 +1,6 @@
 package nl.hazenebula.oubliette;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
@@ -164,5 +165,13 @@ public class Grid extends ScrollPane {
 
     public WritableImage snapshot() {
         return canvas.snapshot(null, null);
+    }
+
+    public DoubleProperty canvasWidthProperty() {
+        return canvas.widthProperty();
+    }
+
+    public DoubleProperty canvasHeightProperty() {
+        return canvas.heightProperty();
     }
 }
