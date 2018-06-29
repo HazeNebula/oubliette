@@ -24,4 +24,8 @@ public class MouseDrawHandler implements EventHandler<MouseEvent> {
             onDrawEventHandler.handle(e);
         }
     }
+
+    public boolean isPressing() {
+        return pressing;
+    }
 }

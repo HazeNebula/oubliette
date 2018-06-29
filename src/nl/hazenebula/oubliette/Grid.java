@@ -1,10 +1,10 @@
 package nl.hazenebula.oubliette;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
@@ -14,6 +14,9 @@ import javafx.scene.paint.Color;
 
 public class Grid extends ScrollPane {
     private static final int GRID_SIZE = 1;
+    public static final int MAX_SQUARE_SIZE = 50;
+    public static final int MIN_SQUARE_SIZE = 10;
+    public static final int INIT_SQUARE_SIZE = 20;
 
     private final IntegerProperty size;
 
@@ -22,6 +25,7 @@ public class Grid extends ScrollPane {
     private Canvas canvas;
     private double hoffset;
     private double voffset;
+    private final MouseDrawHandler drawHandler;
 
     private Field curField;
     private Brush curBrush;
@@ -72,7 +76,7 @@ public class Grid extends ScrollPane {
                     (vvalue - vmin) / (vmax - vmin);
         });
 
-        canvas.addEventHandler(MouseEvent.ANY, new MouseDrawHandler(e -> {
+        drawHandler = new MouseDrawHandler(e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -86,7 +90,8 @@ public class Grid extends ScrollPane {
                     drawField(x, y);
                 }
             }
-        }));
+        });
+        canvas.addEventHandler(MouseEvent.ANY, drawHandler);
 
         drawFullGrid();
     }
@@ -144,7 +149,29 @@ public class Grid extends ScrollPane {
         gridColor = color;
     }
 
+    public void setGridSize(int newSize) {
+        if (newSize >= MIN_SQUARE_SIZE && newSize <= MAX_SQUARE_SIZE) {
+            size.set(newSize);
+
+            canvas.setWidth(fieldGrid.length * (size.get() + GRID_SIZE));
+            canvas.setHeight(fieldGrid[0].length * (size.get() + GRID_SIZE));
+            drawFullGrid();
+        }
+    }
+
+    public boolean isDrawing() {
+        return drawHandler.isPressing();
+    }
+
     public WritableImage snapshot() {
-        return canvas.snapshot(new SnapshotParameters(), null);
+        return canvas.snapshot(null, null);
+    }
+
+    public DoubleProperty canvasWidthProperty() {
+        return canvas.widthProperty();
+    }
+
+    public DoubleProperty canvasHeightProperty() {
+        return canvas.heightProperty();
     }
 }
