@@ -20,9 +20,6 @@ public class MapBar extends GridPane {
                 null)));
         setPadding(new Insets(5, 5, 5, 5));
 
-        // fixme: minimap saving hangs app if file size is large
-        // only update minimap if user is currently not drawing (maybe on
-        // release?)
         minimap = new Minimap(grid.snapshot());
         minimap.widthProperty().bind(widthProperty().subtract(
                 getInsets().getLeft() + getInsets().getRight()));
@@ -31,7 +28,11 @@ public class MapBar extends GridPane {
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(
-                UPDATE_SECONDS), e -> minimap.update(grid.snapshot())));
+                UPDATE_SECONDS), e -> {
+            if (!grid.isDrawing()) {
+                minimap.update(grid.snapshot());
+            }
+        }));
         timeline.playFromStart();
 
         Spinner<Integer> sizeField = new Spinner<>(Grid.MIN_SQUARE_SIZE,
