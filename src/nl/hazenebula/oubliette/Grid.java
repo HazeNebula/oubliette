@@ -24,6 +24,7 @@ public class Grid extends ScrollPane {
     private Canvas canvas;
     private double hoffset;
     private double voffset;
+    private final MouseDrawHandler drawHandler;
 
     private Field curField;
     private Brush curBrush;
@@ -74,7 +75,7 @@ public class Grid extends ScrollPane {
                     (vvalue - vmin) / (vmax - vmin);
         });
 
-        canvas.addEventHandler(MouseEvent.ANY, new MouseDrawHandler(e -> {
+        drawHandler = new MouseDrawHandler(e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -88,7 +89,8 @@ public class Grid extends ScrollPane {
                     drawField(x, y);
                 }
             }
-        }));
+        });
+        canvas.addEventHandler(MouseEvent.ANY, drawHandler);
 
         drawFullGrid();
     }
@@ -154,6 +156,10 @@ public class Grid extends ScrollPane {
             canvas.setHeight(fieldGrid[0].length * (size.get() + GRID_SIZE));
             drawFullGrid();
         }
+    }
+
+    public boolean isDrawing() {
+        return drawHandler.isPressing();
     }
 
     public WritableImage snapshot() {
