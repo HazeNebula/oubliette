@@ -36,7 +36,6 @@ public class Grid extends ScrollPane {
     private Brush curBrush;
     private Color gridColor;
 
-    // hightodo: add highlighted square when mouse is not pressed (field)
     // todo: add highlighted object when placing objects
     // todo: add tool to draw with wall objects
     // todo: add tool to draw with objects
@@ -108,12 +107,14 @@ public class Grid extends ScrollPane {
                     getViewportBounds().getHeight());
 
             if (bounds.contains(e.getX(), e.getY())) {
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+                gc.save();
+
                 if (curBrush == Brush.FIELD) {
                     int x = (int)(e.getX() / (size.get() + GRID_SIZE));
                     int y = (int)(e.getY() / (size.get() + GRID_SIZE));
                     double xPos = x * (size.get() + GRID_SIZE);
                     double yPos = y * (size.get() + GRID_SIZE);
-                    GraphicsContext gc = canvas.getGraphicsContext2D();
 
                     for (int i = prevX; i < prevX + prevWidth; ++i) {
                         for (int j = prevY; j < prevY + prevHeight; ++j) {
@@ -121,13 +122,15 @@ public class Grid extends ScrollPane {
                         }
                     }
 
-                    gc.setFill(HIGHLIGHT_COLOR.interpolate(fieldGrid[x][y].color(),
-                            0.5d));
+                    gc.setGlobalAlpha(0.5d);
+                    gc.setFill(HIGHLIGHT_COLOR);
                     gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
 
                     prevX = x;
                     prevY = y;
                 }
+
+                gc.restore();
             }
         });
         canvas.addEventHandler(MouseEvent.ANY, drawHandler);
