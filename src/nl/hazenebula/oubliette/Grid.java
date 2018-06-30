@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class Grid extends ScrollPane {
+    private static final Color HIGHLIGHT_COLOR = Color.rgb(192, 192, 192, 0.5d);
     private static final int GRID_SIZE = 1;
     public static final int MAX_SQUARE_SIZE = 50;
     public static final int MIN_SQUARE_SIZE = 10;
@@ -21,6 +22,10 @@ public class Grid extends ScrollPane {
     private final IntegerProperty size;
 
     private Field[][] fieldGrid;
+    private int prevX;
+    private int prevY;
+    private int prevWidth;
+    private int prevHeight;
 
     private Canvas canvas;
     private double hoffset;
@@ -31,6 +36,8 @@ public class Grid extends ScrollPane {
     private Brush curBrush;
     private Color gridColor;
 
+    // hightodo: add highlighted square when mouse is not pressed (field)
+    // todo: add highlighted object when placing objects
     // todo: add tool to draw with wall objects
     // todo: add tool to draw with objects
     public Grid() {
@@ -42,6 +49,11 @@ public class Grid extends ScrollPane {
                 fieldGrid[x][y] = Field.EMPTY;
             }
         }
+
+        prevX = 0;
+        prevY = 0;
+        prevWidth = 1;
+        prevHeight = 1;
 
         size = new SimpleIntegerProperty(20);
 
@@ -88,6 +100,33 @@ public class Grid extends ScrollPane {
 
                     fieldGrid[x][y] = curField;
                     drawField(x, y);
+                }
+            }
+        }, e -> {
+            Bounds bounds = new BoundingBox(hoffset, voffset,
+                    getViewportBounds().getWidth(),
+                    getViewportBounds().getHeight());
+
+            if (bounds.contains(e.getX(), e.getY())) {
+                if (curBrush == Brush.FIELD) {
+                    int x = (int)(e.getX() / (size.get() + GRID_SIZE));
+                    int y = (int)(e.getY() / (size.get() + GRID_SIZE));
+                    double xPos = x * (size.get() + GRID_SIZE);
+                    double yPos = y * (size.get() + GRID_SIZE);
+                    GraphicsContext gc = canvas.getGraphicsContext2D();
+
+                    for (int i = prevX; i < prevX + prevWidth; ++i) {
+                        for (int j = prevY; j < prevY + prevHeight; ++j) {
+                            drawField(i, j);
+                        }
+                    }
+
+                    gc.setFill(HIGHLIGHT_COLOR.interpolate(fieldGrid[x][y].color(),
+                            0.5d));
+                    gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
+
+                    prevX = x;
+                    prevY = y;
                 }
             }
         });
