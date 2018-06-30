@@ -224,6 +224,10 @@ public class Grid extends ScrollPane {
         }
     }
 
+    public void setBrush(Brush newBrush) {
+        curBrush = newBrush;
+    }
+
     public boolean isDrawing() {
         return drawHandler.isPressing();
     }

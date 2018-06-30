@@ -7,22 +7,33 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 
 public class ToolPane extends TabPane {
-    private final Grid grid;
-
-    // todo: add wall object tab
-
-    // todo: add object tab
-    // todo: add object resizing
-    // todo: add canvas to show resized image (on grid)
     public ToolPane(Grid grid) {
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
 
-        this.grid = grid;
+        // todo: change grid brush type if tab is changed
 
-        FieldColorPane fieldBrushes = new FieldColorPane(grid);
-        Tab fieldTab = new Tab("Field Brushes", fieldBrushes);
+        FieldColorPane fieldColors = new FieldColorPane(grid);
+        Tab fieldTab = new Tab("Fields", fieldColors);
         getTabs().add(fieldTab);
+        fieldTab.setOnSelectionChanged(e -> {
+            if (fieldTab.isSelected()) {
+                grid.setBrush(Brush.FIELD);
+            }
+        });
+
+        // todo: add object resizing
+        // todo: add canvas to show resized image (on grid)
+        FieldObjectPane fieldObjects = new FieldObjectPane(grid);
+        Tab fieldObjectTab = new Tab("Objects", fieldObjects);
+        getTabs().add(fieldObjectTab);
+        fieldObjectTab.setOnSelectionChanged(e -> {
+            if (fieldObjectTab.isSelected()) {
+                grid.setBrush(Brush.FIELD_OBJECT);
+            }
+        });
+
+        // todo: add wall object tab
     }
 }
