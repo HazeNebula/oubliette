@@ -5,11 +5,13 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseDrawHandler implements EventHandler<MouseEvent> {
     private final EventHandler<MouseEvent> onDrawEventHandler;
+    private final EventHandler<MouseEvent> onSlideEventHandler;
 
     private boolean pressing = false;
 
-    public MouseDrawHandler(EventHandler<MouseEvent> onDrawEventHandler) {
+    public MouseDrawHandler(EventHandler<MouseEvent> onDrawEventHandler, EventHandler<MouseEvent> onSlideEventHandler) {
         this.onDrawEventHandler = onDrawEventHandler;
+        this.onSlideEventHandler = onSlideEventHandler;
     }
 
     @Override
@@ -22,6 +24,8 @@ public class MouseDrawHandler implements EventHandler<MouseEvent> {
 
         if (pressing) {
             onDrawEventHandler.handle(e);
+        } else {
+            onSlideEventHandler.handle(e);
         }
     }
 
