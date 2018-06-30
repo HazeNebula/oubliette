@@ -22,6 +22,7 @@ public class Grid extends ScrollPane {
     private final IntegerProperty size;
 
     private Field[][] fieldGrid;
+    private boolean prevHighlight;
     private int prevX;
     private int prevY;
     private int prevWidth;
@@ -49,6 +50,7 @@ public class Grid extends ScrollPane {
             }
         }
 
+        prevHighlight = false;
         prevX = 0;
         prevY = 0;
         prevWidth = 1;
@@ -75,6 +77,15 @@ public class Grid extends ScrollPane {
 
             hoffset = Math.max(0, contentWidth - viewportWidth) *
                     (hvalue - hmin) / (hmax - hmin);
+
+            // remove possible highlights
+            if (prevHighlight) {
+                for (int i = prevX; i < prevX + prevWidth; ++i) {
+                    for (int j = prevY; j < prevY + prevHeight; ++j) {
+                        drawField(i, j);
+                    }
+                }
+            }
         });
         vvalueProperty().addListener((observable, oldValue, newValue) -> {
             double vmin = getVmin();
@@ -85,6 +96,15 @@ public class Grid extends ScrollPane {
 
             voffset = Math.max(0, contentHeight - viewportHeight) *
                     (vvalue - vmin) / (vmax - vmin);
+
+            // remove possible highlights
+            if (prevHighlight) {
+                for (int i = prevX; i < prevX + prevWidth; ++i) {
+                    for (int j = prevY; j < prevY + prevHeight; ++j) {
+                        drawField(i, j);
+                    }
+                }
+            }
         });
 
         drawHandler = new MouseDrawHandler(e -> {
@@ -106,6 +126,14 @@ public class Grid extends ScrollPane {
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
 
+            if (prevHighlight) {
+                for (int i = prevX; i < prevX + prevWidth; ++i) {
+                    for (int j = prevY; j < prevY + prevHeight; ++j) {
+                        drawField(i, j);
+                    }
+                }
+            }
+
             if (bounds.contains(e.getX(), e.getY())) {
                 GraphicsContext gc = canvas.getGraphicsContext2D();
                 gc.save();
@@ -116,18 +144,13 @@ public class Grid extends ScrollPane {
                     double xPos = x * (size.get() + GRID_SIZE);
                     double yPos = y * (size.get() + GRID_SIZE);
 
-                    for (int i = prevX; i < prevX + prevWidth; ++i) {
-                        for (int j = prevY; j < prevY + prevHeight; ++j) {
-                            drawField(i, j);
-                        }
-                    }
-
                     gc.setGlobalAlpha(0.5d);
                     gc.setFill(HIGHLIGHT_COLOR);
                     gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
 
                     prevX = x;
                     prevY = y;
+                    prevHighlight = true;
                 }
 
                 gc.restore();
