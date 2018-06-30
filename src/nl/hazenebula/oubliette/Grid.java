@@ -13,7 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class Grid extends ScrollPane {
-    private static final Color HIGHLIGHT_COLOR = Color.rgb(192, 192, 192, 0.5d);
+    private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
     private static final int GRID_SIZE = 1;
     public static final int MAX_SQUARE_SIZE = 50;
     public static final int MIN_SQUARE_SIZE = 10;
