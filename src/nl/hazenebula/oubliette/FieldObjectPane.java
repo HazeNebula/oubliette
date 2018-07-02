@@ -1,15 +1,16 @@
 package nl.hazenebula.oubliette;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.io.File;
 import java.util.Arrays;
@@ -19,9 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FieldObjectPane extends GridPane {
-    public static final double BUTTON_SIZE = 100.0d;
-
-    private Canvas resizeCanvas;
+    public static final double BUTTON_SIZE = 80.0d;
 
     private List<FieldObjectImage> objects;
     private int maxSize;
@@ -87,17 +86,22 @@ public class FieldObjectPane extends GridPane {
     }
 
     public FieldObjectPane(Grid grid) {
-        setAlignment(Pos.TOP_CENTER);
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
         setHgap(5.0d);
 
         loadObjects();
 
-        resizeCanvas = new Canvas();
+        Canvas resizeCanvas = new Canvas();
         resizeCanvas.widthProperty().bind(grid.sizeProperty()
-                .add(Grid.GRID_SIZE).multiply(maxSize));
+                .add(Grid.GRID_SIZE).multiply(2).multiply(maxSize));
         resizeCanvas.heightProperty().bind(resizeCanvas.widthProperty());
+        GridPane.setHgrow(resizeCanvas, Priority.ALWAYS);
+        GridPane.setHalignment(resizeCanvas, HPos.CENTER);
+
+        GraphicsContext gc = resizeCanvas.getGraphicsContext2D();
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, resizeCanvas.getWidth(), resizeCanvas.getHeight());
 
         Button increaseSizeButton = new Button("+");
         Button decreaseSizeButton = new Button("-");
@@ -106,17 +110,26 @@ public class FieldObjectPane extends GridPane {
 
         GridPane resizeWrapper = new GridPane();
         resizeWrapper.setPadding(new Insets(5, 5, 5, 5));
-        resizeWrapper.add(resizeCanvas, 0, 0);
+        resizeWrapper.add(resizeCanvas, 1, 1);
+        resizeWrapper.add(increaseSizeButton, 3, 0);
+        resizeWrapper.add(decreaseSizeButton, 3, 2);
+        resizeWrapper.add(rotateClockwiseButton, 0, 3);
+        resizeWrapper.add(rotateAntiClockwiseButton, 2, 3);
 
-        // fixme: flowpane/scrollpane width should be equal to gridpane width
+        setHgrow(resizeWrapper, Priority.ALWAYS);
+        setHalignment(resizeWrapper, HPos.CENTER);
+
         // highptodo: make button press change field object brush
         ScrollPane buttonPane = new ScrollPane();
+        buttonPane.setFitToWidth(true);
+        buttonPane.setStyle("-fx-background: #D3D3D3");
 
         FlowPane buttons = new FlowPane();
         buttons.setPadding(new Insets(5, 5, 5, 5));
         setVgap(5);
         setHgap(5);
-        setAlignment(Pos.TOP_CENTER);
+        buttons.setBackground(new Background(new BackgroundFill(
+                Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
         ToggleGroup fieldObjectToggleGroup = new ToggleGroup();
@@ -132,11 +145,9 @@ public class FieldObjectPane extends GridPane {
             buttons.getChildren().add(button);
         }
 
-        add(resizeWrapper, 0, 0, 2, 2);
-        add(increaseSizeButton, 2, 0);
-        add(decreaseSizeButton, 2, 1);
-        add(rotateClockwiseButton, 0, 3);
-        add(rotateAntiClockwiseButton, 1, 3);
-        add(buttonPane, 0, 4, 2, 1);
+        setVgrow(buttonPane, Priority.ALWAYS);
+
+        add(resizeWrapper, 0, 0);
+        add(buttonPane, 0, 4);
     }
 }
