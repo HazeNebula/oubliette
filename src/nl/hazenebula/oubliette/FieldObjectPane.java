@@ -42,7 +42,7 @@ public class FieldObjectPane extends GridPane {
         loadObjects();
 
         curImg = objects.get(0);
-        curObject = new FieldObject(curImg.getImage(1, 1), 1, 1,
+        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
                 Direction.NORTH);
         grid.setFieldObject(curObject);
 
@@ -62,9 +62,7 @@ public class FieldObjectPane extends GridPane {
         Button increaseWidthButton = new Button("+");
         increaseWidthButton.setOnAction(e -> {
             if (curObject.getWidth() < maxSize) {
-                curObject = new FieldObject(curImg.getImage(curObject.getWidth()
-                        + 1, curObject.getHeight()), curObject.getWidth() + 1,
-                        curObject.getHeight(), curObject.getDir());
+                curObject.setWidth(curObject.getWidth() + 1);
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -73,9 +71,7 @@ public class FieldObjectPane extends GridPane {
         Button decreaseWidthButton = new Button("-");
         decreaseWidthButton.setOnAction(e -> {
             if (curObject.getWidth() > 1) {
-                curObject = new FieldObject(curImg.getImage(curObject.getWidth()
-                        - 1, curObject.getHeight()), curObject.getWidth() - 1,
-                        curObject.getHeight(), curObject.getDir());
+                curObject.setWidth(curObject.getWidth() - 1);
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -86,10 +82,7 @@ public class FieldObjectPane extends GridPane {
         Button increaseHeightButton = new Button("+");
         increaseHeightButton.setOnAction(e -> {
             if (curObject.getHeight() < maxSize) {
-                curObject = new FieldObject(curImg.getImage(
-                        curObject.getWidth(), curObject.getHeight() + 1),
-                        curObject.getWidth(), curObject.getHeight() + 1,
-                        curObject.getDir());
+                curObject.setHeight(curObject.getHeight() + 1);
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -98,10 +91,7 @@ public class FieldObjectPane extends GridPane {
         Button decreaseHeightButton = new Button("-");
         decreaseHeightButton.setOnAction(e -> {
             if (curObject.getHeight() > 1) {
-                curObject = new FieldObject(curImg.getImage(
-                        curObject.getWidth(), curObject.getHeight() - 1),
-                        curObject.getWidth(), curObject.getHeight() - 1,
-                        curObject.getDir());
+                curObject.setHeight(curObject.getHeight());
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -111,18 +101,14 @@ public class FieldObjectPane extends GridPane {
         GridPane.setHgrow(rotateLabel, Priority.ALWAYS);
         Button rotateClockwiseButton = new Button("\u21BB");
         rotateClockwiseButton.setOnAction(e -> {
-            curObject = new FieldObject(curObject.getImage(),
-                    curObject.getWidth(), curObject.getHeight(),
-                    curObject.getDir().next());
+            curObject.setDir(curObject.getDir().next());
             drawCanvas();
 
             grid.setFieldObject(curObject);
         });
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> {
-            curObject = new FieldObject(curObject.getImage(),
-                    curObject.getWidth(), curObject.getHeight(),
-                    curObject.getDir().prev());
+            curObject.setDir(curObject.getDir().prev());
             drawCanvas();
 
             grid.setFieldObject(curObject);
@@ -177,11 +163,12 @@ public class FieldObjectPane extends GridPane {
                     curImg = img;
                     curObject = new FieldObject(curImg.getImage(
                             curObject.getWidth(), curObject.getHeight()),
+                            curObject.getX(), curObject.getY(),
                             curObject.getWidth(), curObject.getHeight(),
                             curObject.getDir());
                     drawCanvas();
 
-                    grid.setFieldObject(curObject);
+                    grid.setFieldObject(new FieldObject(curObject));
                 }
             });
 
