@@ -45,6 +45,7 @@ public class FieldObjectPane extends GridPane {
         curImg = objects.get(0);
         curObject = new FieldObject(curImg.getImage(1, 1), 1, 1,
                 Direction.NORTH);
+        grid.setFieldObject(curObject);
 
         resizeCanvas = new Canvas();
         // highptodo: make resize canvas independent of main grid size
@@ -160,13 +161,16 @@ public class FieldObjectPane extends GridPane {
             button.setGraphic(graphic);
 
             button.setOnAction(e -> {
-                curImg = img;
-                curObject = new FieldObject(curImg.getImage(
-                        curObject.getWidth(), curObject.getHeight()),
-                        curObject.getWidth(), curObject.getHeight(),
-                        curObject.getDir());
-                drawCanvas();
-                // highptodo: make button press change field object brush
+                if (curImg != img) {
+                    curImg = img;
+                    curObject = new FieldObject(curImg.getImage(
+                            curObject.getWidth(), curObject.getHeight()),
+                            curObject.getWidth(), curObject.getHeight(),
+                            curObject.getDir());
+                    drawCanvas();
+
+                    grid.setFieldObject(curObject);
+                }
             });
 
             button.setToggleGroup(fieldObjectToggleGroup);
