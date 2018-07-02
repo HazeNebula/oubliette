@@ -1,23 +1,22 @@
 package nl.hazenebula.oubliette;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import javafx.scene.image.Image;
+
 import java.io.File;
-import java.io.IOException;
 
 public class FieldObjectImage implements Comparable<FieldObjectImage> {
-    private BufferedImage[][] images;
+    private Image[][] images;
     private String name;
 
     public FieldObjectImage(int width, int height) {
-        images = new BufferedImage[width][height];
+        images = new Image[width][height];
         name = null;
     }
 
-    public void setImage(int sizeX, int sizeY, File file) throws IOException {
+    public void setImage(int sizeX, int sizeY, File file) {
         if (sizeX >= 1 && sizeX <= images.length
                 && sizeY >= 0 && sizeY <= images[sizeX - 1].length) {
-            images[sizeX - 1][sizeY - 1] = ImageIO.read(file);
+            images[sizeX - 1][sizeY - 1] = new Image("file:" + file.toString());
         }
     }
 
@@ -25,7 +24,7 @@ public class FieldObjectImage implements Comparable<FieldObjectImage> {
         this.name = name;
     }
 
-    public BufferedImage getImage(int sizeX, int sizeY) {
+    public Image getImage(int sizeX, int sizeY) {
         return images[sizeX - 1][sizeY - 1];
     }
 
@@ -42,8 +41,8 @@ public class FieldObjectImage implements Comparable<FieldObjectImage> {
     }
 
     public boolean completed() {
-        for (BufferedImage[] imageArray : images) {
-            for (BufferedImage image : imageArray) {
+        for (Image[] imageArray : images) {
+            for (Image image : imageArray) {
                 if (image == null) {
                     return false;
                 }
