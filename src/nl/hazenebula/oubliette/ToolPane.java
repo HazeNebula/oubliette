@@ -12,8 +12,6 @@ public class ToolPane extends TabPane {
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
 
-        // todo: change grid brush type if tab is changed
-
         FieldColorPane fieldColors = new FieldColorPane(grid);
         Tab fieldTab = new Tab("Fields", fieldColors);
         getTabs().add(fieldTab);
@@ -23,8 +21,6 @@ public class ToolPane extends TabPane {
             }
         });
 
-        // todo: add object resizing
-        // todo: add canvas to show resized image (on grid)
         FieldObjectPane fieldObjects = new FieldObjectPane(grid);
         Tab fieldObjectTab = new Tab("Objects", fieldObjects);
         getTabs().add(fieldObjectTab);
