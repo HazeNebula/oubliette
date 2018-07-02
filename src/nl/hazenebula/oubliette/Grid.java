@@ -42,7 +42,6 @@ public class Grid extends ScrollPane {
     private Color gridColor;
     private FieldObject curFieldObject;
 
-    // todo: add highlighted object when placing objects
     // todo: add tool to draw with wall objects
     // todo: add tool to draw with objects
     public Grid() {
@@ -85,13 +84,7 @@ public class Grid extends ScrollPane {
                     (hvalue - hmin) / (hmax - hmin);
 
             // remove possible highlights
-            if (prevHighlight) {
-                for (int i = prevX; i < prevX + prevWidth; ++i) {
-                    for (int j = prevY; j < prevY + prevHeight; ++j) {
-                        drawField(i, j);
-                    }
-                }
-            }
+            cleanHighlight();
         });
         vvalueProperty().addListener((observable, oldValue, newValue) -> {
             double vmin = getVmin();
@@ -104,16 +97,18 @@ public class Grid extends ScrollPane {
                     (vvalue - vmin) / (vmax - vmin);
 
             // remove possible highlights
-            if (prevHighlight) {
-                for (int i = prevX; i < prevX + prevWidth; ++i) {
-                    for (int j = prevY; j < prevY + prevHeight; ++j) {
-                        drawField(i, j);
-                    }
-                }
-            }
+            cleanHighlight();
         });
 
         drawHandler = new MouseDrawHandler(e -> {
+            int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
+            int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
+
+            if (curBrush == Brush.FIELD_OBJECT) {
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+                // highptodo: draw field object
+            }
+        }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -126,25 +121,18 @@ public class Grid extends ScrollPane {
                     fieldGrid[x][y] = curField;
                     drawField(x, y);
                 }
-                // highptodo: draw field objects
             }
         }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
 
-            if (prevHighlight) {
-                for (int i = prevX; i < prevX + prevWidth; ++i) {
-                    for (int j = prevY; j < prevY + prevHeight; ++j) {
-                        drawField(i, j);
-                    }
-                }
-            }
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.save();
+
+            cleanHighlight();
 
             if (bounds.contains(e.getX(), e.getY())) {
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-                gc.save();
-
                 if (curBrush == Brush.FIELD) {
                     int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
                     int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
@@ -157,9 +145,29 @@ public class Grid extends ScrollPane {
 
                     prevX = x;
                     prevY = y;
+                    prevWidth = 1;
+                    prevHeight = 1;
+                    prevHighlight = true;
+                } else if (curBrush == Brush.FIELD_OBJECT) {
+                    // highptodo: add rotation to highlight
+                    int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
+                    int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
+                    double xPos = x * (size.get() + GRIDLINE_SIZE);
+                    double yPos = y * (size.get() + GRIDLINE_SIZE);
+
+                    gc.setGlobalAlpha(0.5d);
+                    gc.drawImage(curFieldObject.getImage(), xPos, yPos,
+                            curFieldObject.getWidth()
+                                    * (size.get() + GRIDLINE_SIZE),
+                            curFieldObject.getHeight()
+                                    * (size.get() + GRIDLINE_SIZE));
+
+                    prevX = x;
+                    prevY = y;
+                    prevWidth = curFieldObject.getWidth();
+                    prevHeight = curFieldObject.getHeight();
                     prevHighlight = true;
                 }
-                // highptodo: set field object highlighting
 
                 gc.restore();
             }
@@ -169,7 +177,29 @@ public class Grid extends ScrollPane {
         drawFullGrid();
     }
 
-    public void drawField(int x, int y) {
+    private void cleanHighlight() {
+        if (prevHighlight) {
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+
+            gc.setFill(gridColor);
+            for (int y = prevY; y < prevY + prevHeight; ++y) {
+                double yPos = y * (size.get() + GRIDLINE_SIZE);
+                gc.fillRect(0, yPos, canvas.getWidth(), GRIDLINE_SIZE);
+            }
+
+            for (int i = prevX; i < prevX + prevWidth; ++i) {
+                for (int j = prevY; j < prevY + prevHeight; ++j) {
+                    drawField(i, j);
+                }
+
+                gc.setFill(gridColor);
+                double xPos = i * (size.get() + GRIDLINE_SIZE);
+                gc.fillRect(xPos, 0, GRIDLINE_SIZE, canvas.getHeight());
+            }
+        }
+    }
+
+    private void drawField(int x, int y) {
         if (x >= 0 && x < fieldGrid.length
                 && y >= 0 && y < fieldGrid[y].length) {
             double xPos = x * (size.get() + GRIDLINE_SIZE);
@@ -204,9 +234,9 @@ public class Grid extends ScrollPane {
             }
         }
 
-        // highptodo: draw wall objects
+        // highptodo: draw objects
 
-        // todo: draw objects
+        // todo: draw wall objects
     }
 
     public void setFieldColor(Field field) {
