@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class FieldObjectImage {
+public class FieldObjectImage implements Comparable<FieldObjectImage> {
     private BufferedImage[][] images;
     private String name;
 
@@ -51,5 +51,9 @@ public class FieldObjectImage {
         }
 
         return true;
+    }
+
+    public int compareTo(FieldObjectImage other) {
+        return name.compareTo(other.name);
     }
 }
