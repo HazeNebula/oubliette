@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Rotate;
 
 import java.io.File;
 import java.util.Arrays;
@@ -67,6 +66,8 @@ public class FieldObjectPane extends GridPane {
                         + 1, curObject.getHeight()), curObject.getWidth() + 1,
                         curObject.getHeight(), curObject.getDir());
                 drawCanvas();
+
+                grid.setFieldObject(curObject);
             }
         });
         Button decreaseWidthButton = new Button("-");
@@ -76,6 +77,8 @@ public class FieldObjectPane extends GridPane {
                         - 1, curObject.getHeight()), curObject.getWidth() - 1,
                         curObject.getHeight(), curObject.getDir());
                 drawCanvas();
+
+                grid.setFieldObject(curObject);
             }
         });
         Label heightLabel = new Label("Height:");
@@ -88,6 +91,8 @@ public class FieldObjectPane extends GridPane {
                         curObject.getWidth(), curObject.getHeight() + 1,
                         curObject.getDir());
                 drawCanvas();
+
+                grid.setFieldObject(curObject);
             }
         });
         Button decreaseHeightButton = new Button("-");
@@ -98,6 +103,8 @@ public class FieldObjectPane extends GridPane {
                         curObject.getWidth(), curObject.getHeight() - 1,
                         curObject.getDir());
                 drawCanvas();
+
+                grid.setFieldObject(curObject);
             }
         });
         Label rotateLabel = new Label("Rotate:");
@@ -108,6 +115,8 @@ public class FieldObjectPane extends GridPane {
                     curObject.getWidth(), curObject.getHeight(),
                     curObject.getDir().next());
             drawCanvas();
+
+            grid.setFieldObject(curObject);
         });
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> {
@@ -115,6 +124,8 @@ public class FieldObjectPane extends GridPane {
                     curObject.getWidth(), curObject.getHeight(),
                     curObject.getDir().prev());
             drawCanvas();
+
+            grid.setFieldObject(curObject);
         });
 
         GridPane resizeWrapper = new GridPane();
@@ -134,6 +145,7 @@ public class FieldObjectPane extends GridPane {
         shapeButtonPane.add(rotateClockwiseButton, 1, 3);
         shapeButtonPane.add(rotateCounterclockwiseButton, 2, 3);
 
+        // highptodo: add erase functionality for field objects
         Button eraseButton = new Button("Erase");
         eraseButton.setMaxWidth(Double.MAX_VALUE);
         setHgrow(eraseButton, Priority.ALWAYS);
@@ -249,6 +261,8 @@ public class FieldObjectPane extends GridPane {
 
     private void drawCanvas() {
         GraphicsContext gc = resizeCanvas.getGraphicsContext2D();
+        double gridSize = GRID_MULTIPLIER
+                * grid.sizeProperty().get() + Grid.GRIDLINE_SIZE;
 
         // clear canvas
         gc.setFill(BACK_COLOR);
@@ -257,25 +271,30 @@ public class FieldObjectPane extends GridPane {
         // draw grid lines
         gc.setFill(GRID_COLOR);
         for (int x = 0; x < maxSize; ++x) {
-            double xPos = x * GRID_MULTIPLIER *
-                    (grid.sizeProperty().get() + Grid.GRIDLINE_SIZE);
+            double xPos = x * gridSize;
             gc.fillRect(xPos, 0, 1.0d, resizeCanvas.getHeight());
         }
 
         for (int y = 0; y < maxSize; ++y) {
-            double yPos = y * GRID_MULTIPLIER *
-                    (grid.sizeProperty().get() + Grid.GRIDLINE_SIZE);
+            double yPos = y * gridSize;
             gc.fillRect(0, yPos, resizeCanvas.getWidth(), Grid.GRIDLINE_SIZE);
         }
 
         // draw object
-        Rotate r = new Rotate(curObject.getDir().angle(), resizeCanvas.getWidth() / 2.0d, resizeCanvas.getHeight() / 2.0d);
-        gc.setTransform(new Affine(r));
+        gc.save();
 
-        gc.drawImage(curObject.getImage(), 0, 0, curObject.getWidth()
-                        * GRID_MULTIPLIER * (grid.sizeProperty().get()
-                        + Grid.GRIDLINE_SIZE),
-                curObject.getHeight() * GRID_MULTIPLIER
-                        * (grid.sizeProperty().get() + Grid.GRIDLINE_SIZE));
+        double width = curObject.getWidth() * gridSize;
+        double height = curObject.getHeight() * gridSize;
+
+        Affine a = new Affine();
+        a.appendRotation(curObject.getDir().angle(), width / 2, height / 2);
+        gc.setTransform(a);
+
+        double xoffset = Math.sin(Math.toRadians(curObject.getDir().angle())) * (width - height) / 2;
+        double yoffset = Math.sin(Math.toRadians(curObject.getDir().angle())) * (width - height) / 2;
+
+        gc.drawImage(curObject.getImage(), xoffset, yoffset, width, height);
+
+        gc.restore();
     }
 }
