@@ -57,7 +57,6 @@ public class FieldObjectPane extends GridPane {
         GridPane.setHgrow(resizeCanvas, Priority.ALWAYS);
         GridPane.setHalignment(resizeCanvas, HPos.CENTER);
 
-        // highptodo: make button increase size of field object
         Label widthLabel = new Label("Width:");
         GridPane.setHgrow(widthLabel, Priority.ALWAYS);
         Button increaseWidthButton = new Button("+");
@@ -78,7 +77,6 @@ public class FieldObjectPane extends GridPane {
                 drawCanvas();
             }
         });
-        // highptodo: make button decrease size of field object
         Label heightLabel = new Label("Height:");
         GridPane.setHgrow(heightLabel, Priority.ALWAYS);
         Button increaseHeightButton = new Button("+");
@@ -101,7 +99,6 @@ public class FieldObjectPane extends GridPane {
                 drawCanvas();
             }
         });
-        // highptodo: make button rotate field object
         Label rotateLabel = new Label("Rotate:");
         GridPane.setHgrow(rotateLabel, Priority.ALWAYS);
         Button rotateClockwiseButton = new Button("\u21BB");
@@ -141,8 +138,6 @@ public class FieldObjectPane extends GridPane {
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
-        // highptodo: make button press change field object brush
-        // highptodo: make button press change resizeCanvas object
         ScrollPane buttonPane = new ScrollPane();
         buttonPane.setFitToWidth(true);
         buttonPane.setStyle("-fx-background: #D3D3D3");
@@ -165,7 +160,13 @@ public class FieldObjectPane extends GridPane {
             button.setGraphic(graphic);
 
             button.setOnAction(e -> {
-
+                curImg = img;
+                curObject = new FieldObject(curImg.getImage(
+                        curObject.getWidth(), curObject.getHeight()),
+                        curObject.getWidth(), curObject.getHeight(),
+                        curObject.getDir());
+                drawCanvas();
+                // highptodo: make button press change field object brush
             });
 
             button.setToggleGroup(fieldObjectToggleGroup);
