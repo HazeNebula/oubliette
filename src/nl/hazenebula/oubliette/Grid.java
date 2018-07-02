@@ -12,6 +12,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
+import java.util.List;
+
 public class Grid extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
 
@@ -23,6 +25,7 @@ public class Grid extends ScrollPane {
     private final IntegerProperty size;
 
     private Field[][] fieldGrid;
+    private List<FieldObject> fieldObjects;
     private boolean prevHighlight;
     private int prevX;
     private int prevY;
@@ -34,9 +37,10 @@ public class Grid extends ScrollPane {
     private double voffset;
     private final MouseDrawHandler drawHandler;
 
-    private Field curField;
     private Brush curBrush;
+    private Field curField;
     private Color gridColor;
+    private FieldObject curFieldObject;
 
     // todo: add highlighted object when placing objects
     // todo: add tool to draw with wall objects
@@ -68,6 +72,7 @@ public class Grid extends ScrollPane {
         curBrush = Brush.FIELD;
         curField = Field.EMPTY;
         gridColor = Field.FILLED.color();
+        curFieldObject = null;
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {
             double hmin = getHmin();
@@ -121,6 +126,7 @@ public class Grid extends ScrollPane {
                     fieldGrid[x][y] = curField;
                     drawField(x, y);
                 }
+                // highptodo: draw field objects
             }
         }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
@@ -153,6 +159,7 @@ public class Grid extends ScrollPane {
                     prevY = y;
                     prevHighlight = true;
                 }
+                // highptodo: set field object highlighting
 
                 gc.restore();
             }
@@ -193,22 +200,21 @@ public class Grid extends ScrollPane {
         // draw fields
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
-                double xPos = x * (size.get() + GRIDLINE_SIZE);
-                double yPos = y * (size.get() + GRIDLINE_SIZE);
-
-                gc.setFill(fieldGrid[x][y].color());
-                gc.fillRect(xPos + 1, yPos + 1, size.get(),
-                        size.get());
+                drawField(x, y);
             }
         }
 
-        // todo: draw wall objects
+        // highptodo: draw wall objects
 
         // todo: draw objects
     }
 
     public void setFieldColor(Field field) {
         curField = field;
+    }
+
+    public void setFieldObject(FieldObject fieldObject) {
+        this.curFieldObject = fieldObject;
     }
 
     public void setGridColor(Color color) {
