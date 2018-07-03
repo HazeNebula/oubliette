@@ -11,6 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 
 import java.util.List;
 
@@ -154,18 +155,37 @@ public class Grid extends ScrollPane {
                     int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
                     double xPos = x * (size.get() + GRIDLINE_SIZE);
                     double yPos = y * (size.get() + GRIDLINE_SIZE);
+                    double width = curFieldObject.getWidth()
+                            * (size.get() + GRIDLINE_SIZE);
+                    double height = curFieldObject.getHeight()
+                            * (size.get() + GRIDLINE_SIZE);
 
+                    Affine a = new Affine();
+                    a.appendRotation(curFieldObject.getDir().angle(),
+                            xPos + width / 2, yPos + height / 2);
+                    gc.setTransform(a);
                     gc.setGlobalAlpha(0.5d);
-                    gc.drawImage(curFieldObject.getImage(), xPos, yPos,
-                            curFieldObject.getWidth()
-                                    * (size.get() + GRIDLINE_SIZE),
-                            curFieldObject.getHeight()
-                                    * (size.get() + GRIDLINE_SIZE));
+
+                    double xoffset = Math.sin(Math.toRadians(curFieldObject
+                            .getDir().angle())) * (width - height) / 2;
+                    double yoffset = Math.sin(Math.toRadians(curFieldObject
+                            .getDir().angle())) * (width - height) / 2;
+
+                    gc.drawImage(curFieldObject.getImage(), xPos + xoffset,
+                            yPos + yoffset, width, height);
+
+                    gc.restore();
 
                     prevX = x;
                     prevY = y;
-                    prevWidth = curFieldObject.getWidth();
-                    prevHeight = curFieldObject.getHeight();
+                    double c = Math.abs(Math.cos(Math.toRadians(curFieldObject
+                            .getDir().angle())));
+                    double s = Math.abs(Math.sin(Math.toRadians(curFieldObject
+                            .getDir().angle())));
+                    prevWidth = (int)(c * curFieldObject.getWidth()
+                            + s * curFieldObject.getHeight());
+                    prevHeight = (int)(c * curFieldObject.getHeight()
+                            + s * curFieldObject.getWidth());
                     prevHighlight = true;
                 }
 
