@@ -277,8 +277,10 @@ public class FieldObjectPane extends GridPane {
         a.appendRotation(curObject.getDir().angle(), width / 2, height / 2);
         gc.setTransform(a);
 
-        double xoffset = Math.sin(Math.toRadians(curObject.getDir().angle())) * (width - height) / 2;
-        double yoffset = Math.sin(Math.toRadians(curObject.getDir().angle())) * (width - height) / 2;
+        double xoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
+                * (width - height) / 2;
+        double yoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
+                * (width - height) / 2;
 
         gc.drawImage(curObject.getImage(), xoffset, yoffset, width, height);
 
