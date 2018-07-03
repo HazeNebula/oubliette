@@ -162,6 +162,8 @@ public class FieldObjectPane extends GridPane {
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
+                grid.setBrush(Brush.FIELD_OBJECT);
+
                 if (curImg != img) {
                     curImg = img;
                     curObject = new FieldObject(curImg.getImage(
@@ -171,7 +173,6 @@ public class FieldObjectPane extends GridPane {
                             curObject.getDir());
                     drawCanvas();
 
-                    grid.setBrush(Brush.FIELD_OBJECT);
                     grid.setFieldObject(new FieldObject(curObject));
                 }
             });
