@@ -23,7 +23,6 @@ public class FieldObjectPane extends GridPane {
 
     private static final double BUTTON_SIZE = 80.0d;
 
-    private List<FieldObjectImage> objects;
     private int maxSize;
 
     private Grid grid;
@@ -37,8 +36,6 @@ public class FieldObjectPane extends GridPane {
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
         setHgap(5.0d);
-
-        loadObjects();
 
         resizeCanvas = new Canvas();
         resizeCanvas.widthProperty().bind(widthProperty().divide(2.0d));
@@ -54,6 +51,8 @@ public class FieldObjectPane extends GridPane {
         increaseWidthButton.setOnAction(e -> {
             if (curObject.getWidth() < maxSize) {
                 curObject.setWidth(curObject.getWidth() + 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -63,6 +62,8 @@ public class FieldObjectPane extends GridPane {
         decreaseWidthButton.setOnAction(e -> {
             if (curObject.getWidth() > 1) {
                 curObject.setWidth(curObject.getWidth() - 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -74,6 +75,8 @@ public class FieldObjectPane extends GridPane {
         increaseHeightButton.setOnAction(e -> {
             if (curObject.getHeight() < maxSize) {
                 curObject.setHeight(curObject.getHeight() + 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -83,6 +86,8 @@ public class FieldObjectPane extends GridPane {
         decreaseHeightButton.setOnAction(e -> {
             if (curObject.getHeight() > 1) {
                 curObject.setHeight(curObject.getHeight() - 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
@@ -145,6 +150,8 @@ public class FieldObjectPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
+        List<FieldObjectImage> objects = loadObjects();
+
         ToggleButton firstButton = new ToggleButton();
         for (FieldObjectImage img : objects) {
             ToggleButton button = new ToggleButton();
@@ -195,11 +202,11 @@ public class FieldObjectPane extends GridPane {
         add(buttonPane, 0, 3);
     }
 
-    private void loadObjects() {
+    private List<FieldObjectImage> loadObjects() {
         List<List<File>> files = ObjectFileSearcher.getObjects(
                 ObjectFileSearcher.FIELDOBJECT_DIR);
         maxSize = 1;
-        objects = new LinkedList<>();
+        List<FieldObjectImage> objects = new LinkedList<>();
 
         for (List<File> objectFiles : files) {
             int size = (int)Math.sqrt(objectFiles.size());
@@ -253,6 +260,8 @@ public class FieldObjectPane extends GridPane {
         }
 
         Collections.sort(objects);
+
+        return objects;
     }
 
     private void drawCanvas() {
