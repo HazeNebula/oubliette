@@ -113,6 +113,14 @@ public class Grid extends ScrollPane {
                 fieldObjects.add(newObj);
 
                 drawFieldObject(newObj);
+            } else if (curBrush == Brush.FIELD_OBJECT_ERASE) {
+                for (FieldObject obj : fieldObjects) {
+                    if (obj.inBounds(x, y)) {
+                        fieldObjects.remove(obj);
+                        drawFullGrid();
+                        break;
+                    }
+                }
             }
         }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
