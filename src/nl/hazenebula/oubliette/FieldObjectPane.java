@@ -266,7 +266,7 @@ public class FieldObjectPane extends GridPane {
 
     private void drawCanvas() {
         GraphicsContext gc = resizeCanvas.getGraphicsContext2D();
-        double gridSize = (resizeCanvas.getWidth() - 3) / 3;
+        double gridSize = resizeCanvas.getWidth() / maxSize;
 
         // clear canvas
         gc.setFill(BACK_COLOR);
