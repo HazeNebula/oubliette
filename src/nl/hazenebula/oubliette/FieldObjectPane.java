@@ -123,7 +123,6 @@ public class FieldObjectPane extends GridPane {
         shapeButtonPane.add(rotateClockwiseButton, 1, 3);
         shapeButtonPane.add(rotateCounterclockwiseButton, 2, 3);
 
-        // highptodo: add erase functionality for field objects
         ToggleGroup toggleGroup = new ToggleGroup();
 
         ToggleButton eraseButton = new ToggleButton("Erase");
