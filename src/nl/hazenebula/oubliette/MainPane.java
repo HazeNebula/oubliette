@@ -30,6 +30,7 @@ public class MainPane extends GridPane {
 
         getRowConstraints().add(rc);
 
+        // lowptodo: replace column constraints with constraints on panes
         ColumnConstraints cc1 = new ColumnConstraints();
         cc1.setHgrow(Priority.NEVER);
         cc1.setPercentWidth(20);
@@ -42,7 +43,7 @@ public class MainPane extends GridPane {
 
         // todo: add file saving functionality
         MenuItem saveFile = new MenuItem("Save File");
-        // lowtodo: add separate window that lets user change file resolution
+        // lowptodo: add separate window that lets user change file resolution
         MenuItem pngExport = new MenuItem("Export as PNG");
         pngExport.setOnAction(e -> {
             FileChooser fc = new FileChooser();

@@ -11,10 +11,15 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class Grid extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
-    private static final int GRID_SIZE = 1;
+
+    public static final int GRIDLINE_SIZE = 1;
     public static final int MAX_SQUARE_SIZE = 50;
     public static final int MIN_SQUARE_SIZE = 10;
     public static final int INIT_SQUARE_SIZE = 20;
@@ -22,6 +27,8 @@ public class Grid extends ScrollPane {
     private final IntegerProperty size;
 
     private Field[][] fieldGrid;
+    private List<FieldObject> fieldObjects;
+    private boolean prevHighlight;
     private int prevX;
     private int prevY;
     private int prevWidth;
@@ -32,23 +39,23 @@ public class Grid extends ScrollPane {
     private double voffset;
     private final MouseDrawHandler drawHandler;
 
-    private Field curField;
     private Brush curBrush;
+    private Field curField;
     private Color gridColor;
+    private FieldObject curFieldObject;
 
-    // todo: add highlighted object when placing objects
     // todo: add tool to draw with wall objects
-    // todo: add tool to draw with objects
     public Grid() {
         setStyle("-fx-focus-color: transparent;");
 
-        fieldGrid = new Field[100][100];
+        fieldGrid = new Field[50][50];
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
                 fieldGrid[x][y] = Field.EMPTY;
             }
         }
 
+        prevHighlight = false;
         prevX = 0;
         prevY = 0;
         prevWidth = 1;
@@ -56,8 +63,8 @@ public class Grid extends ScrollPane {
 
         size = new SimpleIntegerProperty(20);
 
-        canvas = new Canvas(fieldGrid.length * (size.get() + GRID_SIZE),
-                fieldGrid[0].length * (size.get() + GRID_SIZE));
+        canvas = new Canvas(fieldGrid.length * (size.get() + GRIDLINE_SIZE),
+                fieldGrid[0].length * (size.get() + GRIDLINE_SIZE));
         canvas.setStyle("-fx-focus-color: transparent;");
 
         setContent(canvas);
@@ -65,6 +72,8 @@ public class Grid extends ScrollPane {
         curBrush = Brush.FIELD;
         curField = Field.EMPTY;
         gridColor = Field.FILLED.color();
+        curFieldObject = null;
+        fieldObjects = new LinkedList<>();
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {
             double hmin = getHmin();
@@ -75,6 +84,9 @@ public class Grid extends ScrollPane {
 
             hoffset = Math.max(0, contentWidth - viewportWidth) *
                     (hvalue - hmin) / (hmax - hmin);
+
+            // remove possible highlights
+            cleanHighlight();
         });
         vvalueProperty().addListener((observable, oldValue, newValue) -> {
             double vmin = getVmin();
@@ -85,17 +97,40 @@ public class Grid extends ScrollPane {
 
             voffset = Math.max(0, contentHeight - viewportHeight) *
                     (vvalue - vmin) / (vmax - vmin);
+
+            // remove possible highlights
+            cleanHighlight();
         });
 
         drawHandler = new MouseDrawHandler(e -> {
+            int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
+            int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
+
+            if (curBrush == Brush.FIELD_OBJECT) {
+                FieldObject newObj = new FieldObject(curFieldObject);
+                newObj.setX(x);
+                newObj.setY(y);
+                fieldObjects.add(newObj);
+
+                drawFieldObject(newObj);
+            } else if (curBrush == Brush.FIELD_OBJECT_ERASE) {
+                for (FieldObject obj : fieldObjects) {
+                    if (obj.inBounds(x, y)) {
+                        fieldObjects.remove(obj);
+                        drawFullGrid();
+                        break;
+                    }
+                }
+            }
+        }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
 
             if (bounds.contains(e.getX(), e.getY())) {
                 if (curBrush == Brush.FIELD) {
-                    int x = (int)(e.getX() / (size.get() + GRID_SIZE));
-                    int y = (int)(e.getY() / (size.get() + GRID_SIZE));
+                    int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
+                    int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
                     fieldGrid[x][y] = curField;
                     drawField(x, y);
@@ -106,21 +141,17 @@ public class Grid extends ScrollPane {
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
 
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.save();
+
+            cleanHighlight();
+
             if (bounds.contains(e.getX(), e.getY())) {
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-                gc.save();
-
                 if (curBrush == Brush.FIELD) {
-                    int x = (int)(e.getX() / (size.get() + GRID_SIZE));
-                    int y = (int)(e.getY() / (size.get() + GRID_SIZE));
-                    double xPos = x * (size.get() + GRID_SIZE);
-                    double yPos = y * (size.get() + GRID_SIZE);
-
-                    for (int i = prevX; i < prevX + prevWidth; ++i) {
-                        for (int j = prevY; j < prevY + prevHeight; ++j) {
-                            drawField(i, j);
-                        }
-                    }
+                    int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
+                    int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
+                    double xPos = x * (size.get() + GRIDLINE_SIZE);
+                    double yPos = y * (size.get() + GRIDLINE_SIZE);
 
                     gc.setGlobalAlpha(0.5d);
                     gc.setFill(HIGHLIGHT_COLOR);
@@ -128,6 +159,46 @@ public class Grid extends ScrollPane {
 
                     prevX = x;
                     prevY = y;
+                    prevWidth = 1;
+                    prevHeight = 1;
+                    prevHighlight = true;
+                } else if (curBrush == Brush.FIELD_OBJECT) {
+                    int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
+                    int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
+                    double xPos = x * (size.get() + GRIDLINE_SIZE);
+                    double yPos = y * (size.get() + GRIDLINE_SIZE);
+                    double width = curFieldObject.getWidth()
+                            * (size.get() + GRIDLINE_SIZE);
+                    double height = curFieldObject.getHeight()
+                            * (size.get() + GRIDLINE_SIZE);
+
+                    Affine a = new Affine();
+                    a.appendRotation(curFieldObject.getDir().angle(),
+                            xPos + width / 2, yPos + height / 2);
+                    gc.setTransform(a);
+                    gc.setGlobalAlpha(0.5d);
+
+                    double xoffset = Math.sin(Math.toRadians(curFieldObject
+                            .getDir().angle())) * (width - height) / 2;
+                    double yoffset = Math.sin(Math.toRadians(curFieldObject
+                            .getDir().angle())) * (width - height) / 2;
+
+                    gc.drawImage(curFieldObject.getImage(), xPos + xoffset,
+                            yPos + yoffset, width, height);
+
+                    gc.restore();
+
+                    prevX = x;
+                    prevY = y;
+                    double c = Math.abs(Math.cos(Math.toRadians(curFieldObject
+                            .getDir().angle())));
+                    double s = Math.abs(Math.sin(Math.toRadians(curFieldObject
+                            .getDir().angle())));
+                    prevWidth = (int)(c * curFieldObject.getWidth()
+                            + s * curFieldObject.getHeight());
+                    prevHeight = (int)(c * curFieldObject.getHeight()
+                            + s * curFieldObject.getWidth());
+                    prevHighlight = true;
                 }
 
                 gc.restore();
@@ -138,15 +209,86 @@ public class Grid extends ScrollPane {
         drawFullGrid();
     }
 
-    public void drawField(int x, int y) {
+    private void cleanHighlight() {
+        if (prevHighlight) {
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+
+            gc.setFill(gridColor);
+            double x1 = prevX * (size.get() + GRIDLINE_SIZE);
+            double x2 = prevWidth * (size.get() + GRIDLINE_SIZE);
+            for (int y = prevY; y < prevY + prevHeight; ++y) {
+                double yPos = y * (size.get() + GRIDLINE_SIZE);
+                gc.fillRect(x1, yPos, x2, GRIDLINE_SIZE);
+            }
+
+            double y1 = prevY * (size.get() + GRIDLINE_SIZE);
+            double y2 = prevHeight * (size.get() + GRIDLINE_SIZE);
+            for (int i = prevX; i < prevX + prevWidth; ++i) {
+                for (int j = prevY; j < prevY + prevHeight; ++j) {
+                    drawField(i, j);
+                }
+
+                gc.setFill(gridColor);
+                double xPos = i * (size.get() + GRIDLINE_SIZE);
+                gc.fillRect(xPos, y1, GRIDLINE_SIZE, y2);
+            }
+
+            for (FieldObject obj : fieldObjects) {
+                for (int x = prevX; x < prevX + prevWidth; ++x) {
+                    for (int y = prevY; y < prevY + prevHeight; ++y) {
+                        if (obj.inBounds(x, y)) {
+                            drawFieldObject(obj);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void drawField(int x, int y) {
         if (x >= 0 && x < fieldGrid.length
-                && y >= 0 && y < fieldGrid[y].length) {
-            double xPos = x * (size.get() + GRID_SIZE);
-            double yPos = y * (size.get() + GRID_SIZE);
+                && y >= 0 && y < fieldGrid[x].length) {
+            double xPos = x * (size.get() + GRIDLINE_SIZE);
+            double yPos = y * (size.get() + GRIDLINE_SIZE);
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
             gc.setFill(fieldGrid[x][y].color());
             gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
+        }
+    }
+
+    private void drawFieldObject(FieldObject obj) {
+        double c = Math.abs(Math.cos(Math.toRadians(obj.getDir().angle())));
+        double s = Math.abs(Math.sin(Math.toRadians(obj.getDir().angle())));
+        int actualWidth = (int)(c * obj.getWidth() + s * obj.getHeight());
+        int actualHeight = (int)(c * obj.getHeight() + s * obj.getWidth());
+        if (obj.getX() >= 0
+                && obj.getX() + actualWidth - 1 < fieldGrid.length
+                && obj.getY() >= 0
+                && obj.getY() + actualHeight - 1
+                < fieldGrid[obj.getX()].length) {
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.save();
+
+            double xPos = obj.getX() * (size.get() + GRIDLINE_SIZE);
+            double yPos = obj.getY() * (size.get() + GRIDLINE_SIZE);
+            double width = obj.getWidth() * (size.get() + GRIDLINE_SIZE);
+            double height = obj.getHeight() * (size.get() + GRIDLINE_SIZE);
+
+            Affine a = new Affine();
+            a.appendRotation(obj.getDir().angle(), xPos + width / 2,
+                    yPos + height / 2);
+            gc.setTransform(a);
+
+            double xoffset = Math.sin(Math.toRadians(obj.getDir().angle()))
+                    * (width - height) / 2;
+            double yoffset = Math.sin(Math.toRadians(obj.getDir().angle()))
+                    * (width - height) / 2;
+
+            gc.drawImage(obj.getImage(), xPos + xoffset, yPos + yoffset, width,
+                    height);
+
+            gc.restore();
         }
     }
 
@@ -157,34 +299,36 @@ public class Grid extends ScrollPane {
 
         // draw grid lines
         for (int x = 0; x < fieldGrid.length; ++x) {
-            double xPos = x * (size.get() + GRID_SIZE);
+            double xPos = x * (size.get() + GRIDLINE_SIZE);
             gc.fillRect(xPos, 0, 1.0d, canvas.getHeight());
         }
 
         for (int y = 0; y < fieldGrid[0].length; ++y) {
-            double yPos = y * (size.get() + GRID_SIZE);
-            gc.fillRect(0, yPos, canvas.getWidth(), GRID_SIZE);
+            double yPos = y * (size.get() + GRIDLINE_SIZE);
+            gc.fillRect(0, yPos, canvas.getWidth(), GRIDLINE_SIZE);
         }
 
         // draw fields
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
-                double xPos = x * (size.get() + GRID_SIZE);
-                double yPos = y * (size.get() + GRID_SIZE);
-
-                gc.setFill(fieldGrid[x][y].color());
-                gc.fillRect(xPos + 1, yPos + 1, size.get(),
-                        size.get());
+                drawField(x, y);
             }
         }
 
-        // todo: draw wall objects
+        // draw field objects
+        for (FieldObject obj : fieldObjects) {
+            drawFieldObject(obj);
+        }
 
-        // todo: draw objects
+        // todo: draw wall objects
     }
 
     public void setFieldColor(Field field) {
         curField = field;
+    }
+
+    public void setFieldObject(FieldObject fieldObject) {
+        this.curFieldObject = fieldObject;
     }
 
     public void setGridColor(Color color) {
@@ -195,10 +339,14 @@ public class Grid extends ScrollPane {
         if (newSize >= MIN_SQUARE_SIZE && newSize <= MAX_SQUARE_SIZE) {
             size.set(newSize);
 
-            canvas.setWidth(fieldGrid.length * (size.get() + GRID_SIZE));
-            canvas.setHeight(fieldGrid[0].length * (size.get() + GRID_SIZE));
+            canvas.setWidth(fieldGrid.length * (size.get() + GRIDLINE_SIZE));
+            canvas.setHeight(fieldGrid[0].length * (size.get() + GRIDLINE_SIZE));
             drawFullGrid();
         }
+    }
+
+    public void setBrush(Brush newBrush) {
+        curBrush = newBrush;
     }
 
     public boolean isDrawing() {
@@ -215,5 +363,9 @@ public class Grid extends ScrollPane {
 
     public DoubleProperty canvasHeightProperty() {
         return canvas.heightProperty();
+    }
+
+    public IntegerProperty sizeProperty() {
+        return size;
     }
 }

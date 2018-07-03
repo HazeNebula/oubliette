@@ -2,6 +2,7 @@ package nl.hazenebula.oubliette;
 
 public enum Brush {
     FIELD,
-    WALL_OBJECT,
-    OBJECT
+    FIELD_OBJECT,
+    FIELD_OBJECT_ERASE,
+    WALL_OBJECT;
 }
