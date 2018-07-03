@@ -91,7 +91,7 @@ public class FieldObjectPane extends GridPane {
         Button decreaseHeightButton = new Button("-");
         decreaseHeightButton.setOnAction(e -> {
             if (curObject.getHeight() > 1) {
-                curObject.setHeight(curObject.getHeight());
+                curObject.setHeight(curObject.getHeight() - 1);
                 drawCanvas();
 
                 grid.setFieldObject(curObject);
