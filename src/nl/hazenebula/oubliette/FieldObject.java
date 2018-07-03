@@ -76,4 +76,9 @@ public class FieldObject {
     public void setDir(Direction dir) {
         this.dir = dir;
     }
+
+    public boolean inBounds(int x, int y) {
+        return x >= getX() && x < getX() + getWidth()
+                && y >= getY() && y < getY() + getHeight();
+    }
 }
