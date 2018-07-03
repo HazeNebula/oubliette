@@ -30,6 +30,13 @@ public class ToolPane extends TabPane {
             }
         });
 
-        // todo: add wall object tab
+        WallObjectPane wallObjects = new WallObjectPane(grid);
+        Tab wallObjectTab = new Tab("Walls", wallObjects);
+        getTabs().add(wallObjectTab);
+        wallObjectTab.setOnSelectionChanged(e -> {
+            if (wallObjectTab.isSelected()) {
+                grid.setBrush(Brush.WALL_OBJECT);
+            }
+        });
     }
 }
