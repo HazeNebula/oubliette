@@ -3,10 +3,12 @@ package nl.hazenebula.oubliette;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 
 import java.io.File;
 import java.util.Arrays;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WallObjectPane extends GridPane {
+    private static final Color BACK_COLOR = Color.WHITE;
+    private static final Color GRID_COLOR = Color.BLACK;
     private static final double BUTTON_SIZE = 80.0d;
 
     private int maxSize;
@@ -34,8 +38,7 @@ public class WallObjectPane extends GridPane {
 
         resizeCanvas = new Canvas();
         resizeCanvas.widthProperty().bind(widthProperty().divide(2.0d));
-        resizeCanvas.heightProperty().bind(resizeCanvas.widthProperty()
-                .divide(2.0d));
+        resizeCanvas.heightProperty().bind(resizeCanvas.widthProperty());
         resizeCanvas.widthProperty().addListener((observable, oldValue,
                                                   newValue) -> drawCanvas());
         GridPane.setHgrow(resizeCanvas, Priority.ALWAYS);
@@ -98,9 +101,7 @@ public class WallObjectPane extends GridPane {
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
-        eraseButton.setOnAction(e -> {
-            grid.setBrush(Brush.FIELD_OBJECT_ERASE);
-        });
+        eraseButton.setOnAction(e -> grid.setBrush(Brush.WALL_OBJECT_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -229,6 +230,46 @@ public class WallObjectPane extends GridPane {
     }
 
     private void drawCanvas() {
-        // highptodo: implement drawCanvas
+        GraphicsContext gc = resizeCanvas.getGraphicsContext2D();
+        double gridSize = resizeCanvas.getWidth() / maxSize;
+
+        // clear canvas
+        gc.setFill(BACK_COLOR);
+        gc.fillRect(0, 0, resizeCanvas.getWidth(), resizeCanvas.getHeight());
+
+        // draw grid lines
+        gc.setFill(GRID_COLOR);
+        for (int x = 0; x < maxSize; ++x) {
+            double xPos = x * gridSize;
+            gc.fillRect(xPos, 0, 1.0d, resizeCanvas.getHeight());
+        }
+
+        for (int y = 0; y < maxSize; ++y) {
+            double yPos = y * gridSize;
+            gc.fillRect(0, yPos, resizeCanvas.getWidth(), Grid.GRIDLINE_SIZE);
+        }
+
+        // draw object
+        gc.save();
+
+        double width = curObject.getWidth() * gridSize;
+        double height = curObject.getHeight() * gridSize;
+
+        Affine a = new Affine();
+        a.appendRotation(curObject.getDir().angle(), width / 2, height / 2);
+        gc.setTransform(a);
+
+        double xoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
+                * (width - height) / 2;
+        double yoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
+                * (width - height) / 2
+                - Math.sin(Math.toRadians(curObject.getDir().angle()))
+                * gridSize / 2
+                + Math.cos(Math.toRadians(curObject.getDir().angle()))
+                * gridSize / 2;
+
+        gc.drawImage(curObject.getImage(), xoffset, yoffset, width, height);
+
+        gc.restore();
     }
 }
