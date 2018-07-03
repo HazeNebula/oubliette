@@ -41,16 +41,8 @@ public class FieldObjectPane extends GridPane {
 
         loadObjects();
 
-        curImg = objects.get(0);
-        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
-                Direction.NORTH);
-        grid.setFieldObject(curObject);
-
         resizeCanvas = new Canvas();
-        // highptodo: make resize canvas independent of main grid size
-        resizeCanvas.widthProperty().bind(grid.sizeProperty()
-                .add(Grid.GRIDLINE_SIZE)
-                .multiply(GRID_MULTIPLIER * maxSize));
+        resizeCanvas.widthProperty().bind(widthProperty().divide(2.0d));
         resizeCanvas.heightProperty().bind(resizeCanvas.widthProperty());
         resizeCanvas.widthProperty().addListener((observable, oldValue,
                                                   newValue) -> drawCanvas());
@@ -132,8 +124,14 @@ public class FieldObjectPane extends GridPane {
         shapeButtonPane.add(rotateCounterclockwiseButton, 2, 3);
 
         // highptodo: add erase functionality for field objects
-        Button eraseButton = new Button("Erase");
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        ToggleButton eraseButton = new ToggleButton("Erase");
+        eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
+        eraseButton.setOnAction(e -> {
+            grid.setBrush(Brush.FIELD_OBJECT_ERASE);
+        });
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -149,14 +147,19 @@ public class FieldObjectPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
-        ToggleGroup fieldObjectToggleGroup = new ToggleGroup();
+        ToggleButton firstButton = new ToggleButton();
         for (FieldObjectImage img : objects) {
             ToggleButton button = new ToggleButton();
+
+            if (img == objects.get(0)) {
+                firstButton = button;
+            }
 
             ImageView graphic = new ImageView(img.getImage(1, 1));
             graphic.setFitWidth(BUTTON_SIZE);
             graphic.setFitHeight(BUTTON_SIZE);
             button.setGraphic(graphic);
+            button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
                 if (curImg != img) {
@@ -168,15 +171,22 @@ public class FieldObjectPane extends GridPane {
                             curObject.getDir());
                     drawCanvas();
 
+                    grid.setBrush(Brush.FIELD_OBJECT);
                     grid.setFieldObject(new FieldObject(curObject));
                 }
             });
 
-            button.setToggleGroup(fieldObjectToggleGroup);
+            button.setToggleGroup(toggleGroup);
             buttons.getChildren().add(button);
         }
 
         setVgrow(buttonPane, Priority.ALWAYS);
+
+        curImg = objects.get(0);
+        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
+                Direction.NORTH);
+        grid.setFieldObject(curObject);
+        firstButton.setSelected(true);
 
         drawCanvas();
 
@@ -248,8 +258,7 @@ public class FieldObjectPane extends GridPane {
 
     private void drawCanvas() {
         GraphicsContext gc = resizeCanvas.getGraphicsContext2D();
-        double gridSize = GRID_MULTIPLIER
-                * grid.sizeProperty().get() + Grid.GRIDLINE_SIZE;
+        double gridSize = (resizeCanvas.getWidth() - 3) / 3;
 
         // clear canvas
         gc.setFill(BACK_COLOR);
