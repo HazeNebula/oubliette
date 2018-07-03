@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class FieldObjectPane extends GridPane {
     private static final Color BACK_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = Color.BLACK;
-    private static final double GRID_MULTIPLIER = 2.0d;
 
     private static final double BUTTON_SIZE = 80.0d;
 
