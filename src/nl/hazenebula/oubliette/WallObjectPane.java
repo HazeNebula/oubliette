@@ -27,7 +27,7 @@ public class WallObjectPane extends GridPane {
     private Grid grid;
     private Canvas resizeCanvas;
     private WallObjectImage curImg;
-    private FieldObject curObject;
+    private WallObject curObject;
 
     public WallObjectPane(Grid grid) {
         this.grid = grid;
@@ -59,7 +59,7 @@ public class WallObjectPane extends GridPane {
                 curObject.setImage(curImg.getImage(curObject.getWidth()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                grid.setWallObject(curObject);
             }
         });
         Button decreaseSizeButton = new Button("-");
@@ -69,7 +69,7 @@ public class WallObjectPane extends GridPane {
                 curObject.setImage(curImg.getImage(curObject.getWidth()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                grid.setWallObject(curObject);
             }
         });
         Label rotateLabel = new Label("Rotate:");
@@ -79,14 +79,14 @@ public class WallObjectPane extends GridPane {
             curObject.setDir(curObject.getDir().next());
             drawCanvas();
 
-            grid.setFieldObject(curObject);
+            grid.setWallObject(curObject);
         });
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> {
             curObject.setDir(curObject.getDir().prev());
             drawCanvas();
 
-            grid.setFieldObject(curObject);
+            grid.setWallObject(curObject);
         });
 
         GridPane shapeButtonPane = new GridPane();
@@ -138,14 +138,12 @@ public class WallObjectPane extends GridPane {
 
                 if (curImg != img) {
                     curImg = img;
-                    curObject = new FieldObject(curImg.getImage(
-                            curObject.getWidth()),
-                            curObject.getX(), curObject.getY(),
-                            curObject.getWidth(), curObject.getHeight(),
+                    curObject = new WallObject(curImg.getImage(
+                            curObject.getWidth()), curObject.getWidth(),
                             curObject.getDir());
                     drawCanvas();
 
-                    grid.setFieldObject(new FieldObject(curObject));
+                    grid.setWallObject(new WallObject(curObject));
                 }
             });
 
@@ -156,9 +154,8 @@ public class WallObjectPane extends GridPane {
         setVgrow(buttonPane, Priority.ALWAYS);
 
         curImg = objects.get(0);
-        curObject = new FieldObject(curImg.getImage(1), 0, 0, 1, 1,
-                Direction.NORTH);
-        grid.setFieldObject(curObject);
+        curObject = new WallObject(curImg.getImage(1), 1, Direction.NORTH);
+        grid.setWallObject(curObject);
         firstButton.setSelected(true);
 
         drawCanvas();
@@ -253,22 +250,21 @@ public class WallObjectPane extends GridPane {
         gc.save();
 
         double width = curObject.getWidth() * gridSize;
-        double height = curObject.getHeight() * gridSize;
 
         Affine a = new Affine();
-        a.appendRotation(curObject.getDir().angle(), width / 2, height / 2);
+        a.appendRotation(curObject.getDir().angle(), width / 2, gridSize / 2);
         gc.setTransform(a);
 
         double xoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
-                * (width - height) / 2;
+                * (width - gridSize) / 2;
         double yoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
-                * (width - height) / 2
+                * (width - gridSize) / 2
                 - Math.sin(Math.toRadians(curObject.getDir().angle()))
                 * gridSize / 2
                 + Math.cos(Math.toRadians(curObject.getDir().angle()))
                 * gridSize / 2;
 
-        gc.drawImage(curObject.getImage(), xoffset, yoffset, width, height);
+        gc.drawImage(curObject.getImage(), xoffset, yoffset, width, gridSize);
 
         gc.restore();
     }
