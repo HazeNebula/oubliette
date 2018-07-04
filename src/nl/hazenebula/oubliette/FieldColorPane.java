@@ -13,11 +13,17 @@ public class FieldColorPane extends FlowPane {
         setVgap(5.0d);
         setHgap(5.0d);
         setAlignment(Pos.TOP_CENTER);
-        // lowptodo: set default color and select button
+
         ToggleGroup group = new ToggleGroup();
         for (Field field : Field.values()) {
             FieldColorButton button = new FieldColorButton(field, BRUSH_SIZE,
                     grid);
+
+            if (field == Field.values()[0]) {
+                button.setSelected(true);
+                grid.setFieldColor(field);
+            }
+
             button.setToggleGroup(group);
             getChildren().add(button);
         }
