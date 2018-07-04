@@ -51,8 +51,6 @@ public class Grid extends ScrollPane {
     private FieldObject curFieldObject;
     private WallObject curWallObject;
 
-    // lowptodo: set scrollpane background to gray instead of white
-    // important: grid should be no smaller than, say, 5x5
     public Grid(int gridWidth, int gridHeight) {
         setStyle("-fx-focus-color: transparent;\n-fx-background: #D3D3D3");
 
@@ -94,7 +92,7 @@ public class Grid extends ScrollPane {
         setContent(canvas);
 
         curBrush = Brush.FIELD;
-        curField = Field.EMPTY;
+        curField = null;
         gridColor = Field.FILLED.color();
         curFieldObject = null;
         fieldObjects = new LinkedList<>();
@@ -109,7 +107,6 @@ public class Grid extends ScrollPane {
             hoffset = Math.max(0, contentWidth - viewportWidth) *
                     (hvalue - hmin) / (hmax - hmin);
 
-            // remove possible highlights
             cleanHighlight();
         });
         vvalueProperty().addListener((observable, oldValue, newValue) -> {
@@ -122,7 +119,6 @@ public class Grid extends ScrollPane {
             voffset = Math.max(0, contentHeight - viewportHeight) *
                     (vvalue - vmin) / (vmax - vmin);
 
-            // remove possible highlights
             cleanHighlight();
         });
 
