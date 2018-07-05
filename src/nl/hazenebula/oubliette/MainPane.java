@@ -13,9 +13,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class MainPane extends GridPane {
     private MenuBar menuBar;
@@ -23,6 +23,7 @@ public class MainPane extends GridPane {
     private Grid grid;
     private ToolPane toolPane;
 
+    // todo: add menu screen before mainpane that shows settings
     public MainPane(Stage primaryStage) {
         // lowptodo: replace column constraints with constraints on panes
         ColumnConstraints cc1 = new ColumnConstraints();
@@ -37,6 +38,22 @@ public class MainPane extends GridPane {
 
         // todo: add file saving functionality
         MenuItem saveFile = new MenuItem("Save File");
+        saveFile.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
+            fc.setInitialFileName("map.oubl");
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                    "Oubliette Map File", ".oubl"));
+
+            File file = fc.showSaveDialog(primaryStage);
+            if (file != null) {
+                try {
+                    writeFile(grid, file);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
         // lowptodo: add separate window that lets user change file resolution
         MenuItem pngExport = new MenuItem("Export as PNG");
         pngExport.setOnAction(e -> {
@@ -94,5 +111,34 @@ public class MainPane extends GridPane {
         add(mapBar, 0, 1);
         add(grid, 1, 1);
         add(toolPane, 2, 1);
+    }
+
+    private void writeFile(Grid grid, File file) throws IOException {
+        try (FileOutputStream fout = new FileOutputStream(file)) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(fout)) {
+                oos.writeObject(grid.getFields());
+                oos.writeObject(grid.getFieldObjects());
+                oos.writeObject(grid.getWallGrid());
+            }
+        }
+    }
+
+    private void readFile(File file) throws IOException {
+        try (FileInputStream fin = new FileInputStream(file)) {
+            try (ObjectInputStream ois = new ObjectInputStream(fin)) {
+                Field[][] fieldGrid = (Field[][])ois.readObject();
+                List<FieldObject> fieldObjects = (List<FieldObject>)
+                        ois.readObject();
+                WallObject[][][] wallGrid = (WallObject[][][])
+                        ois.readObject();
+
+                grid.setFields(fieldGrid);
+                grid.setFieldObjects(fieldObjects);
+                grid.setWallGrid(wallGrid);
+                grid.drawFullGrid();
+            } catch (ClassNotFoundException e) {
+                System.err.println("Could not find file");
+            }
+        }
     }
 }
