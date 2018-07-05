@@ -187,6 +187,39 @@ public class Grid extends ScrollPane {
                         break;
                     }
                 }
+            } else if (curBrush == Brush.WALL_OBJECT_ERASE) {
+                double gridSize = size.get() + GRIDLINE_SIZE;
+                Direction orient = (curWallObject.getDir()
+                        == Direction.NORTH || curWallObject.getDir()
+                        == Direction.SOUTH) ? Direction.NORTH :
+                        Direction.EAST;
+                double x1 = x * gridSize;
+                double x2 = (x + 1) * gridSize;
+                x = (e.getX() - x1 <= x2 - e.getX()) ? x - 1 : x;
+
+                double y1 = y * gridSize;
+                double y2 = (y + 1) * gridSize;
+                y = (e.getY() - y1 <= y2 - e.getY()) ? y - 1 : y;
+
+                if (orient == Direction.NORTH) {
+                    WallObject wall = wallGrid[x + 1][y + 1][orient.id()];
+                    if (wall != null) {
+                        for (int pX = wall.getX(); pX < wall.getX()
+                                + wall.getWidth(); ++pX) {
+                            wallGrid[pX + 1][y + 1][orient.id()] = null;
+                        }
+                    }
+                } else {
+                    WallObject wall = wallGrid[x + 1][y + 1][orient.id()];
+                    if (wall != null) {
+                        for (int pY = wall.getY();
+                             pY < wall.getY() + wall.getWidth(); ++pY) {
+                            wallGrid[x + 1][pY + 1][orient.id()] = null;
+                        }
+                    }
+                }
+
+                drawFullGrid();
             }
         }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
