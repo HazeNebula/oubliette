@@ -1,19 +1,25 @@
 package nl.hazenebula.oubliette;
 
 public enum Direction {
-    NORTH(0),
-    EAST(90),
-    SOUTH(180),
-    WEST(270);
+    NORTH(0, 0),
+    EAST(90, 1),
+    SOUTH(180, 2),
+    WEST(270, 3);
 
     private final double angle;
+    private final int id;
 
-    Direction(double angle) {
+    Direction(double angle, int id) {
         this.angle = angle;
+        this.id = id;
     }
 
     public double angle() {
         return angle;
+    }
+
+    public int id() {
+        return id;
     }
 
     public Direction prev() {

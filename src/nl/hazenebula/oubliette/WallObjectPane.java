@@ -1,5 +1,7 @@
 package nl.hazenebula.oubliette;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
@@ -17,21 +19,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FieldObjectPane extends GridPane {
+public class WallObjectPane extends GridPane {
     private static final Color BACK_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = Color.BLACK;
-
     private static final double BUTTON_SIZE = 80.0d;
 
     private int maxSize;
 
     private Grid grid;
     private Canvas resizeCanvas;
-    private FieldObjectImage curImg;
-    private FieldObject curObject;
+    private WallObjectImage curImg;
+    private WallObject curObject;
+    private StringProperty eraseOrient;
 
-    public FieldObjectPane(Grid grid) {
+    public WallObjectPane(Grid grid) {
         this.grid = grid;
+
+        eraseOrient = new SimpleStringProperty("Horizontal");
 
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
@@ -45,52 +49,32 @@ public class FieldObjectPane extends GridPane {
         GridPane.setHgrow(resizeCanvas, Priority.ALWAYS);
         GridPane.setHalignment(resizeCanvas, HPos.CENTER);
 
-        Label widthLabel = new Label("Width:");
-        GridPane.setHgrow(widthLabel, Priority.ALWAYS);
-        Button increaseWidthButton = new Button("+");
-        increaseWidthButton.setOnAction(e -> {
+        GridPane resizeWrapper = new GridPane();
+        resizeWrapper.add(resizeCanvas, 0, 0);
+
+        setHgrow(resizeWrapper, Priority.ALWAYS);
+        setHalignment(resizeWrapper, HPos.CENTER);
+
+        Label sizeLabel = new Label("Size:");
+        GridPane.setHgrow(sizeLabel, Priority.ALWAYS);
+        Button increaseSizeButton = new Button("+");
+        increaseSizeButton.setOnAction(e -> {
             if (curObject.getWidth() < maxSize) {
                 curObject.setWidth(curObject.getWidth() + 1);
-                curObject.setImage(curImg.getImage(curObject.getWidth(),
-                        curObject.getHeight()));
+                curObject.setImage(curImg.getImage(curObject.getWidth()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                grid.setWallObject(curObject);
             }
         });
-        Button decreaseWidthButton = new Button("-");
-        decreaseWidthButton.setOnAction(e -> {
+        Button decreaseSizeButton = new Button("-");
+        decreaseSizeButton.setOnAction(e -> {
             if (curObject.getWidth() > 1) {
                 curObject.setWidth(curObject.getWidth() - 1);
-                curObject.setImage(curImg.getImage(curObject.getWidth(),
-                        curObject.getHeight()));
+                curObject.setImage(curImg.getImage(curObject.getWidth()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
-            }
-        });
-        Label heightLabel = new Label("Height:");
-        GridPane.setHgrow(heightLabel, Priority.ALWAYS);
-        Button increaseHeightButton = new Button("+");
-        increaseHeightButton.setOnAction(e -> {
-            if (curObject.getHeight() < maxSize) {
-                curObject.setHeight(curObject.getHeight() + 1);
-                curObject.setImage(curImg.getImage(curObject.getWidth(),
-                        curObject.getHeight()));
-                drawCanvas();
-
-                grid.setFieldObject(curObject);
-            }
-        });
-        Button decreaseHeightButton = new Button("-");
-        decreaseHeightButton.setOnAction(e -> {
-            if (curObject.getHeight() > 1) {
-                curObject.setHeight(curObject.getHeight() - 1);
-                curObject.setImage(curImg.getImage(curObject.getWidth(),
-                        curObject.getHeight()));
-                drawCanvas();
-
-                grid.setFieldObject(curObject);
+                grid.setWallObject(curObject);
             }
         });
         Label rotateLabel = new Label("Rotate:");
@@ -100,41 +84,50 @@ public class FieldObjectPane extends GridPane {
             curObject.setDir(curObject.getDir().next());
             drawCanvas();
 
-            grid.setFieldObject(curObject);
+            grid.setWallObject(curObject);
+
+            if (curObject.getDir() == Direction.NORTH
+                    || curObject.getDir() == Direction.SOUTH) {
+                eraseOrient.setValue("Horizontal");
+            } else {
+                eraseOrient.setValue("Vertical");
+            }
         });
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> {
             curObject.setDir(curObject.getDir().prev());
             drawCanvas();
 
-            grid.setFieldObject(curObject);
+            grid.setWallObject(curObject);
+
+            if (curObject.getDir() == Direction.NORTH
+                    || curObject.getDir() == Direction.SOUTH) {
+                eraseOrient.setValue("Horizontal");
+            } else {
+                eraseOrient.setValue("Vertical");
+            }
         });
 
-        GridPane resizeWrapper = new GridPane();
-        resizeWrapper.add(resizeCanvas, 0, 0);
-
-        setHgrow(resizeWrapper, Priority.ALWAYS);
-        setHalignment(resizeWrapper, HPos.CENTER);
-
         GridPane shapeButtonPane = new GridPane();
-        shapeButtonPane.add(widthLabel, 0, 0);
-        shapeButtonPane.add(increaseWidthButton, 1, 0);
-        shapeButtonPane.add(decreaseWidthButton, 2, 0);
-        shapeButtonPane.add(heightLabel, 0, 1);
-        shapeButtonPane.add(increaseHeightButton, 1, 1);
-        shapeButtonPane.add(decreaseHeightButton, 2, 1);
-        shapeButtonPane.add(rotateLabel, 0, 3);
-        shapeButtonPane.add(rotateClockwiseButton, 1, 3);
-        shapeButtonPane.add(rotateCounterclockwiseButton, 2, 3);
+        shapeButtonPane.add(sizeLabel, 0, 0);
+        shapeButtonPane.add(increaseSizeButton, 1, 0);
+        shapeButtonPane.add(decreaseSizeButton, 2, 0);
+        shapeButtonPane.add(rotateClockwiseButton, 1, 1);
+        shapeButtonPane.add(rotateCounterclockwiseButton, 2, 1);
 
         ToggleGroup toggleGroup = new ToggleGroup();
+
+        Label eraseLabel = new Label();
+        eraseLabel.textProperty().bind(new
+                SimpleStringProperty("Erase Orientation: ").concat(
+                eraseOrient));
+        setHgrow(eraseLabel, Priority.ALWAYS);
+        setHalignment(eraseLabel, HPos.CENTER);
 
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
-        eraseButton.setOnAction(e -> {
-            grid.setBrush(Brush.FIELD_OBJECT_ERASE);
-        });
+        eraseButton.setOnAction(e -> grid.setBrush(Brush.WALL_OBJECT_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -150,35 +143,33 @@ public class FieldObjectPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
-        List<FieldObjectImage> objects = loadObjects();
+        List<WallObjectImage> objects = loadObjects();
 
         ToggleButton firstButton = new ToggleButton();
-        for (FieldObjectImage img : objects) {
+        for (WallObjectImage img : objects) {
             ToggleButton button = new ToggleButton();
 
             if (img == objects.get(0)) {
                 firstButton = button;
             }
 
-            ImageView graphic = new ImageView(img.getImage(1, 1));
+            ImageView graphic = new ImageView(img.getImage(1));
             graphic.setFitWidth(BUTTON_SIZE);
             graphic.setFitHeight(BUTTON_SIZE);
             button.setGraphic(graphic);
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
-                grid.setBrush(Brush.FIELD_OBJECT);
+                grid.setBrush(Brush.WALL_OBJECT);
 
                 if (curImg != img) {
                     curImg = img;
-                    curObject = new FieldObject(curImg.getImage(
-                            curObject.getWidth(), curObject.getHeight()),
-                            curObject.getX(), curObject.getY(),
-                            curObject.getWidth(), curObject.getHeight(),
+                    curObject = new WallObject(curImg.getImage(
+                            curObject.getWidth()), curObject.getWidth(),
                             curObject.getDir());
                     drawCanvas();
 
-                    grid.setFieldObject(new FieldObject(curObject));
+                    grid.setWallObject(new WallObject(curObject));
                 }
             });
 
@@ -189,28 +180,28 @@ public class FieldObjectPane extends GridPane {
         setVgrow(buttonPane, Priority.ALWAYS);
 
         curImg = objects.get(0);
-        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
-                Direction.NORTH);
-        grid.setFieldObject(curObject);
+        curObject = new WallObject(curImg.getImage(1), 1, Direction.NORTH);
+        grid.setWallObject(curObject);
         firstButton.setSelected(true);
 
         drawCanvas();
 
         add(resizeWrapper, 0, 0);
         add(shapeButtonPane, 0, 1);
-        add(eraseButton, 0, 2);
-        add(buttonPane, 0, 3);
+        add(eraseLabel, 0, 2);
+        add(eraseButton, 0, 3);
+        add(buttonPane, 0, 4);
     }
 
-    private List<FieldObjectImage> loadObjects() {
+    private List<WallObjectImage> loadObjects() {
         List<List<File>> files = ObjectFileSearcher.getObjects(
-                ObjectFileSearcher.FIELDOBJECT_DIR);
+                ObjectFileSearcher.WALLOBJECT_DIR);
         maxSize = 1;
-        List<FieldObjectImage> objects = new LinkedList<>();
+        List<WallObjectImage> objects = new LinkedList<>();
 
         for (List<File> objectFiles : files) {
-            int size = (int)Math.sqrt(objectFiles.size());
-            FieldObjectImage img = new FieldObjectImage(size, size);
+            int size = objectFiles.size();
+            WallObjectImage img = new WallObjectImage(size);
 
             if (size > maxSize) {
                 maxSize = size;
@@ -236,21 +227,19 @@ public class FieldObjectPane extends GridPane {
                 if (lastHyphenIndex > -1) {
                     String[] sizesStr = filename.substring(lastHyphenIndex + 1,
                             filename.indexOf('.')).split("x");
-                    int[] sizes = new int[2];
+                    int width = 1;
 
-                    for (int i = 0; i < sizes.length; ++i) {
-                        try {
-                            sizes[i] = Integer.parseInt(sizesStr[i]);
-                        } catch (NumberFormatException e) {
-                            System.err.println("Could not format as number: " +
-                                    sizesStr[i]);
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            System.err.println("Could not parse file name: " +
-                                    filename);
-                        }
+                    try {
+                        width = Integer.parseInt(sizesStr[0]);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Could not format as number: " +
+                                sizesStr[0]);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.err.println("Could not parse file name: " +
+                                filename);
                     }
 
-                    img.setImage(sizes[0], sizes[1], objFile);
+                    img.setImage(width, objFile);
                 }
             }
 
@@ -288,18 +277,21 @@ public class FieldObjectPane extends GridPane {
         gc.save();
 
         double width = curObject.getWidth() * gridSize;
-        double height = curObject.getHeight() * gridSize;
 
         Affine a = new Affine();
-        a.appendRotation(curObject.getDir().angle(), width / 2, height / 2);
+        a.appendRotation(curObject.getDir().angle(), width / 2, gridSize / 2);
         gc.setTransform(a);
 
         double xoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
-                * (width - height) / 2;
+                * (width - gridSize) / 2;
         double yoffset = Math.sin(Math.toRadians(curObject.getDir().angle()))
-                * (width - height) / 2;
+                * (width - gridSize) / 2
+                - Math.sin(Math.toRadians(curObject.getDir().angle()))
+                * gridSize / 2
+                + Math.cos(Math.toRadians(curObject.getDir().angle()))
+                * gridSize / 2;
 
-        gc.drawImage(curObject.getImage(), xoffset, yoffset, width, height);
+        gc.drawImage(curObject.getImage(), xoffset, yoffset, width, gridSize);
 
         gc.restore();
     }

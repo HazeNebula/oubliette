@@ -8,7 +8,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -25,11 +24,6 @@ public class MainPane extends GridPane {
     private ToolPane toolPane;
 
     public MainPane(Stage primaryStage) {
-        RowConstraints rc = new RowConstraints();
-        rc.setVgrow(Priority.ALWAYS);
-
-        getRowConstraints().add(rc);
-
         // lowptodo: replace column constraints with constraints on panes
         ColumnConstraints cc1 = new ColumnConstraints();
         cc1.setHgrow(Priority.NEVER);
@@ -87,9 +81,14 @@ public class MainPane extends GridPane {
 
         menuBar = new MenuBar(file, options);
 
-        grid = new Grid();
+        grid = new Grid(50, 50);
         toolPane = new ToolPane(grid);
         mapBar = new MapBar(grid);
+
+        GridPane.setVgrow(menuBar, Priority.NEVER);
+        GridPane.setVgrow(mapBar, Priority.ALWAYS);
+        GridPane.setVgrow(grid, Priority.ALWAYS);
+        GridPane.setVgrow(toolPane, Priority.ALWAYS);
 
         add(menuBar, 0, 0, 3, 1);
         add(mapBar, 0, 1);
