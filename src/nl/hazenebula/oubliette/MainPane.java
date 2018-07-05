@@ -68,7 +68,7 @@ public class MainPane extends GridPane {
 
         MenuItem blueGrid = new MenuItem("Blue");
         blueGrid.setOnAction(e -> {
-            grid.setGridColor(Color.rgb(51, 153, 204));
+            grid.setGridColor(Field.FILLED.color());
             grid.drawFullGrid();
         });
         MenuItem whiteGrid = new MenuItem("White");
