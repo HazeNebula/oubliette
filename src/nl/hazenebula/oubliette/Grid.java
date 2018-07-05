@@ -147,32 +147,45 @@ public class Grid extends ScrollPane {
                 if (orient == Direction.NORTH) {
                     for (int xIndex = x; xIndex < x + wall.getWidth();
                          ++xIndex) {
-                        WallObject prevWall = wallGrid[xIndex + 1][y + 1]
-                                [orient.id()];
-                        if (prevWall != null) {
-                            for (int pX = prevWall.getX();
-                                 pX < prevWall.getX() + prevWall.getWidth();
-                                 ++pX) {
-                                wallGrid[pX + 1][y + 1][orient.id()] = null;
+                        if (xIndex + 1 >= 0 && xIndex + 1 < wallGrid.length) {
+                            WallObject prevWall = wallGrid[xIndex + 1][y + 1]
+                                    [orient.id()];
+                            if (prevWall != null) {
+                                for (int pX = prevWall.getX();
+                                     pX < prevWall.getX() + prevWall.getWidth();
+                                     ++pX) {
+                                    if (pX + 1 >= 0
+                                            && pX + 1 < wallGrid.length) {
+                                        wallGrid[pX + 1][y + 1][orient.id()] =
+                                                null;
+                                    }
+                                }
                             }
-                        }
 
-                        wallGrid[xIndex + 1][y + 1][orient.id()] = wall;
+                            wallGrid[xIndex + 1][y + 1][orient.id()] = wall;
+                        }
                     }
                 } else {
                     for (int yIndex = y; yIndex < y + wall.getWidth();
                          ++yIndex) {
-                        WallObject prevWall = wallGrid[x + 1][yIndex + 1]
-                                [orient.id()];
-                        if (prevWall != null) {
-                            for (int pY = prevWall.getY();
-                                 pY < prevWall.getY() + prevWall.getWidth();
-                                 ++pY) {
-                                wallGrid[x + 1][pY + 1][orient.id()] = null;
+                        if (yIndex + 1 >= 0
+                                && yIndex + 1 < wallGrid[x].length) {
+                            WallObject prevWall = wallGrid[x + 1][yIndex + 1]
+                                    [orient.id()];
+                            if (prevWall != null) {
+                                for (int pY = prevWall.getY();
+                                     pY < prevWall.getY() + prevWall.getWidth();
+                                     ++pY) {
+                                    if (pY + 1 >= 0 && pY + 1
+                                            < wallGrid[x + 1].length) {
+                                        wallGrid[x + 1][pY + 1][orient.id()] =
+                                                null;
+                                    }
+                                }
                             }
-                        }
 
-                        wallGrid[x + 1][yIndex + 1][orient.id()] = wall;
+                            wallGrid[x + 1][yIndex + 1][orient.id()] = wall;
+                        }
                     }
                 }
 
@@ -219,7 +232,9 @@ public class Grid extends ScrollPane {
 
                 drawFullGrid();
             }
-        }, e -> {
+        }, e ->
+
+        {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -233,7 +248,9 @@ public class Grid extends ScrollPane {
                     drawField(x, y);
                 }
             }
-        }, e -> {
+        }, e ->
+
+        {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -356,6 +373,7 @@ public class Grid extends ScrollPane {
         canvas.addEventHandler(MouseEvent.ANY, drawHandler);
 
         drawFullGrid();
+
     }
 
     private void cleanHighlight() {
@@ -394,8 +412,10 @@ public class Grid extends ScrollPane {
                 }
             }
 
-            for (int x = prevX; x < prevX + prevWidth + 1; ++x) {
-                for (int y = prevY; y < prevY + prevHeight + 1; ++y) {
+            int maxX = Math.min(wallGrid.length - 1, prevX + prevWidth + 1);
+            int maxY = Math.min(wallGrid[0].length - 1, prevY + prevHeight + 1);
+            for (int x = prevX; x < maxX; ++x) {
+                for (int y = prevY; y < maxY; ++y) {
                     drawWallObject(wallGrid[x][y][Direction.NORTH.id()]);
                     drawWallObject(wallGrid[x][y][Direction.EAST.id()]);
                 }
