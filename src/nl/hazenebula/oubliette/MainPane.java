@@ -19,24 +19,12 @@ import java.util.List;
 
 public class MainPane extends GridPane {
     private MenuBar menuBar;
-    private MapBar mapBar;
+    private MapPane mapPane;
     private Grid grid;
     private ToolPane toolPane;
 
     // todo: add menu screen before mainpane that shows settings
     public MainPane(Stage primaryStage) {
-        // lowptodo: replace column constraints with constraints on panes
-        ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setHgrow(Priority.NEVER);
-        cc1.setPercentWidth(20);
-        ColumnConstraints cc2 = new ColumnConstraints();
-        cc2.setHgrow(Priority.ALWAYS);
-        ColumnConstraints cc3 = new ColumnConstraints();
-        cc3.setHgrow(Priority.NEVER);
-        cc3.setPercentWidth(20);
-        getColumnConstraints().addAll(cc1, cc2, cc3);
-
-        // todo: add file saving functionality
         MenuItem saveFile = new MenuItem("Save File");
         saveFile.setOnAction(e -> {
             FileChooser fc = new FileChooser();
@@ -97,18 +85,27 @@ public class MainPane extends GridPane {
                 blueGrid, whiteGrid, blackGrid));
 
         menuBar = new MenuBar(file, options);
+        GridPane.setVgrow(menuBar, Priority.NEVER);
 
         grid = new Grid(50, 50);
-        toolPane = new ToolPane(grid);
-        mapBar = new MapBar(grid);
-
-        GridPane.setVgrow(menuBar, Priority.NEVER);
-        GridPane.setVgrow(mapBar, Priority.ALWAYS);
+        GridPane.setHgrow(grid, Priority.ALWAYS);
         GridPane.setVgrow(grid, Priority.ALWAYS);
+
+        toolPane = new ToolPane(grid);
         GridPane.setVgrow(toolPane, Priority.ALWAYS);
 
+        mapPane = new MapPane(grid);
+        GridPane.setVgrow(mapPane, Priority.ALWAYS);
+
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setPercentWidth(20);
+        ColumnConstraints cc2 = new ColumnConstraints();
+        ColumnConstraints cc3 = new ColumnConstraints();
+        cc3.setPercentWidth(20);
+        getColumnConstraints().addAll(cc1, cc2, cc3);
+
         add(menuBar, 0, 0, 3, 1);
-        add(mapBar, 0, 1);
+        add(mapPane, 0, 1);
         add(grid, 1, 1);
         add(toolPane, 2, 1);
     }
