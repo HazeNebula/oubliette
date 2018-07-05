@@ -42,7 +42,7 @@ public class WallObjectPane extends GridPane {
         setHgap(5.0d);
 
         resizeCanvas = new Canvas();
-        resizeCanvas.widthProperty().bind(widthProperty().divide(2.0d));
+        resizeCanvas.widthProperty().bind(widthProperty().multiply(0.9d));
         resizeCanvas.heightProperty().bind(resizeCanvas.widthProperty());
         resizeCanvas.widthProperty().addListener((observable, oldValue,
                                                   newValue) -> drawCanvas());
