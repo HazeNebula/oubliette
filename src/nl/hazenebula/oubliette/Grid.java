@@ -20,9 +20,9 @@ public class Grid extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
 
     public static final int GRIDLINE_SIZE = 1;
-    public static final int MAX_SQUARE_SIZE = 50;
+    public static final int MAX_SQUARE_SIZE = 60;
     public static final int MIN_SQUARE_SIZE = 10;
-    public static final int INIT_SQUARE_SIZE = 20;
+    public static final int INIT_SQUARE_SIZE = 30;
 
     private final IntegerProperty size;
 
@@ -75,7 +75,7 @@ public class Grid extends ScrollPane {
         prevWallWidth = 1;
         prevWallDir = Direction.NORTH;
 
-        size = new SimpleIntegerProperty(60);
+        size = new SimpleIntegerProperty(INIT_SQUARE_SIZE);
 
         canvas = new Canvas(fieldGrid.length * (size.get() + GRIDLINE_SIZE),
                 fieldGrid[0].length * (size.get() + GRIDLINE_SIZE));
@@ -403,19 +403,11 @@ public class Grid extends ScrollPane {
             }
 
             for (FieldObject obj : fieldObjects) {
-                for (int x = prevX; x < prevX + prevWidth; ++x) {
-                    for (int y = prevY; y < prevY + prevHeight; ++y) {
-                        if (obj.inBounds(x, y)) {
-                            drawFieldObject(obj);
-                        }
-                    }
-                }
+                drawFieldObject(obj);
             }
 
-            int maxX = Math.min(wallGrid.length - 1, prevX + prevWidth + 1);
-            int maxY = Math.min(wallGrid[0].length - 1, prevY + prevHeight + 1);
-            for (int x = prevX; x < maxX; ++x) {
-                for (int y = prevY; y < maxY; ++y) {
+            for (int x = 0; x < wallGrid.length; ++x) {
+                for (int y = 0; y < wallGrid[x].length; ++y) {
                     drawWallObject(wallGrid[x][y][Direction.NORTH.id()]);
                     drawWallObject(wallGrid[x][y][Direction.EAST.id()]);
                 }
