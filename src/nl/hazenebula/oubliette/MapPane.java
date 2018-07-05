@@ -11,12 +11,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-public class MapBar extends GridPane {
+public class MapPane extends GridPane {
     private static final int UPDATE_SECONDS = 10;
 
     private final Minimap minimap;
 
-    public MapBar(Grid grid) {
+    public MapPane(Grid grid) {
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
         setPadding(new Insets(5, 5, 5, 5));
