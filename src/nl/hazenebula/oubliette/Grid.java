@@ -61,8 +61,6 @@ public class Grid extends ScrollPane {
             }
         }
 
-        // wallX = fieldX - 1
-        // wallY = fieldY + 1
         wallGrid = new WallObject[gridWidth + 1][gridHeight + 1][2];
 
         prevHighlight = false;
@@ -623,6 +621,18 @@ public class Grid extends ScrollPane {
         return drawHandler.isPressing();
     }
 
+    public void setFields(Field[][] fieldGrid) {
+        this.fieldGrid = fieldGrid;
+    }
+
+    public void setFieldObjects(List<FieldObject> fieldObjects) {
+        this.fieldObjects = fieldObjects;
+    }
+
+    public void setWallGrid(WallObject[][][] wallGrid) {
+        this.wallGrid = wallGrid;
+    }
+
     public WritableImage snapshot() {
         return canvas.snapshot(null, null);
     }
@@ -633,5 +643,17 @@ public class Grid extends ScrollPane {
 
     public DoubleProperty canvasHeightProperty() {
         return canvas.heightProperty();
+    }
+
+    public Field[][] getFields() {
+        return fieldGrid;
+    }
+
+    public List<FieldObject> getFieldObjects() {
+        return fieldObjects;
+    }
+
+    public WallObject[][][] getWallGrid() {
+        return wallGrid;
     }
 }
