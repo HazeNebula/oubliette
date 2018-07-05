@@ -1,5 +1,7 @@
 package nl.hazenebula.oubliette;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
@@ -28,9 +30,12 @@ public class WallObjectPane extends GridPane {
     private Canvas resizeCanvas;
     private WallObjectImage curImg;
     private WallObject curObject;
+    private StringProperty eraseOrient;
 
     public WallObjectPane(Grid grid) {
         this.grid = grid;
+
+        eraseOrient = new SimpleStringProperty("Horizontal");
 
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
@@ -80,6 +85,13 @@ public class WallObjectPane extends GridPane {
             drawCanvas();
 
             grid.setWallObject(curObject);
+
+            if (curObject.getDir() == Direction.NORTH
+                    || curObject.getDir() == Direction.SOUTH) {
+                eraseOrient.setValue("Horizontal");
+            } else {
+                eraseOrient.setValue("Vertical");
+            }
         });
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> {
@@ -87,6 +99,13 @@ public class WallObjectPane extends GridPane {
             drawCanvas();
 
             grid.setWallObject(curObject);
+
+            if (curObject.getDir() == Direction.NORTH
+                    || curObject.getDir() == Direction.SOUTH) {
+                eraseOrient.setValue("Horizontal");
+            } else {
+                eraseOrient.setValue("Vertical");
+            }
         });
 
         GridPane shapeButtonPane = new GridPane();
@@ -97,6 +116,13 @@ public class WallObjectPane extends GridPane {
         shapeButtonPane.add(rotateCounterclockwiseButton, 2, 1);
 
         ToggleGroup toggleGroup = new ToggleGroup();
+
+        Label eraseLabel = new Label();
+        eraseLabel.textProperty().bind(new
+                SimpleStringProperty("Erase Orientation: ").concat(
+                eraseOrient));
+        setHgrow(eraseLabel, Priority.ALWAYS);
+        setHalignment(eraseLabel, HPos.CENTER);
 
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
@@ -162,8 +188,9 @@ public class WallObjectPane extends GridPane {
 
         add(resizeWrapper, 0, 0);
         add(shapeButtonPane, 0, 1);
-        add(eraseButton, 0, 2);
-        add(buttonPane, 0, 3);
+        add(eraseLabel, 0, 2);
+        add(eraseButton, 0, 3);
+        add(buttonPane, 0, 4);
     }
 
     private List<WallObjectImage> loadObjects() {
