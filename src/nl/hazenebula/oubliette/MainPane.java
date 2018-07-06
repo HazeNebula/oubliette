@@ -1,10 +1,7 @@
 package nl.hazenebula.oubliette;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -16,6 +13,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 public class MainPane extends GridPane {
     private MenuBar menuBar;
@@ -24,13 +22,27 @@ public class MainPane extends GridPane {
     private ToolPane toolPane;
 
     public MainPane(Stage primaryStage) {
-        // todo: add unsaved changes window
         // todo: add new map option with starting width/height
+        // todo: add an option to expand/shrink the map
+
         // todo: add a cave generator
         // todo: add a dungeon style generator
-        // todo: add a trace map option
-        // todo: add an option to expand/shrink the map
+
         // todo: add undo/redo
+
+        primaryStage.setOnCloseRequest(e -> {
+            Alert closeConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            closeConfirmation.setTitle("Confirm Close");
+            closeConfirmation.setHeaderText("Close the current window?");
+            closeConfirmation.setContentText("If the current window is closed, " +
+                    "all unsaved changes will be lost.");
+            Optional<ButtonType> result = closeConfirmation.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                e.consume();
+            }
+        });
+
         MenuItem loadFile = new MenuItem("Load File");
         loadFile.setOnAction(e -> {
             FileChooser fc = new FileChooser();
