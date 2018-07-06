@@ -74,7 +74,7 @@ public class ExportSettingsPane extends GridPane {
             if (file != null) {
                 int size = canvasPane.getGridSize();
                 canvasPane.setGridSize(gridSize.get());
-                canvasPane.drawFullGrid();
+                canvasPane.drawAll();
 
                 WritableImage img = canvasPane.snapshot();
                 try {
@@ -86,7 +86,7 @@ public class ExportSettingsPane extends GridPane {
                 }
 
                 canvasPane.setGridSize(size);
-                canvasPane.drawFullGrid();
+                canvasPane.drawAll();
 
                 this.getScene().getWindow().hide();
             }

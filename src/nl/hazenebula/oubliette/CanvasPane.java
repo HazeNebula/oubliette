@@ -12,7 +12,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class CanvasPane extends ScrollPane {
@@ -25,9 +24,9 @@ public class CanvasPane extends ScrollPane {
 
     private final IntegerProperty size;
 
-    private Field[][] fieldGrid;
-    private List<FieldObject> fieldObjects;
-    private WallObject[][][] wallGrid;
+    // highptodo: combine fields, fieldObject and walls into one wrapper object
+    private Map map;
+
     private boolean prevHighlight;
     private int prevX;
     private int prevY;
@@ -52,19 +51,13 @@ public class CanvasPane extends ScrollPane {
     private FieldObject curFieldObject;
     private WallObject curWallObject;
 
-    public CanvasPane(int gridWidth, int gridHeight) {
+    public CanvasPane(Map map) {
         setStyle("-fx-focus-color: transparent;\n-fx-background: #D3D3D3");
 
-        fieldWidthProperty = new SimpleIntegerProperty(gridWidth);
-        fieldHeightProperty = new SimpleIntegerProperty(gridHeight);
-        fieldGrid = new Field[gridWidth][gridHeight];
-        for (int x = 0; x < fieldGrid.length; ++x) {
-            for (int y = 0; y < fieldGrid[x].length; ++y) {
-                fieldGrid[x][y] = Field.EMPTY;
-            }
-        }
+        this.map = map;
 
-        wallGrid = new WallObject[gridWidth + 1][gridHeight + 1][2];
+        fieldWidthProperty = new SimpleIntegerProperty(map.getWidth());
+        fieldHeightProperty = new SimpleIntegerProperty(map.getHeight());
 
         prevHighlight = false;
         prevX = 0;
@@ -80,8 +73,8 @@ public class CanvasPane extends ScrollPane {
 
         size = new SimpleIntegerProperty(INIT_SQUARE_SIZE);
 
-        canvas = new Canvas(fieldGrid.length * (size.get() + GRIDLINE_SIZE),
-                fieldGrid[0].length * (size.get() + GRIDLINE_SIZE));
+        canvas = new Canvas(map.getWidth() * (size.get() + GRIDLINE_SIZE),
+                map.getHeight() * (size.get() + GRIDLINE_SIZE));
         canvas.setStyle("-fx-focus-color: transparent;");
 
         setContent(canvas);
@@ -90,7 +83,6 @@ public class CanvasPane extends ScrollPane {
         curField = null;
         gridColor = Field.FILLED.color();
         curFieldObject = null;
-        fieldObjects = new LinkedList<>();
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {
             double hmin = getHmin();
@@ -125,7 +117,7 @@ public class CanvasPane extends ScrollPane {
                 FieldObject newObj = new FieldObject(curFieldObject);
                 newObj.setX(x);
                 newObj.setY(y);
-                fieldObjects.add(newObj);
+                map.getObjects().add(newObj);
 
                 drawFieldObject(newObj);
             } else if (curBrush == Brush.WALL_OBJECT) {
@@ -150,54 +142,54 @@ public class CanvasPane extends ScrollPane {
                 if (orient == Direction.NORTH) {
                     for (int xIndex = x; xIndex < x + wall.getWidth();
                          ++xIndex) {
-                        if (xIndex + 1 >= 0 && xIndex + 1 < wallGrid.length) {
-                            WallObject prevWall = wallGrid[xIndex + 1][y + 1]
-                                    [orient.id()];
+                        if (xIndex + 1 >= 0 && xIndex + 1 < map.getWallWidth()) {
+                            WallObject prevWall = map.getWall(xIndex + 1, y + 1,
+                                    orient);
                             if (prevWall != null) {
                                 for (int pX = prevWall.getX();
                                      pX < prevWall.getX() + prevWall.getWidth();
                                      ++pX) {
                                     if (pX + 1 >= 0
-                                            && pX + 1 < wallGrid.length) {
-                                        wallGrid[pX + 1][y + 1][orient.id()] =
-                                                null;
+                                            && pX + 1 < map.getWallWidth()) {
+                                        map.setWall(pX + 1, y + 1, orient,
+                                                null);
                                     }
                                 }
                             }
 
-                            wallGrid[xIndex + 1][y + 1][orient.id()] = wall;
+                            map.setWall(xIndex + 1, y + 1, orient, wall);
                         }
                     }
                 } else {
                     for (int yIndex = y; yIndex < y + wall.getWidth();
                          ++yIndex) {
                         if (yIndex + 1 >= 0
-                                && yIndex + 1 < wallGrid[x].length) {
-                            WallObject prevWall = wallGrid[x + 1][yIndex + 1]
-                                    [orient.id()];
+                                && yIndex + 1 < map.getWallHeight()) {
+                            WallObject prevWall = map.getWall(x + 1, yIndex + 1,
+                                    orient);
                             if (prevWall != null) {
                                 for (int pY = prevWall.getY();
                                      pY < prevWall.getY() + prevWall.getWidth();
                                      ++pY) {
                                     if (pY + 1 >= 0 && pY + 1
-                                            < wallGrid[x + 1].length) {
-                                        wallGrid[x + 1][pY + 1][orient.id()] =
-                                                null;
+                                            < map.getWallHeight()) {
+                                        map.setWall(x + 1, pY + 1, orient,
+                                                null);
                                     }
                                 }
                             }
 
-                            wallGrid[x + 1][yIndex + 1][orient.id()] = wall;
+                            map.setWall(x + 1, yIndex + 1, orient, wall);
                         }
                     }
                 }
 
-                drawFullGrid();
+                drawAll();
             } else if (curBrush == Brush.FIELD_OBJECT_ERASE) {
-                for (FieldObject obj : fieldObjects) {
+                for (FieldObject obj : map.getObjects()) {
                     if (obj.inBounds(x, y)) {
-                        fieldObjects.remove(obj);
-                        drawFullGrid();
+                        map.getObjects().remove(obj);
+                        drawAll();
                         break;
                     }
                 }
@@ -215,25 +207,23 @@ public class CanvasPane extends ScrollPane {
                 double y2 = (y + 1) * gridSize;
                 y = (e.getY() - y1 <= y2 - e.getY()) ? y - 1 : y;
 
-                if (orient == Direction.NORTH) {
-                    WallObject wall = wallGrid[x + 1][y + 1][orient.id()];
-                    if (wall != null) {
+                WallObject wall = map.getWall(x + 1, y + 1, orient);
+
+                if (wall != null) {
+                    if (orient == Direction.NORTH) {
                         for (int pX = wall.getX(); pX < wall.getX()
                                 + wall.getWidth(); ++pX) {
-                            wallGrid[pX + 1][y + 1][orient.id()] = null;
+                            map.setWall(pX + 1, y + 1, orient, null);
                         }
-                    }
-                } else {
-                    WallObject wall = wallGrid[x + 1][y + 1][orient.id()];
-                    if (wall != null) {
+                    } else {
                         for (int pY = wall.getY();
                              pY < wall.getY() + wall.getWidth(); ++pY) {
-                            wallGrid[x + 1][pY + 1][orient.id()] = null;
+                            map.setWall(x + 1, pY + 1, orient, null);
                         }
                     }
                 }
 
-                drawFullGrid();
+                drawAll();
             }
         }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
@@ -245,7 +235,7 @@ public class CanvasPane extends ScrollPane {
                 int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
                 if (curBrush == Brush.FIELD) {
-                    fieldGrid[x][y] = curField;
+                    map.setField(x, y, curField);
                     drawField(x, y);
                 }
             }
@@ -371,7 +361,7 @@ public class CanvasPane extends ScrollPane {
         });
         canvas.addEventHandler(MouseEvent.ANY, drawHandler);
 
-        drawFullGrid();
+        drawAll();
 
     }
 
@@ -379,8 +369,8 @@ public class CanvasPane extends ScrollPane {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double gridSize = size.get() + GRIDLINE_SIZE;
 
-        if (prevHighlight && prevX >= 0 && prevX < fieldGrid.length
-                && prevY >= 0 && prevY < fieldGrid[prevX].length) {
+        if (prevHighlight && prevX >= 0 && prevX < map.getWidth()
+                && prevY >= 0 && prevY < map.getHeight()) {
             gc.setFill(gridColor);
             double x1 = prevX * gridSize;
             double x2 = prevWidth * gridSize;
@@ -401,14 +391,14 @@ public class CanvasPane extends ScrollPane {
                 gc.fillRect(xPos, y1, GRIDLINE_SIZE, y2);
             }
 
-            for (FieldObject obj : fieldObjects) {
+            for (FieldObject obj : map.getObjects()) {
                 drawFieldObject(obj);
             }
 
-            for (int x = 0; x < wallGrid.length; ++x) {
-                for (int y = 0; y < wallGrid[x].length; ++y) {
-                    drawWallObject(wallGrid[x][y][Direction.NORTH.id()]);
-                    drawWallObject(wallGrid[x][y][Direction.EAST.id()]);
+            for (int x = 0; x < map.getWallWidth(); ++x) {
+                for (int y = 0; y < map.getWallHeight(); ++y) {
+                    drawWallObject(map.getWall(x, y, Direction.NORTH));
+                    drawWallObject(map.getWall(x, y, Direction.EAST));
                 }
             }
 
@@ -434,7 +424,7 @@ public class CanvasPane extends ScrollPane {
                 }
 
                 // draw field objects
-                for (FieldObject obj : fieldObjects) {
+                for (FieldObject obj : map.getObjects()) {
                     for (int x = prevWallX; x < prevWallX + prevWallWidth;
                          ++x) {
                         for (int y = prevWallY; y <= prevWallY + 1; ++y) {
@@ -458,7 +448,7 @@ public class CanvasPane extends ScrollPane {
                     }
                 }
 
-                for (FieldObject obj : fieldObjects) {
+                for (FieldObject obj : map.getObjects()) {
                     for (int x = prevWallX; x <= prevWallX + 1; ++x) {
                         for (int y = prevWallY; y < prevWallY + prevWallWidth; ++y) {
                             if (obj.inBounds(x, y)) {
@@ -469,10 +459,10 @@ public class CanvasPane extends ScrollPane {
                 }
             }
 
-            for (int x = 0; x < wallGrid.length; ++x) {
-                for (int y = 0; y < wallGrid[x].length; ++y) {
-                    drawWallObject(wallGrid[x][y][Direction.NORTH.id()]);
-                    drawWallObject(wallGrid[x][y][Direction.EAST.id()]);
+            for (int x = 0; x < map.getWallWidth(); ++x) {
+                for (int y = 0; y < map.getWallHeight(); ++y) {
+                    drawWallObject(map.getWall(x, y, Direction.NORTH));
+                    drawWallObject(map.getWall(x, y, Direction.EAST));
                 }
             }
 
@@ -481,16 +471,16 @@ public class CanvasPane extends ScrollPane {
     }
 
     private void drawField(int x, int y) {
-        if (x >= 0 && x < fieldGrid.length
-                && y >= 0 && y < fieldGrid[x].length) {
+        if (x >= 0 && x < map.getWidth()
+                && y >= 0 && y < map.getHeight()) {
             double xPos = x * (size.get() + GRIDLINE_SIZE);
             double yPos = y * (size.get() + GRIDLINE_SIZE);
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
-            gc.setFill(fieldGrid[x][y].color());
+            gc.setFill(map.getField(x, y).color());
             gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
 
-            for (FieldObject obj : fieldObjects) {
+            for (FieldObject obj : map.getObjects()) {
                 if (obj.inBounds(x, y)) {
                     drawFieldObject(obj);
                 }
@@ -498,14 +488,14 @@ public class CanvasPane extends ScrollPane {
 
             int xMin = Math.max(-1, x - 1);
             int yMin = Math.max(-1, y - 1);
-            int xMax = Math.min(wallGrid.length - 1, x + 1);
-            int yMax = Math.min(wallGrid[0].length - 1, y + 1);
+            int xMax = Math.min(map.getWallWidth() - 1, x + 1);
+            int yMax = Math.min(map.getWallHeight() - 1, y + 1);
             for (int xIndex = xMin; xIndex < xMax; ++xIndex) {
                 for (int yIndex = yMin; yIndex < yMax; ++yIndex) {
-                    drawWallObject(wallGrid[xIndex + 1][yIndex + 1]
-                            [Direction.NORTH.id()]);
-                    drawWallObject(wallGrid[xIndex + 1][yIndex + 1]
-                            [Direction.EAST.id()]);
+                    drawWallObject(map.getWall(xIndex + 1, yIndex + 1,
+                            Direction.NORTH));
+                    drawWallObject(map.getWall(xIndex + 1, yIndex + 1,
+                            Direction.EAST));
                 }
             }
         }
@@ -517,10 +507,10 @@ public class CanvasPane extends ScrollPane {
         int actualWidth = (int)(c * obj.getWidth() + s * obj.getHeight());
         int actualHeight = (int)(c * obj.getHeight() + s * obj.getWidth());
         if (obj.getX() >= 0
-                && obj.getX() + actualWidth - 1 < fieldGrid.length
+                && obj.getX() + actualWidth - 1 < map.getWidth()
                 && obj.getY() >= 0
                 && obj.getY() + actualHeight - 1
-                < fieldGrid[obj.getX()].length) {
+                < map.getHeight()) {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.save();
 
@@ -580,39 +570,39 @@ public class CanvasPane extends ScrollPane {
         }
     }
 
-    public void drawFullGrid() {
+    public void drawAll() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(gridColor);
 
         // draw grid lines
-        for (int x = 0; x < fieldGrid.length; ++x) {
+        for (int x = 0; x < map.getWidth(); ++x) {
             double xPos = x * (size.get() + GRIDLINE_SIZE);
             gc.fillRect(xPos, 0, 1.0d, canvas.getHeight());
         }
 
-        for (int y = 0; y < fieldGrid[0].length; ++y) {
+        for (int y = 0; y < map.getHeight(); ++y) {
             double yPos = y * (size.get() + GRIDLINE_SIZE);
             gc.fillRect(0, yPos, canvas.getWidth(), GRIDLINE_SIZE);
         }
 
         // draw fields
-        for (int x = 0; x < fieldGrid.length; ++x) {
-            for (int y = 0; y < fieldGrid[x].length; ++y) {
+        for (int x = 0; x < map.getWidth(); ++x) {
+            for (int y = 0; y < map.getHeight(); ++y) {
                 drawField(x, y);
             }
         }
 
         // draw field objects
-        for (FieldObject obj : fieldObjects) {
+        for (FieldObject obj : map.getObjects()) {
             drawFieldObject(obj);
         }
 
         // draw wall objects
-        for (WallObject[][] wallGridRow : wallGrid) {
-            for (WallObject[] wallGridSquare : wallGridRow) {
-                drawWallObject(wallGridSquare[Direction.NORTH.id()]);
-                drawWallObject(wallGridSquare[Direction.EAST.id()]);
+        for (int x = 0; x < map.getWallWidth(); ++x) {
+            for (int y = 0; y < map.getWallHeight(); ++y) {
+                drawWallObject(map.getWall(x, y, Direction.NORTH));
+                drawWallObject(map.getWall(x, y, Direction.EAST));
             }
         }
     }
@@ -637,9 +627,9 @@ public class CanvasPane extends ScrollPane {
         if (newSize >= MIN_SQUARE_SIZE && newSize <= MAX_SQUARE_SIZE) {
             size.set(newSize);
 
-            canvas.setWidth(fieldGrid.length * (size.get() + GRIDLINE_SIZE));
-            canvas.setHeight(fieldGrid[0].length * (size.get() + GRIDLINE_SIZE));
-            drawFullGrid();
+            canvas.setWidth(map.getWidth() * (size.get() + GRIDLINE_SIZE));
+            canvas.setHeight(map.getHeight() * (size.get() + GRIDLINE_SIZE));
+            drawAll();
         }
     }
 
@@ -651,16 +641,16 @@ public class CanvasPane extends ScrollPane {
         return drawHandler.isPressing();
     }
 
-    public void setFields(Field[][] fieldGrid) {
-        this.fieldGrid = fieldGrid;
+    public void setFields(Field[][] fields) {
+        map.setFields(fields);
     }
 
-    public void setFieldObjects(List<FieldObject> fieldObjects) {
-        this.fieldObjects = fieldObjects;
+    public void setFieldObjects(List<FieldObject> objects) {
+        map.setObjects(objects);
     }
 
-    public void setWallGrid(WallObject[][][] wallGrid) {
-        this.wallGrid = wallGrid;
+    public void setWalls(WallObject[][][] walls) {
+        map.setWalls(walls);
     }
 
     public WritableImage snapshot() {
@@ -679,15 +669,7 @@ public class CanvasPane extends ScrollPane {
         return size.get();
     }
 
-    public Field[][] getFields() {
-        return fieldGrid;
-    }
-
-    public List<FieldObject> getFieldObjects() {
-        return fieldObjects;
-    }
-
-    public WallObject[][][] getWallGrid() {
-        return wallGrid;
+    public Map getMap() {
+        return map;
     }
 }
