@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 
 public class MainPane extends GridPane {
@@ -22,7 +21,6 @@ public class MainPane extends GridPane {
     private ToolPane toolPane;
 
     public MainPane(Stage primaryStage) {
-        // todo: add new map option with starting width/height
         // todo: add an option to expand/shrink the map
 
         // todo: add undo/redo
@@ -40,7 +38,7 @@ public class MainPane extends GridPane {
             }
         });
 
-        canvasPane = new CanvasPane(new Map(50, 50, Field.FILLED));
+        canvasPane = new CanvasPane(new Map(50, 50, Field.STONE));
         GridPane.setHgrow(canvasPane, Priority.ALWAYS);
         GridPane.setVgrow(canvasPane, Priority.ALWAYS);
 
@@ -122,7 +120,7 @@ public class MainPane extends GridPane {
 
         MenuItem blueGrid = new MenuItem("Blue");
         blueGrid.setOnAction(e -> {
-            canvasPane.setGridColor(Field.FILLED.color());
+            canvasPane.setGridColor(Field.STONE.color());
             canvasPane.drawAll();
         });
         MenuItem whiteGrid = new MenuItem("White");
@@ -157,16 +155,9 @@ public class MainPane extends GridPane {
     private void readFile(File file) throws IOException {
         try (FileInputStream fin = new FileInputStream(file)) {
             try (ObjectInputStream ois = new ObjectInputStream(fin)) {
-                Field[][] fieldGrid = (Field[][])ois.readObject();
-                List<FieldObject> fieldObjects = (List<FieldObject>)
-                        ois.readObject();
-                WallObject[][][] wallGrid = (WallObject[][][])
-                        ois.readObject();
+                Map map = (Map)ois.readObject();
 
-                canvasPane.setFields(fieldGrid);
-                canvasPane.setFieldObjects(fieldObjects);
-                canvasPane.setWalls(wallGrid);
-                canvasPane.drawAll();
+                canvasPane.setMap(map);
             } catch (ClassNotFoundException e) {
                 System.err.println("Could not find file");
             }
