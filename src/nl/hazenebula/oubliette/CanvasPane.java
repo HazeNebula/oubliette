@@ -236,7 +236,6 @@ public class CanvasPane extends ScrollPane {
                         && y < map.getHeight()) {
                     if (curBrush == Brush.FIELD) {
                         map.setField(x, y, curField);
-                        System.out.println(x + "\t" + y);
                         drawField(x, y);
                     }
                 }
