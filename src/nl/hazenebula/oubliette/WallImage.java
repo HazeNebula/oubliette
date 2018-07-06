@@ -4,11 +4,11 @@ import javafx.scene.image.Image;
 
 import java.io.File;
 
-public class WallObjectImage implements Comparable<WallObjectImage> {
+public class WallImage implements Comparable<WallImage> {
     private Image[] images;
     private String name;
 
-    public WallObjectImage(int width) {
+    public WallImage(int width) {
         images = new Image[width];
         name = null;
     }
@@ -45,7 +45,7 @@ public class WallObjectImage implements Comparable<WallObjectImage> {
         return true;
     }
 
-    public int compareTo(WallObjectImage other) {
+    public int compareTo(WallImage other) {
         return name.compareTo(other.name);
     }
 }

@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WallObjectPane extends GridPane {
+public class WallPane extends GridPane {
     private static final Color BACK_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = Color.BLACK;
     private static final double BUTTON_SIZE = 80.0d;
@@ -28,11 +28,11 @@ public class WallObjectPane extends GridPane {
 
     private CanvasPane canvasPane;
     private Canvas resizeCanvas;
-    private WallObjectImage curImg;
-    private WallObject curObject;
+    private WallImage curImg;
+    private Wall curObject;
     private StringProperty eraseOrient;
 
-    public WallObjectPane(CanvasPane canvasPane) {
+    public WallPane(CanvasPane canvasPane) {
         this.canvasPane = canvasPane;
 
         eraseOrient = new SimpleStringProperty("Horizontal");
@@ -143,10 +143,10 @@ public class WallObjectPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
-        List<WallObjectImage> objects = loadObjects();
+        List<WallImage> objects = loadObjects();
 
         ToggleButton firstButton = new ToggleButton();
-        for (WallObjectImage img : objects) {
+        for (WallImage img : objects) {
             ToggleButton button = new ToggleButton();
 
             if (img == objects.get(0)) {
@@ -164,12 +164,12 @@ public class WallObjectPane extends GridPane {
 
                 if (curImg != img) {
                     curImg = img;
-                    curObject = new WallObject(curImg.getImage(
+                    curObject = new Wall(curImg.getImage(
                             curObject.getWidth()), curObject.getWidth(),
                             curObject.getDir());
                     drawCanvas();
 
-                    canvasPane.setWallObject(new WallObject(curObject));
+                    canvasPane.setWallObject(new Wall(curObject));
                 }
             });
 
@@ -180,7 +180,7 @@ public class WallObjectPane extends GridPane {
         setVgrow(buttonPane, Priority.ALWAYS);
 
         curImg = objects.get(0);
-        curObject = new WallObject(curImg.getImage(1), 1, Direction.NORTH);
+        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
         canvasPane.setWallObject(curObject);
         firstButton.setSelected(true);
 
@@ -193,15 +193,15 @@ public class WallObjectPane extends GridPane {
         add(buttonPane, 0, 4);
     }
 
-    private List<WallObjectImage> loadObjects() {
+    private List<WallImage> loadObjects() {
         List<List<File>> files = ObjectFileSearcher.getObjects(
                 ObjectFileSearcher.WALLOBJECT_DIR);
         maxSize = 1;
-        List<WallObjectImage> objects = new LinkedList<>();
+        List<WallImage> objects = new LinkedList<>();
 
         for (List<File> objectFiles : files) {
             int size = objectFiles.size();
-            WallObjectImage img = new WallObjectImage(size);
+            WallImage img = new WallImage(size);
 
             if (size > maxSize) {
                 maxSize = size;

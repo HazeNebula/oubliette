@@ -9,14 +9,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class WallObject implements Serializable {
+public class Wall implements Serializable {
     private transient Image img;
     private int x;
     private int y;
     private int width;
     private Direction dir;
 
-    public WallObject(Image img, int width, Direction dir) {
+    public Wall(Image img, int width, Direction dir) {
         this.img = img;
         this.x = 0;
         this.y = 0;
@@ -24,7 +24,7 @@ public class WallObject implements Serializable {
         this.dir = dir;
     }
 
-    public WallObject(WallObject other) {
+    public Wall(Wall other) {
         img = other.img;
         x = 0;
         y = 0;
@@ -32,7 +32,7 @@ public class WallObject implements Serializable {
         dir = other.dir;
     }
 
-    public WallObject(WallObject other, int x, int y) {
+    public Wall(Wall other, int x, int y) {
         img = other.img;
         this.x = x;
         this.y = y;
