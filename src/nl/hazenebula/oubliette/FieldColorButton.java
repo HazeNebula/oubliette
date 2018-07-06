@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 public class FieldColorButton extends ToggleButton {
     private final Field field;
 
-    public FieldColorButton(Field field, double size, Grid grid) {
+    public FieldColorButton(Field field, double size, CanvasPane canvasPane) {
         super();
 
         this.field = field;
@@ -15,6 +15,6 @@ public class FieldColorButton extends ToggleButton {
         setGraphic(new Rectangle(0.9d * size, 0.9d * size, field.color()));
         setTooltip(new Tooltip(field.toString()));
 
-        setOnAction(e -> grid.setFieldColor(field));
+        setOnAction(e -> canvasPane.setFieldColor(field));
     }
 }

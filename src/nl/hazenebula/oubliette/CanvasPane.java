@@ -15,7 +15,7 @@ import javafx.scene.transform.Affine;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Grid extends ScrollPane {
+public class CanvasPane extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
 
     public static final int GRIDLINE_SIZE = 1;
@@ -52,7 +52,7 @@ public class Grid extends ScrollPane {
     private FieldObject curFieldObject;
     private WallObject curWallObject;
 
-    public Grid(int gridWidth, int gridHeight) {
+    public CanvasPane(int gridWidth, int gridHeight) {
         setStyle("-fx-focus-color: transparent;\n-fx-background: #D3D3D3");
 
         fieldWidthProperty = new SimpleIntegerProperty(gridWidth);
