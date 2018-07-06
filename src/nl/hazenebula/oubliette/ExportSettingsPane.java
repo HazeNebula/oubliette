@@ -30,6 +30,7 @@ public class ExportSettingsPane extends GridPane {
         Spinner<Integer> squaresPerInchField = new Spinner<>(
                 MIN_SQUARES_PER_INCH, MAX_SQUARES_PER_INCH,
                 INIT_SQUARES_PER_INCH, 1);
+        squaresPerInchField.setEditable(true);
 
         Label dpiLabel = new Label("Dots per inch:");
         GridPane.setHgrow(dpiLabel, Priority.ALWAYS);
