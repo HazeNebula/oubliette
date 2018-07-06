@@ -19,12 +19,24 @@ public class NewMapChooser extends GridPane {
         Spinner<Integer> widthSpinner = new Spinner<>(MIN_SIZE, MAX_SIZE,
                 INIT_SIZE, 1);
         widthSpinner.setEditable(true);
+        widthSpinner.focusedProperty().addListener((observable, oldValue,
+                                                    newValue) -> {
+            if (!newValue) {
+                widthSpinner.increment(0);
+            }
+        });
 
         Label heightLabel = new Label("Height:");
         GridPane.setHgrow(heightLabel, Priority.ALWAYS);
         Spinner<Integer> heightSpinner = new Spinner<>(MIN_SIZE, MAX_SIZE,
                 INIT_SIZE, 1);
         heightSpinner.setEditable(true);
+        heightSpinner.focusedProperty().addListener((observable, oldValue,
+                                                     newValue) -> {
+            if (!newValue) {
+                heightSpinner.increment(0);
+            }
+        });
 
         Button optionsButton = new Button("Generation Options");
         optionsButton.setDisable(true);
@@ -65,31 +77,20 @@ public class NewMapChooser extends GridPane {
 
             getScene().getWindow().hide();
         });
-        // todo: create a new map
 
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(e -> getScene().getWindow().hide());
 
         HBox buttonPane = new HBox();
         buttonPane.setSpacing(5);
-        buttonPane.getChildren().
-
-                addAll(newMapButton, cancelButton);
-
+        buttonPane.getChildren().addAll(newMapButton, cancelButton);
         add(widthLabel, 0, 0);
-
         add(widthSpinner, 1, 0);
-
         add(heightLabel, 0, 1);
-
         add(heightSpinner, 1, 1);
-
         add(methodLabel, 0, 2);
-
         add(methods, 1, 2);
-
         add(optionsButton, 1, 3);
-
         add(buttonPane, 0, 4);
     }
 }
