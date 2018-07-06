@@ -41,8 +41,10 @@ public class NewMapChooser extends GridPane {
         Button optionsButton = new Button("Generation Options");
         optionsButton.setDisable(true);
         // todo: add a new window with generation options
-        // todo: add a cave generator
-        // todo: add a dungeon style generator
+        // todo: add a cave generator (cellular automata)
+        // todo: add a generator for random rooms
+        // todo: add a generator for random mazes
+        // todo: add a generator for a random layout of rooms and corridors
 
         Label methodLabel = new Label("Fill:");
         GridPane.setHgrow(methodLabel, Priority.ALWAYS);
