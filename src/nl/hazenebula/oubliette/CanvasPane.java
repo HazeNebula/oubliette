@@ -22,7 +22,6 @@ public class CanvasPane extends ScrollPane {
 
     private final IntegerProperty size;
 
-    // highptodo: combine fields, fieldObject and walls into one wrapper object
     private Map map;
 
     private boolean prevHighlight;
@@ -233,10 +232,13 @@ public class CanvasPane extends ScrollPane {
                 int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
                 int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
-                if (curBrush == Brush.FIELD) {
-                    map.setField(x, y, curField);
-                    System.out.println(x + "\t" + y);
-                    drawField(x, y);
+                if (x >= 0 && x < map.getWidth() && y >= 0
+                        && y < map.getHeight()) {
+                    if (curBrush == Brush.FIELD) {
+                        map.setField(x, y, curField);
+                        System.out.println(x + "\t" + y);
+                        drawField(x, y);
+                    }
                 }
             }
         }, e -> {
