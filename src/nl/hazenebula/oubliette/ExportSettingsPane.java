@@ -67,7 +67,7 @@ public class ExportSettingsPane extends GridPane {
             fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
             fc.setInitialFileName("map.png");
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                    "Portable Network Graphics", ".png"));
+                    "Portable Network Graphics", "*.png"));
 
             File file = fc.showSaveDialog(this.getScene().getWindow());
             if (file != null) {
