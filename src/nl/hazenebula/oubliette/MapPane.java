@@ -46,22 +46,8 @@ public class MapPane extends GridPane {
         sizeField.valueProperty().addListener((observable, oldValue, newValue)
                 -> grid.setGridSize(newValue));
 
-        Label pngWidthLabel = new Label("PNG Width");
-        Label pngWidth = new Label();
-        pngWidth.textProperty().bind(grid.canvasWidthProperty().asString()
-                .concat(" px"));
-
-        Label pngHeightLabel = new Label("PNG Height");
-        Label pngHeight = new Label();
-        pngHeight.textProperty().bind(grid.canvasHeightProperty().asString()
-                .concat(" px"));
-
         add(minimap, 0, 0);
         add(sizeLabel, 0, 1);
         add(sizeField, 1, 1);
-        add(pngWidthLabel, 0, 2);
-        add(pngWidth, 1, 2);
-        add(pngHeightLabel, 0, 3);
-        add(pngHeight, 1, 3);
     }
 }
