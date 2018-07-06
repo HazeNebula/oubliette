@@ -9,12 +9,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
-public class NewMapChooser extends GridPane {
+public class NewMapPane extends GridPane {
     private static final int MIN_SIZE = 1;
     private static final int MAX_SIZE = Integer.MAX_VALUE;
     private static final int INIT_SIZE = 50;
 
-    public NewMapChooser(CanvasPane canvasPane, Stage primaryStage) {
+    public NewMapPane(CanvasPane canvasPane, Stage primaryStage) {
         Label widthLabel = new Label("Width: ");
         GridPane.setHgrow(widthLabel, Priority.ALWAYS);
         Spinner<Integer> widthSpinner = new Spinner<>(MIN_SIZE, MAX_SIZE,
