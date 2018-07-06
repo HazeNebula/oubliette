@@ -41,6 +41,8 @@ public class Grid extends ScrollPane {
     private Direction prevWallDir;
 
     private Canvas canvas;
+    private IntegerProperty fieldWidthProperty;
+    private IntegerProperty fieldHeightProperty;
     private double hoffset;
     private double voffset;
     private final MouseDrawHandler drawHandler;
@@ -54,6 +56,8 @@ public class Grid extends ScrollPane {
     public Grid(int gridWidth, int gridHeight) {
         setStyle("-fx-focus-color: transparent;\n-fx-background: #D3D3D3");
 
+        fieldWidthProperty = new SimpleIntegerProperty(gridWidth);
+        fieldHeightProperty = new SimpleIntegerProperty(gridHeight);
         fieldGrid = new Field[gridWidth][gridHeight];
         for (int x = 0; x < fieldGrid.length; ++x) {
             for (int y = 0; y < fieldGrid[x].length; ++y) {
@@ -260,6 +264,7 @@ public class Grid extends ScrollPane {
 
             cleanHighlight();
 
+            // todo: only clean highlight if coordinates have changed
             if (bounds.contains(e.getX(), e.getY())) {
                 int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
                 int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
@@ -655,6 +660,14 @@ public class Grid extends ScrollPane {
 
     public DoubleProperty canvasHeightProperty() {
         return canvas.heightProperty();
+    }
+
+    public IntegerProperty fieldWidthProperty() {
+        return fieldWidthProperty;
+    }
+
+    public IntegerProperty fieldHeightProperty() {
+        return fieldHeightProperty;
     }
 
     public Field[][] getFields() {
