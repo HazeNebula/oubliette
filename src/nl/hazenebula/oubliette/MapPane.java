@@ -11,12 +11,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-public class MapBar extends GridPane {
+public class MapPane extends GridPane {
     private static final int UPDATE_SECONDS = 10;
 
     private final Minimap minimap;
 
-    public MapBar(Grid grid) {
+    public MapPane(Grid grid) {
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
         setPadding(new Insets(5, 5, 5, 5));
@@ -46,22 +46,8 @@ public class MapBar extends GridPane {
         sizeField.valueProperty().addListener((observable, oldValue, newValue)
                 -> grid.setGridSize(newValue));
 
-        Label pngWidthLabel = new Label("PNG Width");
-        Label pngWidth = new Label();
-        pngWidth.textProperty().bind(grid.canvasWidthProperty().asString()
-                .concat(" px"));
-
-        Label pngHeightLabel = new Label("PNG Height");
-        Label pngHeight = new Label();
-        pngHeight.textProperty().bind(grid.canvasHeightProperty().asString()
-                .concat(" px"));
-
         add(minimap, 0, 0);
         add(sizeLabel, 0, 1);
         add(sizeField, 1, 1);
-        add(pngWidthLabel, 0, 2);
-        add(pngWidth, 1, 2);
-        add(pngHeightLabel, 0, 3);
-        add(pngHeight, 1, 3);
     }
 }

@@ -1,9 +1,16 @@
 package nl.hazenebula.oubliette;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
-public class WallObject {
-    private Image img;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+public class WallObject implements Serializable {
+    private transient Image img;
     private int x;
     private int y;
     private int width;
@@ -63,5 +70,16 @@ public class WallObject {
 
     public int getY() {
         return y;
+    }
+
+    private void readObject(ObjectInputStream ois) throws IOException,
+            ClassNotFoundException {
+        ois.defaultReadObject();
+        img = SwingFXUtils.toFXImage(ImageIO.read(ois), null);
+    }
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", oos);
     }
 }

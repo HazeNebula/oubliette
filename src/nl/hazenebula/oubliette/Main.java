@@ -9,7 +9,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         MainPane mainPane = new MainPane(primaryStage);
 
-        primaryStage.setTitle("Main");
         primaryStage.setScene(new Scene(mainPane, 1280, 960));
         primaryStage.show();
     }
