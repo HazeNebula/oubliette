@@ -1,18 +1,17 @@
 package nl.hazenebula.oubliette;
 
-import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,7 +22,6 @@ public class MainPane extends GridPane {
     private Grid grid;
     private ToolPane toolPane;
 
-    // todo: add menu screen before mainpane that shows settings
     public MainPane(Stage primaryStage) {
         MenuItem saveFile = new MenuItem("Save File");
         saveFile.setOnAction(e -> {
@@ -42,27 +40,33 @@ public class MainPane extends GridPane {
                 }
             }
         });
-        // lowptodo: add separate window that lets user change file resolution
+        // todo: let user change file resolution before exporting
+        // possibly with squares/inch setting and dpi?
         MenuItem pngExport = new MenuItem("Export as PNG");
         pngExport.setOnAction(e -> {
-            FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
-            fc.setInitialFileName("map.png");
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                    "Portable Network Graphics", ".png"));
-
-            File file = fc.showSaveDialog(primaryStage);
-            if (file != null) {
-                WritableImage img = grid.snapshot();
-
-                try {
-                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png",
-                            file);
-                } catch (IOException ex) {
-                    System.err.println("Could not save file " +
-                            file.toString());
-                }
-            }
+//            FileChooser fc = new FileChooser();
+//            fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
+//            fc.setInitialFileName("map.png");
+//            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+//                    "Portable Network Graphics", ".png"));
+//
+//            File file = fc.showSaveDialog(primaryStage);
+//            if (file != null) {
+//                WritableImage img = grid.snapshot();
+//
+//                try {
+//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png",
+//                            file);
+//                } catch (IOException ex) {
+//                    System.err.println("Could not save file " +
+//                            file.toString());
+//                }
+//            }
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(getScene().getWindow());
+            stage.setScene(new Scene(new ExportSettingsPane(grid)));
+            stage.show();
         });
         Menu file = new Menu("File", null, saveFile, pngExport);
 
