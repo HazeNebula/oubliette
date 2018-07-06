@@ -50,7 +50,10 @@ public class NewMapChooser extends GridPane {
         Label methodLabel = new Label("Fill:");
         GridPane.setHgrow(methodLabel, Priority.ALWAYS);
         ComboBox<String> methods = new ComboBox<>();
-        methods.getItems().addAll("Filled", "Open", "Generated");
+        for (Field field : Field.values()) {
+            methods.getItems().add(field.toString());
+        }
+        methods.getItems().add("Generated");
         methods.getSelectionModel().select(0);
         methods.valueProperty().addListener((observable, oldValue,
                                              newValue) -> {
@@ -64,18 +67,16 @@ public class NewMapChooser extends GridPane {
         Button newMapButton = new Button("New");
         newMapButton.setOnAction(e -> {
             if (methods.getSelectionModel().getSelectedItem()
-                    .equals("Filled")) {
-                canvasPane.setMap(new Map(widthSpinner.getValue(),
-                        heightSpinner.getValue(), Field.STONE));
-                canvasPane.drawAll();
-            } else if (methods.getSelectionModel().getSelectedItem()
-                    .equals("Open")) {
-                canvasPane.setMap(new Map(widthSpinner.getValue(),
-                        heightSpinner.getValue(), Field.OPEN));
-                canvasPane.drawAll();
-            } else if (methods.getSelectionModel().getSelectedItem()
                     .equals("Generated")) {
 
+            } else {
+                for (Field field : Field.values()) {
+                    if (methods.getSelectionModel().getSelectedItem()
+                            .equals(field.toString())) {
+                        canvasPane.setMap(new Map(widthSpinner.getValue(),
+                                heightSpinner.getValue(), field));
+                    }
+                }
             }
             primaryStage.setTitle("New File");
 

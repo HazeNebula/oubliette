@@ -78,7 +78,7 @@ public class CanvasPane extends ScrollPane {
 
         curBrush = Brush.FIELD;
         curField = null;
-        gridColor = Field.STONE.color();
+        gridColor = Field.BLUE.color();
         curObject = null;
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {

@@ -5,8 +5,10 @@ import javafx.scene.paint.Color;
 import java.io.Serializable;
 
 public enum Field implements Serializable {
-    OPEN(Color.rgb(255, 255, 255), "Open"),
-    STONE(Color.rgb(51, 153, 204), "Stone");
+    WHITE(Color.rgb(255, 255, 255), "White"),
+    BLUE(Color.rgb(51, 153, 204), "Blue"),
+    GREY(Color.rgb(211, 211, 211), "Grey"),
+    BLACK(Color.rgb(0, 0, 0), "Black");
 
     private Color color;
     private String str;
