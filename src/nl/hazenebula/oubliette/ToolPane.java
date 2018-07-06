@@ -21,7 +21,7 @@ public class ToolPane extends TabPane {
             }
         });
 
-        FieldObjectPane fieldObjects = new FieldObjectPane(canvasPane);
+        ObjectPane fieldObjects = new ObjectPane(canvasPane);
         Tab fieldObjectTab = new Tab("Objects", fieldObjects);
         getTabs().add(fieldObjectTab);
         fieldObjectTab.setOnSelectionChanged(e -> {
@@ -30,7 +30,7 @@ public class ToolPane extends TabPane {
             }
         });
 
-        WallObjectPane wallObjects = new WallObjectPane(canvasPane);
+        WallPane wallObjects = new WallPane(canvasPane);
         Tab wallObjectTab = new Tab("Walls", wallObjects);
         getTabs().add(wallObjectTab);
         wallObjectTab.setOnSelectionChanged(e -> {

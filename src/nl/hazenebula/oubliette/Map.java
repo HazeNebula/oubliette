@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Map implements Serializable {
     private Field[][] fields;
-    private List<FieldObject> objects;
-    private WallObject[][][] walls;
+    private List<Object> objects;
+    private Wall[][][] walls;
 
     public Map(int width, int height, Field fill) {
         fields = new Field[width][height];
@@ -19,7 +19,7 @@ public class Map implements Serializable {
 
         objects = new LinkedList<>();
 
-        walls = new WallObject[width + 1][height + 1][2];
+        walls = new Wall[width + 1][height + 1][2];
     }
 
     public int getWidth() {
@@ -46,11 +46,11 @@ public class Map implements Serializable {
         this.fields = fields;
     }
 
-    public List<FieldObject> getObjects() {
+    public List<Object> getObjects() {
         return objects;
     }
 
-    public void setObjects(List<FieldObject> objects) {
+    public void setObjects(List<Object> objects) {
         this.objects = objects;
     }
 
@@ -62,19 +62,19 @@ public class Map implements Serializable {
         return walls[0].length;
     }
 
-    public WallObject getWall(int x, int y, Direction dir) {
+    public Wall getWall(int x, int y, Direction dir) {
         return walls[x][y][dir.id()];
     }
 
-    public WallObject[][][] getWalls() {
+    public Wall[][][] getWalls() {
         return walls;
     }
 
-    public void setWall(int x, int y, Direction dir, WallObject val) {
+    public void setWall(int x, int y, Direction dir, Wall val) {
         walls[x][y][dir.id()] = val;
     }
 
-    public void setWalls(WallObject[][][] walls) {
+    public void setWalls(Wall[][][] walls) {
         this.walls = walls;
     }
 }

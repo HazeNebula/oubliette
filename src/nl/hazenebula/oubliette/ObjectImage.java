@@ -4,11 +4,11 @@ import javafx.scene.image.Image;
 
 import java.io.File;
 
-public class FieldObjectImage implements Comparable<FieldObjectImage> {
+public class ObjectImage implements Comparable<ObjectImage> {
     private Image[][] images;
     private String name;
 
-    public FieldObjectImage(int width, int height) {
+    public ObjectImage(int width, int height) {
         images = new Image[width][height];
         name = null;
     }
@@ -52,7 +52,7 @@ public class FieldObjectImage implements Comparable<FieldObjectImage> {
         return true;
     }
 
-    public int compareTo(FieldObjectImage other) {
+    public int compareTo(ObjectImage other) {
         return name.compareTo(other.name);
     }
 }
