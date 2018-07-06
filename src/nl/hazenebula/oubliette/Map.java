@@ -34,6 +34,10 @@ public class Map implements Serializable {
         return fields[x][y];
     }
 
+    public Field[][] getFields() {
+        return fields;
+    }
+
     public void setField(int x, int y, Field field) {
         fields[x][y] = field;
     }
@@ -60,6 +64,10 @@ public class Map implements Serializable {
 
     public WallObject getWall(int x, int y, Direction dir) {
         return walls[x][y][dir.id()];
+    }
+
+    public WallObject[][][] getWalls() {
+        return walls;
     }
 
     public void setWall(int x, int y, Direction dir, WallObject val) {
