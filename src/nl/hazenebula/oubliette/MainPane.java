@@ -1,6 +1,7 @@
 package nl.hazenebula.oubliette;
 
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -23,15 +24,42 @@ public class MainPane extends GridPane {
     private ToolPane toolPane;
 
     public MainPane(Stage primaryStage) {
+        // todo: add unsaved changes window
+        // todo: add new map option with starting width/height
+        // todo: add a cave generator
+        // todo: add a dungeon style generator
+        // todo: add a trace map option
+        // todo: add an option to expand/shrink the map
+        // todo: add undo/redo
+        MenuItem loadFile = new MenuItem("Load File");
+        loadFile.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                    "Oubliette Map File", "*.oubl"));
+
+            File file = fc.showOpenDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    readFile(file);
+                    primaryStage.setTitle(file.getName());
+                } catch (IOException ex) {
+                    Alert errorMsg = new Alert(Alert.AlertType.ERROR,
+                            "Could not open file: " + file);
+                    errorMsg.showAndWait();
+                }
+            }
+        });
+
         MenuItem saveFile = new MenuItem("Save File");
         saveFile.setOnAction(e -> {
             FileChooser fc = new FileChooser();
             fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
             fc.setInitialFileName("map.oubl");
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                    "Oubliette Map File", ".oubl"));
+                    "Oubliette Map File", "*.oubl"));
 
-            File file = fc.showSaveDialog(primaryStage);
+            File file = fc.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
                     writeFile(grid, file);
@@ -49,7 +77,8 @@ public class MainPane extends GridPane {
             stage.setScene(new Scene(new ExportSettingsPane(grid)));
             stage.show();
         });
-        Menu file = new Menu("File", null, saveFile, pngExport);
+
+        Menu file = new Menu("File", null, loadFile, saveFile, pngExport);
 
         MenuItem blueGrid = new MenuItem("Blue");
         blueGrid.setOnAction(e -> {
@@ -81,6 +110,8 @@ public class MainPane extends GridPane {
 
         mapPane = new MapPane(grid);
         GridPane.setVgrow(mapPane, Priority.ALWAYS);
+
+        primaryStage.setTitle("New File");
 
         ColumnConstraints cc1 = new ColumnConstraints();
         cc1.setPercentWidth(20);
