@@ -486,6 +486,7 @@ public class Grid extends ScrollPane {
         }
     }
 
+    // fixme: while drawing objects are obscured
     private void drawField(int x, int y) {
         if (x >= 0 && x < fieldGrid.length
                 && y >= 0 && y < fieldGrid[x].length) {
@@ -668,6 +669,10 @@ public class Grid extends ScrollPane {
 
     public IntegerProperty fieldHeightProperty() {
         return fieldHeightProperty;
+    }
+
+    public int getGridSize() {
+        return size.get();
     }
 
     public Field[][] getFields() {
