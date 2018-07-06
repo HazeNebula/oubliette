@@ -40,28 +40,9 @@ public class MainPane extends GridPane {
                 }
             }
         });
-        // todo: let user change file resolution before exporting
-        // possibly with squares/inch setting and dpi?
+
         MenuItem pngExport = new MenuItem("Export as PNG");
         pngExport.setOnAction(e -> {
-//            FileChooser fc = new FileChooser();
-//            fc.setInitialDirectory(Paths.get(".").toAbsolutePath().toFile());
-//            fc.setInitialFileName("map.png");
-//            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-//                    "Portable Network Graphics", ".png"));
-//
-//            File file = fc.showSaveDialog(primaryStage);
-//            if (file != null) {
-//                WritableImage img = grid.snapshot();
-//
-//                try {
-//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png",
-//                            file);
-//                } catch (IOException ex) {
-//                    System.err.println("Could not save file " +
-//                            file.toString());
-//                }
-//            }
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(getScene().getWindow());
