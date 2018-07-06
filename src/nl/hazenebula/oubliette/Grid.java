@@ -1,6 +1,5 @@
 package nl.hazenebula.oubliette;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
@@ -260,7 +259,6 @@ public class Grid extends ScrollPane {
 
             cleanHighlight();
 
-            // todo: only clean highlight if coordinates have changed
             if (bounds.contains(e.getX(), e.getY())) {
                 int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
                 int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
@@ -667,14 +665,6 @@ public class Grid extends ScrollPane {
 
     public WritableImage snapshot() {
         return canvas.snapshot(null, null);
-    }
-
-    public DoubleProperty canvasWidthProperty() {
-        return canvas.widthProperty();
-    }
-
-    public DoubleProperty canvasHeightProperty() {
-        return canvas.heightProperty();
     }
 
     public IntegerProperty fieldWidthProperty() {
