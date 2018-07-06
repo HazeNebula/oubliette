@@ -236,9 +236,7 @@ public class Grid extends ScrollPane {
 
                 drawFullGrid();
             }
-        }, e ->
-
-        {
+        }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -252,9 +250,7 @@ public class Grid extends ScrollPane {
                     drawField(x, y);
                 }
             }
-        }, e ->
-
-        {
+        }, e -> {
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -353,8 +349,8 @@ public class Grid extends ScrollPane {
                             .getDir().angle())) * (width - gridSize) / 2
                             + Math.cos(Math.toRadians(curWallObject.getDir()
                             .angle())) * yPos
-                            - Math.sin(Math.toRadians(curWallObject
-                            .getDir().angle())) * xPos
+                            - Math.sin(Math.toRadians(curWallObject.getDir()
+                            .angle())) * xPos
                             - Math.sin(Math.toRadians(curWallObject.getDir()
                             .angle())) * gridSize / 2
                             + Math.cos(Math.toRadians(curWallObject.getDir()
@@ -486,7 +482,6 @@ public class Grid extends ScrollPane {
         }
     }
 
-    // fixme: while drawing objects are obscured
     private void drawField(int x, int y) {
         if (x >= 0 && x < fieldGrid.length
                 && y >= 0 && y < fieldGrid[x].length) {
@@ -496,6 +491,25 @@ public class Grid extends ScrollPane {
 
             gc.setFill(fieldGrid[x][y].color());
             gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
+
+            for (FieldObject obj : fieldObjects) {
+                if (obj.inBounds(x, y)) {
+                    drawFieldObject(obj);
+                }
+            }
+
+            int xMin = Math.max(-1, x - 1);
+            int yMin = Math.max(-1, y - 1);
+            int xMax = Math.min(wallGrid.length - 1, x + 1);
+            int yMax = Math.min(wallGrid[0].length - 1, y + 1);
+            for (int xIndex = xMin; xIndex < xMax; ++xIndex) {
+                for (int yIndex = yMin; yIndex < yMax; ++yIndex) {
+                    drawWallObject(wallGrid[xIndex + 1][yIndex + 1]
+                            [Direction.NORTH.id()]);
+                    drawWallObject(wallGrid[xIndex + 1][yIndex + 1]
+                            [Direction.EAST.id()]);
+                }
+            }
         }
     }
 
