@@ -1,5 +1,6 @@
 package nl.hazenebula.oubliette;
 
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -7,7 +8,10 @@ import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import nl.hazenebula.terraingeneration.CaveGenerator;
+import nl.hazenebula.terraingeneration.TerrainGenerator;
 
 public class NewMapPane extends GridPane {
     private static final int MIN_SIZE = 1;
@@ -49,29 +53,59 @@ public class NewMapPane extends GridPane {
 
         Label methodLabel = new Label("Fill:");
         GridPane.setHgrow(methodLabel, Priority.ALWAYS);
-        ComboBox<String> methods = new ComboBox<>();
+        ComboBox<String> methodBox = new ComboBox<>();
         for (Field field : Field.values()) {
-            methods.getItems().add(field.toString());
+            methodBox.getItems().add(field.toString());
         }
-        methods.getItems().add("Generated");
-        methods.getSelectionModel().select(0);
-        methods.valueProperty().addListener((observable, oldValue,
-                                             newValue) -> {
-            if (newValue.equals("Generated")) {
-                optionsButton.setDisable(false);
-            } else {
-                optionsButton.setDisable(true);
+        methodBox.getItems().add("Caves");
+        methodBox.getSelectionModel().select(0);
+        methodBox.valueProperty().addListener((observable, oldValue,
+                                               newValue) -> {
+            boolean disable = false;
+            for (Field field : Field.values()) {
+                if (methodBox.getSelectionModel().getSelectedItem()
+                        .equals(field.toString())) {
+                    disable = true;
+                }
+            }
+
+            optionsButton.setDisable(disable);
+        });
+
+        CaveGeneratorSettingsPane caveGeneratorSettingsPane =
+                new CaveGeneratorSettingsPane();
+        Scene caveGeneratorSettingsScene = new Scene(caveGeneratorSettingsPane);
+
+        Stage settingsStage = new Stage();
+        settingsStage.setTitle("Generator Settings");
+        settingsStage.initModality(Modality.APPLICATION_MODAL);
+
+        optionsButton.setOnAction(e -> {
+            if (methodBox.getSelectionModel().getSelectedItem()
+                    .equals("Caves")) {
+                settingsStage.setScene(caveGeneratorSettingsScene);
+                settingsStage.show();
             }
         });
 
         Button newMapButton = new Button("New");
         newMapButton.setOnAction(e -> {
-            if (methods.getSelectionModel().getSelectedItem()
-                    .equals("Generated")) {
+            if (methodBox.getSelectionModel().getSelectedItem()
+                    .equals("Caves")) {
+                Map map = new Map(widthSpinner.getValue(),
+                        heightSpinner.getValue(), caveGeneratorSettingsPane
+                        .getBackColor());
 
+                TerrainGenerator gen = new CaveGenerator(
+                        caveGeneratorSettingsPane.getOnProb(),
+                        caveGeneratorSettingsPane.getOffThreshold(),
+                        caveGeneratorSettingsPane.getOnThreshold(),
+                        caveGeneratorSettingsPane.getNumberOfSteps(),
+                        caveGeneratorSettingsPane.getFloor());
+                canvasPane.setMap(gen.generate(map));
             } else {
                 for (Field field : Field.values()) {
-                    if (methods.getSelectionModel().getSelectedItem()
+                    if (methodBox.getSelectionModel().getSelectedItem()
                             .equals(field.toString())) {
                         canvasPane.setMap(new Map(widthSpinner.getValue(),
                                 heightSpinner.getValue(), field));
@@ -95,7 +129,7 @@ public class NewMapPane extends GridPane {
         add(heightLabel, 0, 1);
         add(heightSpinner, 1, 1);
         add(methodLabel, 0, 2);
-        add(methods, 1, 2);
+        add(methodBox, 1, 2);
         add(optionsButton, 1, 3);
         add(buttonPane, 0, 4);
     }
