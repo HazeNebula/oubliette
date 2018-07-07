@@ -23,7 +23,8 @@ public class MainPane extends GridPane {
         primaryStage.setOnCloseRequest(e -> {
             Alert closeConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
             closeConfirmation.setTitle("Confirm Close");
-            closeConfirmation.setHeaderText("Close the current window?");
+            closeConfirmation.setGraphic(null);
+            closeConfirmation.setHeaderText(null);
             closeConfirmation.setContentText("If the current window is closed, "
                     + "all unsaved changes will be lost.");
             Optional<ButtonType> result = closeConfirmation.showAndWait();
@@ -46,7 +47,7 @@ public class MainPane extends GridPane {
         primaryStage.setTitle("New File");
 
         ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setPercentWidth(10);
+        cc1.setPercentWidth(20);
         ColumnConstraints cc2 = new ColumnConstraints();
         ColumnConstraints cc3 = new ColumnConstraints();
         cc3.setPercentWidth(20);
@@ -78,6 +79,8 @@ public class MainPane extends GridPane {
                 } catch (IOException ex) {
                     Alert errorMsg = new Alert(Alert.AlertType.ERROR,
                             "Could not open file: " + file);
+                    errorMsg.setHeaderText(null);
+                    errorMsg.setGraphic(null);
                     errorMsg.showAndWait();
                 }
             }
