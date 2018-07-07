@@ -21,16 +21,12 @@ public class MainPane extends GridPane {
     private ToolPane toolPane;
 
     public MainPane(Stage primaryStage) {
-        // todo: add an option to expand/shrink the map
-
-        // todo: add undo/redo
-
         primaryStage.setOnCloseRequest(e -> {
             Alert closeConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
             closeConfirmation.setTitle("Confirm Close");
             closeConfirmation.setHeaderText("Close the current window?");
-            closeConfirmation.setContentText("If the current window is closed, " +
-                    "all unsaved changes will be lost.");
+            closeConfirmation.setContentText("If the current window is closed, "
+                    + "all unsaved changes will be lost.");
             Optional<ButtonType> result = closeConfirmation.showAndWait();
 
             if (result.isPresent() && result.get() == ButtonType.CANCEL) {
@@ -38,7 +34,7 @@ public class MainPane extends GridPane {
             }
         });
 
-        canvasPane = new CanvasPane(new Map(50, 50, Field.STONE));
+        canvasPane = new CanvasPane(new Map(50, 50, Field.BLUE));
         GridPane.setHgrow(canvasPane, Priority.ALWAYS);
         GridPane.setVgrow(canvasPane, Priority.ALWAYS);
 
@@ -63,7 +59,8 @@ public class MainPane extends GridPane {
             stage.setTitle("New");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(getScene().getWindow());
-            stage.setScene(new Scene(new NewMapChooser(canvasPane)));
+            stage.setScene(new Scene(new NewMapPane(canvasPane,
+                    primaryStage)));
             stage.show();
         });
 
@@ -120,22 +117,37 @@ public class MainPane extends GridPane {
 
         MenuItem blueGrid = new MenuItem("Blue");
         blueGrid.setOnAction(e -> {
-            canvasPane.setGridColor(Field.STONE.color());
+            canvasPane.setGridColor(Field.BLUE.color());
             canvasPane.drawAll();
         });
+
         MenuItem whiteGrid = new MenuItem("White");
         whiteGrid.setOnAction(e -> {
             canvasPane.setGridColor(Color.WHITE);
             canvasPane.drawAll();
         });
+
         MenuItem blackGrid = new MenuItem("Black");
         blackGrid.setOnAction(e -> {
             canvasPane.setGridColor(Color.BLACK);
             canvasPane.drawAll();
         });
-        Menu options = new Menu("Options", null, new Menu("CanvasPane Color", null,
-                blueGrid, whiteGrid, blackGrid));
-        menuBar = new MenuBar(file, options);
+
+        Menu gridColor = new Menu("Grid Color", null, blueGrid, whiteGrid,
+                blackGrid);
+
+        MenuItem resizeDungeon = new MenuItem("Resize Map");
+        resizeDungeon.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setTitle("Resize");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(getScene().getWindow());
+            stage.setScene(new Scene(new ResizeDungeonPane(canvasPane)));
+            stage.show();
+        });
+
+        Menu edit = new Menu("Edit", null, gridColor, resizeDungeon);
+        menuBar = new MenuBar(file, edit);
         GridPane.setVgrow(menuBar, Priority.NEVER);
 
         add(menuBar, 0, 0, 3, 1);
@@ -144,7 +156,8 @@ public class MainPane extends GridPane {
         add(toolPane, 2, 1);
     }
 
-    private void writeFile(CanvasPane canvasPane, File file) throws IOException {
+    private void writeFile(CanvasPane canvasPane, File file)
+            throws IOException {
         try (FileOutputStream fout = new FileOutputStream(file)) {
             try (ObjectOutputStream oos = new ObjectOutputStream(fout)) {
                 oos.writeObject(canvasPane.getMap());
