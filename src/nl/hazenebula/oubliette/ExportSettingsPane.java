@@ -35,7 +35,7 @@ public class ExportSettingsPane extends GridPane {
         Label dpiLabel = new Label("Dots per inch:");
         GridPane.setHgrow(dpiLabel, Priority.ALWAYS);
         Spinner<Integer> dpiField = new Spinner<>(MIN_DPI, MAX_DPI,
-                canvasPane.getGridSize() + 1, 1);
+                canvasPane.getSquareSize() + 1, 1);
         dpiField.setEditable(true);
 
         IntegerProperty gridSize = new SimpleIntegerProperty((
@@ -72,8 +72,8 @@ public class ExportSettingsPane extends GridPane {
 
             File file = fc.showSaveDialog(this.getScene().getWindow());
             if (file != null) {
-                int size = canvasPane.getGridSize();
-                canvasPane.setGridSize(gridSize.get());
+                int size = canvasPane.getSquareSize();
+                canvasPane.setSquareSize(gridSize.get());
                 canvasPane.drawAll();
 
                 WritableImage img = canvasPane.snapshot();
@@ -85,7 +85,7 @@ public class ExportSettingsPane extends GridPane {
                             file.toString() + ": " + ex.getMessage());
                 }
 
-                canvasPane.setGridSize(size);
+                canvasPane.setSquareSize(size);
                 canvasPane.drawAll();
 
                 this.getScene().getWindow().hide();

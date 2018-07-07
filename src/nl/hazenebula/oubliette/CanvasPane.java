@@ -629,8 +629,7 @@ public class CanvasPane extends ScrollPane {
         gridColor = color;
     }
 
-    // todo: change setGridSize to setSquareSize
-    public void setGridSize(int newSize) {
+    public void setSquareSize(int newSize) {
         if (newSize >= MIN_SQUARE_SIZE && newSize <= MAX_SQUARE_SIZE) {
             size.set(newSize);
 
@@ -672,7 +671,7 @@ public class CanvasPane extends ScrollPane {
         return fieldHeightProperty;
     }
 
-    public int getGridSize() {
+    public int getSquareSize() {
         return size.get();
     }
 

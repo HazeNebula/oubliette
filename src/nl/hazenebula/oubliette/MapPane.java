@@ -44,7 +44,7 @@ public class MapPane extends GridPane {
                 CanvasPane.MAX_SQUARE_SIZE, CanvasPane.INIT_SQUARE_SIZE, 1);
         sizeField.setEditable(true);
         sizeField.valueProperty().addListener((observable, oldValue, newValue)
-                -> canvasPane.setGridSize(newValue));
+                -> canvasPane.setSquareSize(newValue));
 
         add(minimap, 0, 0);
         add(sizeLabel, 0, 1);
