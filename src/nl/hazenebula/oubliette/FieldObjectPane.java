@@ -26,15 +26,19 @@ public class FieldObjectPane extends GridPane {
 
     private static final double BUTTON_SIZE = 80.0d;
 
-    private int maxSize;
+    private CanvasPane canvasPane;
 
     private Canvas resizeCanvas;
+    private int maxSize;
+    private List<ToggleButton> objectButtons;
     private FieldObjectImage curImg;
     private NumberObjectImage curNumImg;
     private FieldObject curObject;
     private boolean drawingNumbers;
 
     public FieldObjectPane(CanvasPane canvasPane) {
+        this.canvasPane = canvasPane;
+
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
         setHgap(5.0d);
@@ -149,6 +153,16 @@ public class FieldObjectPane extends GridPane {
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
+        Label colorLabel = new Label("Object Color:");
+        ComboBox<String> color = new ComboBox<>();
+        for (Field field : Field.values()) {
+            if (field != Field.WHITE) {
+                color.getItems().add(field.toString());
+            }
+        }
+        color.getSelectionModel().select("Blue");
+        GridPane.setHgrow(colorLabel, Priority.ALWAYS);
+
         ScrollPane buttonPane = new ScrollPane();
         buttonPane.setFitToWidth(true);
         buttonPane.setStyle("-fx-background: #D3D3D3");
@@ -162,41 +176,7 @@ public class FieldObjectPane extends GridPane {
         buttonPane.setContent(buttons);
 
         List<FieldObjectImage> objects = loadObjects();
-
-        ToggleButton firstButton = new ToggleButton();
-        for (FieldObjectImage img : objects) {
-            ToggleButton button = new ToggleButton();
-
-            if (img == objects.get(0)) {
-                firstButton = button;
-            }
-
-            ImageView graphic = new ImageView(img.getImage(1, 1));
-            graphic.setFitWidth(BUTTON_SIZE);
-            graphic.setFitHeight(BUTTON_SIZE);
-            button.setGraphic(graphic);
-            button.setTooltip(new Tooltip(img.getName()));
-
-            button.setOnAction(e -> {
-                drawingNumbers = false;
-                canvasPane.setBrush(Brush.FIELD_OBJECT);
-
-                if (curImg != img) {
-                    curImg = img;
-                    curObject = new FieldObject(curImg.getImage(
-                            curObject.getWidth(), curObject.getHeight()),
-                            curObject.getX(), curObject.getY(),
-                            curObject.getWidth(), curObject.getHeight(),
-                            curObject.getDir());
-                    drawCanvas();
-
-                    canvasPane.setFieldObject(new FieldObject(curObject));
-                }
-            });
-
-            button.setToggleGroup(toggleGroup);
-            buttons.getChildren().add(button);
-        }
+        objectButtons = new LinkedList<>();
 
         setVgrow(buttonPane, Priority.ALWAYS);
 
@@ -251,19 +231,26 @@ public class FieldObjectPane extends GridPane {
             canvasPane.setFieldObject(new FieldObject(curObject));
         });
 
-        curImg = objects.get(0);
-        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
-                Direction.NORTH);
-        canvasPane.setFieldObject(curObject);
-        firstButton.setSelected(true);
+        color.valueProperty().addListener((observable, oldValue, newValue) -> {
+            loadButtons(buttons, toggleGroup, objects, newValue);
+            curNumImg.setColor(Field.fromString(newValue).color());
 
+            ImageView img = new ImageView(curNumImg.getImage(INIT_NUM));
+            img.setFitWidth(BUTTON_SIZE);
+            img.setFitHeight(BUTTON_SIZE);
+            numberButton.setGraphic(img);
+        });
+
+        loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
         drawCanvas();
 
-        add(resizeWrapper, 0, 0);
-        add(shapeButtonPane, 0, 1);
-        add(eraseButton, 0, 2);
-        add(buttonPane, 0, 3);
-        add(numberPane, 0, 4);
+        add(resizeWrapper, 0, 0, 2, 1);
+        add(shapeButtonPane, 0, 1, 2, 1);
+        add(eraseButton, 0, 2, 2, 1);
+        add(colorLabel, 0, 3);
+        add(color, 1, 3);
+        add(buttonPane, 0, 4, 2, 1);
+        add(numberPane, 0, 5, 2, 1);
     }
 
     private List<FieldObjectImage> loadObjects() {
@@ -326,6 +313,64 @@ public class FieldObjectPane extends GridPane {
         Collections.sort(objects);
 
         return objects;
+    }
+
+    private void loadButtons(FlowPane buttons, ToggleGroup group,
+                             List<FieldObjectImage> allObjects,
+                             String color) {
+        for (ToggleButton button : objectButtons) {
+            group.getToggles().remove(button);
+            buttons.getChildren().remove(button);
+        }
+
+        List<FieldObjectImage> objects = new LinkedList<>();
+        for (FieldObjectImage img : allObjects) {
+            if (img.getName().toLowerCase().contains(color.toLowerCase())) {
+                objects.add(img);
+            }
+        }
+
+        ToggleButton firstButton = new ToggleButton();
+        for (FieldObjectImage img : objects) {
+            ToggleButton button = new ToggleButton();
+
+            if (img == objects.get(0)) {
+                firstButton = button;
+            }
+
+            ImageView graphic = new ImageView(img.getImage(1, 1));
+            graphic.setFitWidth(BUTTON_SIZE);
+            graphic.setFitHeight(BUTTON_SIZE);
+            button.setGraphic(graphic);
+            button.setTooltip(new Tooltip(img.getName()));
+
+            button.setOnAction(e -> {
+                drawingNumbers = false;
+                canvasPane.setBrush(Brush.FIELD_OBJECT);
+
+                if (curImg != img) {
+                    curImg = img;
+                    curObject = new FieldObject(curImg.getImage(
+                            curObject.getWidth(), curObject.getHeight()),
+                            curObject.getX(), curObject.getY(),
+                            curObject.getWidth(), curObject.getHeight(),
+                            curObject.getDir());
+                    drawCanvas();
+
+                    canvasPane.setFieldObject(new FieldObject(curObject));
+                }
+            });
+
+            button.setToggleGroup(group);
+            objectButtons.add(button);
+            buttons.getChildren().add(button);
+        }
+
+        curImg = objects.get(0);
+        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
+                Direction.NORTH);
+        canvasPane.setFieldObject(curObject);
+        firstButton.setSelected(true);
     }
 
     private void drawCanvas() {

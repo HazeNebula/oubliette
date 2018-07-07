@@ -21,6 +21,10 @@ public class NumberObjectImage {
         this.color = color;
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     private double getTextWidth(String str) {
         Text text = new Text(str);
         text.setFont(font);
