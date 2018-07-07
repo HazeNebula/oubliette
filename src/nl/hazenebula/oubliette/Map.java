@@ -104,8 +104,8 @@ public class Map implements Serializable {
         return walls;
     }
 
-    public void setWall(int x, int y, Direction dir, Wall val) {
-        walls[x][y][dir.id()] = val;
+    public void setWall(int x, int y, Direction dir, Wall wall) {
+        walls[x][y][dir.id()] = wall;
     }
 
     public void setWalls(Wall[][][] walls) {
