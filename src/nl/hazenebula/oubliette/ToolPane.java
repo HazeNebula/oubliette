@@ -12,6 +12,7 @@ public class ToolPane extends TabPane {
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
 
+        // todo: add number label tab
         FieldColorPane fieldColors = new FieldColorPane(canvasPane);
         Tab fieldTab = new Tab("Fields", fieldColors);
         getTabs().add(fieldTab);
@@ -21,7 +22,7 @@ public class ToolPane extends TabPane {
             }
         });
 
-        ObjectPane fieldObjects = new ObjectPane(canvasPane);
+        FieldObjectPane fieldObjects = new FieldObjectPane(canvasPane);
         Tab fieldObjectTab = new Tab("Objects", fieldObjects);
         getTabs().add(fieldObjectTab);
         fieldObjectTab.setOnSelectionChanged(e -> {

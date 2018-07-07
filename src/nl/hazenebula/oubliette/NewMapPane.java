@@ -89,6 +89,7 @@ public class NewMapPane extends GridPane {
         HBox buttonPane = new HBox();
         buttonPane.setSpacing(5);
         buttonPane.getChildren().addAll(newMapButton, cancelButton);
+
         add(widthLabel, 0, 0);
         add(widthSpinner, 1, 0);
         add(heightLabel, 0, 1);

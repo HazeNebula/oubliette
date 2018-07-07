@@ -45,7 +45,7 @@ public class CanvasPane extends ScrollPane {
     private Brush curBrush;
     private Field curField;
     private Color gridColor;
-    private Object curObject;
+    private FieldObject curObject;
     private Wall curWall;
 
     public CanvasPane(Map map) {
@@ -111,7 +111,7 @@ public class CanvasPane extends ScrollPane {
             int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
             if (curBrush == Brush.FIELD_OBJECT) {
-                Object newObj = new Object(curObject);
+                FieldObject newObj = new FieldObject(curObject);
                 newObj.setX(x);
                 newObj.setY(y);
                 map.getObjects().add(newObj);
@@ -184,7 +184,7 @@ public class CanvasPane extends ScrollPane {
 
                 drawAll();
             } else if (curBrush == Brush.FIELD_OBJECT_ERASE) {
-                for (Object obj : map.getObjects()) {
+                for (FieldObject obj : map.getObjects()) {
                     if (obj.inBounds(x, y)) {
                         map.getObjects().remove(obj);
                         drawAll();
@@ -392,7 +392,7 @@ public class CanvasPane extends ScrollPane {
                 gc.fillRect(xPos, y1, GRIDLINE_SIZE, y2);
             }
 
-            for (Object obj : map.getObjects()) {
+            for (FieldObject obj : map.getObjects()) {
                 drawObject(obj);
             }
 
@@ -423,7 +423,7 @@ public class CanvasPane extends ScrollPane {
                     }
                 }
 
-                for (Object obj : map.getObjects()) {
+                for (FieldObject obj : map.getObjects()) {
                     for (int x = prevWallX; x < prevWallX + prevWallWidth;
                          ++x) {
                         for (int y = prevWallY; y <= prevWallY + 1; ++y) {
@@ -447,7 +447,7 @@ public class CanvasPane extends ScrollPane {
                     }
                 }
 
-                for (Object obj : map.getObjects()) {
+                for (FieldObject obj : map.getObjects()) {
                     for (int x = prevWallX; x <= prevWallX + 1; ++x) {
                         for (int y = prevWallY; y < prevWallY + prevWallWidth; ++y) {
                             if (obj.inBounds(x, y)) {
@@ -479,7 +479,7 @@ public class CanvasPane extends ScrollPane {
             gc.setFill(map.getField(x, y).color());
             gc.fillRect(xPos + 1, yPos + 1, size.get(), size.get());
 
-            for (Object obj : map.getObjects()) {
+            for (FieldObject obj : map.getObjects()) {
                 if (obj.inBounds(x, y)) {
                     drawObject(obj);
                 }
@@ -500,7 +500,7 @@ public class CanvasPane extends ScrollPane {
         }
     }
 
-    private void drawObject(Object obj) {
+    private void drawObject(FieldObject obj) {
         double c = Math.abs(Math.cos(Math.toRadians(obj.getDir().angle())));
         double s = Math.abs(Math.sin(Math.toRadians(obj.getDir().angle())));
         int actualWidth = (int)(c * obj.getWidth() + s * obj.getHeight());
@@ -590,7 +590,7 @@ public class CanvasPane extends ScrollPane {
             }
         }
 
-        for (Object obj : map.getObjects()) {
+        for (FieldObject obj : map.getObjects()) {
             drawObject(obj);
         }
 
@@ -602,11 +602,22 @@ public class CanvasPane extends ScrollPane {
         }
     }
 
+    public void resize(int width, int height, Field fill) {
+        map.resize(width, height, fill);
+
+        fieldWidthProperty.setValue(width);
+        fieldHeightProperty.setValue(height);
+
+        canvas.setWidth(map.getWidth() * (size.get() + GRIDLINE_SIZE));
+        canvas.setHeight(map.getHeight() * (size.get() + GRIDLINE_SIZE));
+        drawAll();
+    }
+
     public void setFieldColor(Field field) {
         curField = field;
     }
 
-    public void setFieldObject(Object object) {
+    public void setFieldObject(FieldObject object) {
         this.curObject = object;
     }
 
@@ -618,6 +629,7 @@ public class CanvasPane extends ScrollPane {
         gridColor = color;
     }
 
+    // todo: change setGridSize to setSquareSize
     public void setGridSize(int newSize) {
         if (newSize >= MIN_SQUARE_SIZE && newSize <= MAX_SQUARE_SIZE) {
             size.set(newSize);
@@ -637,6 +649,8 @@ public class CanvasPane extends ScrollPane {
         this.map.setObjects(map.getObjects());
         this.map.setWalls(map.getWalls());
 
+        fieldWidthProperty().setValue(map.getWidth());
+        fieldHeightProperty().setValue(map.getHeight());
         canvas.setWidth(map.getWidth() * (size.get() + GRIDLINE_SIZE));
         canvas.setHeight(map.getHeight() * (size.get() + GRIDLINE_SIZE));
         drawAll();
