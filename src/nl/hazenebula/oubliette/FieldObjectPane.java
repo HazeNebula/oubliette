@@ -144,9 +144,8 @@ public class FieldObjectPane extends GridPane {
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
-        eraseButton.setOnAction(e -> {
-            canvasPane.setBrush(Brush.FIELD_OBJECT_ERASE);
-        });
+        eraseButton.setOnAction(e -> canvasPane.setBrush(
+                Brush.FIELD_OBJECT_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -179,7 +178,7 @@ public class FieldObjectPane extends GridPane {
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
-                drawingNumbers = true;
+                drawingNumbers = false;
                 canvasPane.setBrush(Brush.FIELD_OBJECT);
 
                 if (curImg != img) {
