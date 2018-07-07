@@ -133,13 +133,13 @@ public class WallPane extends GridPane {
         setHalignment(eraseButton, HPos.CENTER);
 
         Label colorLabel = new Label("Object Color:");
-        ComboBox<String> color = new ComboBox<>();
+        ComboBox<String> colorBox = new ComboBox<>();
         for (Field field : Field.values()) {
             if (field != Field.WHITE) {
-                color.getItems().add(field.toString());
+                colorBox.getItems().add(field.toString());
             }
         }
-        color.getSelectionModel().select("Blue");
+        colorBox.getSelectionModel().select("Blue");
         GridPane.setHgrow(colorLabel, Priority.ALWAYS);
 
         ScrollPane buttonPane = new ScrollPane();
@@ -159,7 +159,7 @@ public class WallPane extends GridPane {
 
         setVgrow(buttonPane, Priority.ALWAYS);
 
-        color.valueProperty().addListener((observable, oldValue, newValue) -> {
+        colorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             loadButtons(buttons, toggleGroup, objects, newValue);
         });
 
@@ -171,7 +171,7 @@ public class WallPane extends GridPane {
         add(eraseLabel, 0, 2, 2, 1);
         add(eraseButton, 0, 3, 2, 1);
         add(colorLabel, 0, 4);
-        add(color, 1, 4);
+        add(colorBox, 1, 4);
         add(buttonPane, 0, 5, 2, 1);
     }
 

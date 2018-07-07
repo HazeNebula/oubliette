@@ -154,13 +154,13 @@ public class FieldObjectPane extends GridPane {
         setHalignment(eraseButton, HPos.CENTER);
 
         Label colorLabel = new Label("Object Color:");
-        ComboBox<String> color = new ComboBox<>();
+        ComboBox<String> colorBox = new ComboBox<>();
         for (Field field : Field.values()) {
             if (field != Field.WHITE) {
-                color.getItems().add(field.toString());
+                colorBox.getItems().add(field.toString());
             }
         }
-        color.getSelectionModel().select("Blue");
+        colorBox.getSelectionModel().select("Blue");
         GridPane.setHgrow(colorLabel, Priority.ALWAYS);
 
         ScrollPane buttonPane = new ScrollPane();
@@ -231,7 +231,7 @@ public class FieldObjectPane extends GridPane {
             canvasPane.setFieldObject(new FieldObject(curObject));
         });
 
-        color.valueProperty().addListener((observable, oldValue, newValue) -> {
+        colorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             loadButtons(buttons, toggleGroup, objects, newValue);
             curNumImg.setColor(Field.fromString(newValue).color());
 
@@ -248,7 +248,7 @@ public class FieldObjectPane extends GridPane {
         add(shapeButtonPane, 0, 1, 2, 1);
         add(eraseButton, 0, 2, 2, 1);
         add(colorLabel, 0, 3);
-        add(color, 1, 3);
+        add(colorBox, 1, 3);
         add(buttonPane, 0, 4, 2, 1);
         add(numberPane, 0, 5, 2, 1);
     }
