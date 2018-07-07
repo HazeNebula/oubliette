@@ -46,7 +46,7 @@ public class MainPane extends GridPane {
         primaryStage.setTitle("New File");
 
         ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setPercentWidth(20);
+        cc1.setPercentWidth(10);
         ColumnConstraints cc2 = new ColumnConstraints();
         ColumnConstraints cc3 = new ColumnConstraints();
         cc3.setPercentWidth(20);
