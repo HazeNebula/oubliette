@@ -660,6 +660,7 @@ public class CanvasPane extends ScrollPane {
     }
 
     public WritableImage snapshot() {
+        cleanHighlight();
         return canvas.snapshot(null, null);
     }
 
