@@ -5,7 +5,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -115,26 +114,16 @@ public class MainPane extends GridPane {
         Menu file = new Menu("File", null, newFile, loadFile, saveFile,
                 pngExport);
 
-        MenuItem blueGrid = new MenuItem("Blue");
-        blueGrid.setOnAction(e -> {
-            canvasPane.setGridColor(Field.BLUE.color());
-            canvasPane.drawAll();
-        });
+        Menu gridColor = new Menu("Grid Color");
+        for (Field field : Field.values()) {
+            MenuItem color = new MenuItem(field.toString());
+            color.setOnAction(e -> {
+                canvasPane.setGridColor(field.color());
+                canvasPane.drawAll();
+            });
 
-        MenuItem whiteGrid = new MenuItem("White");
-        whiteGrid.setOnAction(e -> {
-            canvasPane.setGridColor(Color.WHITE);
-            canvasPane.drawAll();
-        });
-
-        MenuItem blackGrid = new MenuItem("Black");
-        blackGrid.setOnAction(e -> {
-            canvasPane.setGridColor(Color.BLACK);
-            canvasPane.drawAll();
-        });
-
-        Menu gridColor = new Menu("Grid Color", null, blueGrid, whiteGrid,
-                blackGrid);
+            gridColor.getItems().add(color);
+        }
 
         MenuItem resizeDungeon = new MenuItem("Resize Map");
         resizeDungeon.setOnAction(e -> {
