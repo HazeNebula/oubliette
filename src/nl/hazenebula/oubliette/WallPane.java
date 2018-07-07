@@ -24,10 +24,11 @@ public class WallPane extends GridPane {
     private static final Color GRID_COLOR = Color.BLACK;
     private static final double BUTTON_SIZE = 80.0d;
 
-    private int maxSize;
-
     private CanvasPane canvasPane;
+
     private Canvas resizeCanvas;
+    private int maxSize;
+    private List<ToggleButton> wallButtons;
     private WallImage curImg;
     private Wall curObject;
     private StringProperty eraseOrient;
@@ -131,6 +132,16 @@ public class WallPane extends GridPane {
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
+        Label colorLabel = new Label("Object Color:");
+        ComboBox<String> colorBox = new ComboBox<>();
+        for (Field field : Field.values()) {
+            if (field != Field.WHITE) {
+                colorBox.getItems().add(field.toString());
+            }
+        }
+        colorBox.getSelectionModel().select("Blue");
+        GridPane.setHgrow(colorLabel, Priority.ALWAYS);
+
         ScrollPane buttonPane = new ScrollPane();
         buttonPane.setFitToWidth(true);
         buttonPane.setStyle("-fx-background: #D3D3D3");
@@ -143,57 +154,28 @@ public class WallPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
-        List<WallImage> objects = loadObjects();
-
-        ToggleButton firstButton = new ToggleButton();
-        for (WallImage img : objects) {
-            ToggleButton button = new ToggleButton();
-
-            if (img == objects.get(0)) {
-                firstButton = button;
-            }
-
-            ImageView graphic = new ImageView(img.getImage(1));
-            graphic.setFitWidth(BUTTON_SIZE);
-            graphic.setFitHeight(BUTTON_SIZE);
-            button.setGraphic(graphic);
-            button.setTooltip(new Tooltip(img.getName()));
-
-            button.setOnAction(e -> {
-                canvasPane.setBrush(Brush.WALL_OBJECT);
-
-                if (curImg != img) {
-                    curImg = img;
-                    curObject = new Wall(curImg.getImage(
-                            curObject.getWidth()), curObject.getWidth(),
-                            curObject.getDir());
-                    drawCanvas();
-
-                    canvasPane.setWallObject(new Wall(curObject));
-                }
-            });
-
-            button.setToggleGroup(toggleGroup);
-            buttons.getChildren().add(button);
-        }
+        List<WallImage> objects = loadWalls();
+        wallButtons = new LinkedList<>();
 
         setVgrow(buttonPane, Priority.ALWAYS);
 
-        curImg = objects.get(0);
-        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
-        canvasPane.setWallObject(curObject);
-        firstButton.setSelected(true);
+        colorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            loadButtons(buttons, toggleGroup, objects, newValue);
+        });
 
+        loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
         drawCanvas();
 
-        add(resizeWrapper, 0, 0);
-        add(shapeButtonPane, 0, 1);
-        add(eraseLabel, 0, 2);
-        add(eraseButton, 0, 3);
-        add(buttonPane, 0, 4);
+        add(resizeWrapper, 0, 0, 2, 1);
+        add(shapeButtonPane, 0, 1, 2, 1);
+        add(eraseLabel, 0, 2, 2, 1);
+        add(eraseButton, 0, 3, 2, 1);
+        add(colorLabel, 0, 4);
+        add(colorBox, 1, 4);
+        add(buttonPane, 0, 5, 2, 1);
     }
 
-    private List<WallImage> loadObjects() {
+    private List<WallImage> loadWalls() {
         List<List<File>> files = ObjectFileSearcher.getObjects(
                 ObjectFileSearcher.WALLOBJECT_DIR);
         maxSize = 1;
@@ -251,6 +233,60 @@ public class WallPane extends GridPane {
         Collections.sort(objects);
 
         return objects;
+    }
+
+    private void loadButtons(FlowPane buttons, ToggleGroup group,
+                             List<WallImage> allObjects,
+                             String color) {
+        for (ToggleButton button : wallButtons) {
+            group.getToggles().remove(button);
+            buttons.getChildren().remove(button);
+        }
+
+        List<WallImage> objects = new LinkedList<>();
+        for (WallImage img : allObjects) {
+            if (img.getName().toLowerCase().contains(color.toLowerCase())) {
+                objects.add(img);
+            }
+        }
+
+        ToggleButton firstButton = new ToggleButton();
+        for (WallImage img : objects) {
+            ToggleButton button = new ToggleButton();
+
+            if (img == objects.get(0)) {
+                firstButton = button;
+            }
+
+            ImageView graphic = new ImageView(img.getImage(1));
+            graphic.setFitWidth(BUTTON_SIZE);
+            graphic.setFitHeight(BUTTON_SIZE);
+            button.setGraphic(graphic);
+            button.setTooltip(new Tooltip(img.getName()));
+
+            button.setOnAction(e -> {
+                canvasPane.setBrush(Brush.WALL_OBJECT);
+
+                if (curImg != img) {
+                    curImg = img;
+                    curObject = new Wall(curImg.getImage(
+                            curObject.getWidth()), curObject.getWidth(),
+                            curObject.getDir());
+                    drawCanvas();
+
+                    canvasPane.setWallObject(new Wall(curObject));
+                }
+            });
+
+            button.setToggleGroup(group);
+            wallButtons.add(button);
+            buttons.getChildren().add(button);
+        }
+
+        curImg = objects.get(0);
+        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
+        canvasPane.setWallObject(curObject);
+        firstButton.setSelected(true);
     }
 
     private void drawCanvas() {
