@@ -26,4 +26,14 @@ public enum Field implements Serializable {
     public String toString() {
         return str;
     }
+
+    public static Field fromString(String str) {
+        for (Field field : Field.values()) {
+            if (field.toString().equals(str)) {
+                return field;
+            }
+        }
+
+        return null;
+    }
 }
