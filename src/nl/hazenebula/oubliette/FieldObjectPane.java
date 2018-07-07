@@ -25,14 +25,11 @@ public class FieldObjectPane extends GridPane {
 
     private int maxSize;
 
-    private CanvasPane canvasPane;
     private Canvas resizeCanvas;
     private FieldObjectImage curImg;
     private FieldObject curObject;
 
     public FieldObjectPane(CanvasPane canvasPane) {
-        this.canvasPane = canvasPane;
-
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
         setHgap(5.0d);
