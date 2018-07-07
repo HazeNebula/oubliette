@@ -9,7 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class Object implements Serializable {
+public class FieldObject implements Serializable {
     private transient Image img;
     private int x;
     private int y;
@@ -17,8 +17,8 @@ public class Object implements Serializable {
     private int height;
     private Direction dir;
 
-    public Object(Image img, int x, int y, int width, int height,
-                  Direction dir) {
+    public FieldObject(Image img, int x, int y, int width, int height,
+                       Direction dir) {
         this.img = img;
         this.x = 0;
         this.y = 0;
@@ -27,7 +27,7 @@ public class Object implements Serializable {
         this.dir = dir;
     }
 
-    public Object(Object other) {
+    public FieldObject(FieldObject other) {
         img = other.img;
         x = other.x;
         y = other.y;

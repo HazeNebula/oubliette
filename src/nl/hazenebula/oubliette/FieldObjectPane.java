@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ObjectPane extends GridPane {
+public class FieldObjectPane extends GridPane {
     private static final Color BACK_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = Color.BLACK;
 
@@ -27,10 +27,10 @@ public class ObjectPane extends GridPane {
 
     private CanvasPane canvasPane;
     private Canvas resizeCanvas;
-    private ObjectImage curImg;
-    private Object curObject;
+    private FieldObjectImage curImg;
+    private FieldObject curObject;
 
-    public ObjectPane(CanvasPane canvasPane) {
+    public FieldObjectPane(CanvasPane canvasPane) {
         this.canvasPane = canvasPane;
 
         setPadding(new Insets(5, 5, 5, 5));
@@ -150,10 +150,10 @@ public class ObjectPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
-        List<ObjectImage> objects = loadObjects();
+        List<FieldObjectImage> objects = loadObjects();
 
         ToggleButton firstButton = new ToggleButton();
-        for (ObjectImage img : objects) {
+        for (FieldObjectImage img : objects) {
             ToggleButton button = new ToggleButton();
 
             if (img == objects.get(0)) {
@@ -171,14 +171,14 @@ public class ObjectPane extends GridPane {
 
                 if (curImg != img) {
                     curImg = img;
-                    curObject = new Object(curImg.getImage(
+                    curObject = new FieldObject(curImg.getImage(
                             curObject.getWidth(), curObject.getHeight()),
                             curObject.getX(), curObject.getY(),
                             curObject.getWidth(), curObject.getHeight(),
                             curObject.getDir());
                     drawCanvas();
 
-                    canvasPane.setFieldObject(new Object(curObject));
+                    canvasPane.setFieldObject(new FieldObject(curObject));
                 }
             });
 
@@ -189,7 +189,7 @@ public class ObjectPane extends GridPane {
         setVgrow(buttonPane, Priority.ALWAYS);
 
         curImg = objects.get(0);
-        curObject = new Object(curImg.getImage(1, 1), 0, 0, 1, 1,
+        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
                 Direction.NORTH);
         canvasPane.setFieldObject(curObject);
         firstButton.setSelected(true);
@@ -202,15 +202,15 @@ public class ObjectPane extends GridPane {
         add(buttonPane, 0, 3);
     }
 
-    private List<ObjectImage> loadObjects() {
+    private List<FieldObjectImage> loadObjects() {
         List<List<File>> files = ObjectFileSearcher.getObjects(
                 ObjectFileSearcher.FIELDOBJECT_DIR);
         maxSize = 1;
-        List<ObjectImage> objects = new LinkedList<>();
+        List<FieldObjectImage> objects = new LinkedList<>();
 
         for (List<File> objectFiles : files) {
             int size = (int)Math.sqrt(objectFiles.size());
-            ObjectImage img = new ObjectImage(size, size);
+            FieldObjectImage img = new FieldObjectImage(size, size);
 
             if (size > maxSize) {
                 maxSize = size;
