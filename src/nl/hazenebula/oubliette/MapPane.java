@@ -16,14 +16,14 @@ public class MapPane extends GridPane {
 
     private final Minimap minimap;
 
-    public MapPane(Grid grid) {
+    public MapPane(CanvasPane canvasPane) {
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
         setPadding(new Insets(5, 5, 5, 5));
         setHgap(5);
         setVgap(5);
 
-        minimap = new Minimap(grid.snapshot());
+        minimap = new Minimap(canvasPane.snapshot());
         minimap.widthProperty().bind(widthProperty().subtract(
                 getInsets().getLeft() + getInsets().getRight()));
         minimap.heightProperty().bind(minimap.widthProperty());
@@ -32,19 +32,19 @@ public class MapPane extends GridPane {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(
                 UPDATE_SECONDS), e -> {
-            if (!grid.isDrawing()) {
-                minimap.update(grid.snapshot());
+            if (!canvasPane.isDrawing()) {
+                minimap.update(canvasPane.snapshot());
             }
         }));
         timeline.playFromStart();
 
         Label sizeLabel = new Label("Size:");
 
-        Spinner<Integer> sizeField = new Spinner<>(Grid.MIN_SQUARE_SIZE,
-                Grid.MAX_SQUARE_SIZE, Grid.INIT_SQUARE_SIZE, 1);
+        Spinner<Integer> sizeField = new Spinner<>(CanvasPane.MIN_SQUARE_SIZE,
+                CanvasPane.MAX_SQUARE_SIZE, CanvasPane.INIT_SQUARE_SIZE, 1);
         sizeField.setEditable(true);
         sizeField.valueProperty().addListener((observable, oldValue, newValue)
-                -> grid.setGridSize(newValue));
+                -> canvasPane.setSquareSize(newValue));
 
         add(minimap, 0, 0);
         add(sizeLabel, 0, 1);

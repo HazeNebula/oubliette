@@ -19,21 +19,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WallObjectPane extends GridPane {
+public class WallPane extends GridPane {
     private static final Color BACK_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = Color.BLACK;
     private static final double BUTTON_SIZE = 80.0d;
 
     private int maxSize;
 
-    private Grid grid;
+    private CanvasPane canvasPane;
     private Canvas resizeCanvas;
-    private WallObjectImage curImg;
-    private WallObject curObject;
+    private WallImage curImg;
+    private Wall curObject;
     private StringProperty eraseOrient;
 
-    public WallObjectPane(Grid grid) {
-        this.grid = grid;
+    public WallPane(CanvasPane canvasPane) {
+        this.canvasPane = canvasPane;
 
         eraseOrient = new SimpleStringProperty("Horizontal");
 
@@ -64,7 +64,7 @@ public class WallObjectPane extends GridPane {
                 curObject.setImage(curImg.getImage(curObject.getWidth()));
                 drawCanvas();
 
-                grid.setWallObject(curObject);
+                canvasPane.setWallObject(curObject);
             }
         });
         Button decreaseSizeButton = new Button("-");
@@ -74,7 +74,7 @@ public class WallObjectPane extends GridPane {
                 curObject.setImage(curImg.getImage(curObject.getWidth()));
                 drawCanvas();
 
-                grid.setWallObject(curObject);
+                canvasPane.setWallObject(curObject);
             }
         });
         Label rotateLabel = new Label("Rotate:");
@@ -84,7 +84,7 @@ public class WallObjectPane extends GridPane {
             curObject.setDir(curObject.getDir().next());
             drawCanvas();
 
-            grid.setWallObject(curObject);
+            canvasPane.setWallObject(curObject);
 
             if (curObject.getDir() == Direction.NORTH
                     || curObject.getDir() == Direction.SOUTH) {
@@ -98,7 +98,7 @@ public class WallObjectPane extends GridPane {
             curObject.setDir(curObject.getDir().prev());
             drawCanvas();
 
-            grid.setWallObject(curObject);
+            canvasPane.setWallObject(curObject);
 
             if (curObject.getDir() == Direction.NORTH
                     || curObject.getDir() == Direction.SOUTH) {
@@ -127,7 +127,7 @@ public class WallObjectPane extends GridPane {
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
-        eraseButton.setOnAction(e -> grid.setBrush(Brush.WALL_OBJECT_ERASE));
+        eraseButton.setOnAction(e -> canvasPane.setBrush(Brush.WALL_OBJECT_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -143,10 +143,10 @@ public class WallObjectPane extends GridPane {
                 Color.LIGHTGRAY, null, null)));
         buttonPane.setContent(buttons);
 
-        List<WallObjectImage> objects = loadObjects();
+        List<WallImage> objects = loadObjects();
 
         ToggleButton firstButton = new ToggleButton();
-        for (WallObjectImage img : objects) {
+        for (WallImage img : objects) {
             ToggleButton button = new ToggleButton();
 
             if (img == objects.get(0)) {
@@ -160,16 +160,16 @@ public class WallObjectPane extends GridPane {
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
-                grid.setBrush(Brush.WALL_OBJECT);
+                canvasPane.setBrush(Brush.WALL_OBJECT);
 
                 if (curImg != img) {
                     curImg = img;
-                    curObject = new WallObject(curImg.getImage(
+                    curObject = new Wall(curImg.getImage(
                             curObject.getWidth()), curObject.getWidth(),
                             curObject.getDir());
                     drawCanvas();
 
-                    grid.setWallObject(new WallObject(curObject));
+                    canvasPane.setWallObject(new Wall(curObject));
                 }
             });
 
@@ -180,8 +180,8 @@ public class WallObjectPane extends GridPane {
         setVgrow(buttonPane, Priority.ALWAYS);
 
         curImg = objects.get(0);
-        curObject = new WallObject(curImg.getImage(1), 1, Direction.NORTH);
-        grid.setWallObject(curObject);
+        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
+        canvasPane.setWallObject(curObject);
         firstButton.setSelected(true);
 
         drawCanvas();
@@ -193,15 +193,15 @@ public class WallObjectPane extends GridPane {
         add(buttonPane, 0, 4);
     }
 
-    private List<WallObjectImage> loadObjects() {
+    private List<WallImage> loadObjects() {
         List<List<File>> files = ObjectFileSearcher.getObjects(
                 ObjectFileSearcher.WALLOBJECT_DIR);
         maxSize = 1;
-        List<WallObjectImage> objects = new LinkedList<>();
+        List<WallImage> objects = new LinkedList<>();
 
         for (List<File> objectFiles : files) {
             int size = objectFiles.size();
-            WallObjectImage img = new WallObjectImage(size);
+            WallImage img = new WallImage(size);
 
             if (size > maxSize) {
                 maxSize = size;
@@ -261,7 +261,7 @@ public class WallObjectPane extends GridPane {
         gc.setFill(BACK_COLOR);
         gc.fillRect(0, 0, resizeCanvas.getWidth(), resizeCanvas.getHeight());
 
-        // draw grid lines
+        // draw canvasPane lines
         gc.setFill(GRID_COLOR);
         for (int x = 0; x < maxSize; ++x) {
             double xPos = x * gridSize;
@@ -270,7 +270,7 @@ public class WallObjectPane extends GridPane {
 
         for (int y = 0; y < maxSize; ++y) {
             double yPos = y * gridSize;
-            gc.fillRect(0, yPos, resizeCanvas.getWidth(), Grid.GRIDLINE_SIZE);
+            gc.fillRect(0, yPos, resizeCanvas.getWidth(), CanvasPane.GRIDLINE_SIZE);
         }
 
         // draw object

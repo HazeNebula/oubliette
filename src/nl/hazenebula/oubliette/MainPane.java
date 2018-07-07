@@ -12,35 +12,56 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 
 public class MainPane extends GridPane {
     private MenuBar menuBar;
     private MapPane mapPane;
-    private Grid grid;
+    private CanvasPane canvasPane;
     private ToolPane toolPane;
 
     public MainPane(Stage primaryStage) {
-        // todo: add new map option with starting width/height
-        // todo: add an option to expand/shrink the map
-
-        // todo: add a cave generator
-        // todo: add a dungeon style generator
-
-        // todo: add undo/redo
-
         primaryStage.setOnCloseRequest(e -> {
             Alert closeConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
             closeConfirmation.setTitle("Confirm Close");
             closeConfirmation.setHeaderText("Close the current window?");
-            closeConfirmation.setContentText("If the current window is closed, " +
-                    "all unsaved changes will be lost.");
+            closeConfirmation.setContentText("If the current window is closed, "
+                    + "all unsaved changes will be lost.");
             Optional<ButtonType> result = closeConfirmation.showAndWait();
 
             if (result.isPresent() && result.get() == ButtonType.CANCEL) {
                 e.consume();
             }
+        });
+
+        canvasPane = new CanvasPane(new Map(50, 50, Field.BLUE));
+        GridPane.setHgrow(canvasPane, Priority.ALWAYS);
+        GridPane.setVgrow(canvasPane, Priority.ALWAYS);
+
+        toolPane = new ToolPane(canvasPane);
+        GridPane.setVgrow(toolPane, Priority.ALWAYS);
+
+        mapPane = new MapPane(canvasPane);
+        GridPane.setVgrow(mapPane, Priority.ALWAYS);
+
+        primaryStage.setTitle("New File");
+
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setPercentWidth(20);
+        ColumnConstraints cc2 = new ColumnConstraints();
+        ColumnConstraints cc3 = new ColumnConstraints();
+        cc3.setPercentWidth(20);
+        getColumnConstraints().addAll(cc1, cc2, cc3);
+
+        MenuItem newFile = new MenuItem("New File");
+        newFile.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setTitle("New");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(getScene().getWindow());
+            stage.setScene(new Scene(new NewMapPane(canvasPane,
+                    primaryStage)));
+            stage.show();
         });
 
         MenuItem loadFile = new MenuItem("Load File");
@@ -74,7 +95,7 @@ public class MainPane extends GridPane {
             File file = fc.showSaveDialog(getScene().getWindow());
             if (file != null) {
                 try {
-                    writeFile(grid, file);
+                    writeFile(canvasPane, file);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -84,66 +105,62 @@ public class MainPane extends GridPane {
         MenuItem pngExport = new MenuItem("Export as PNG");
         pngExport.setOnAction(e -> {
             Stage stage = new Stage();
+            stage.setTitle("Export");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(getScene().getWindow());
-            stage.setScene(new Scene(new ExportSettingsPane(grid)));
+            stage.setScene(new Scene(new ExportSettingsPane(canvasPane)));
             stage.show();
         });
 
-        Menu file = new Menu("File", null, loadFile, saveFile, pngExport);
+        Menu file = new Menu("File", null, newFile, loadFile, saveFile,
+                pngExport);
 
         MenuItem blueGrid = new MenuItem("Blue");
         blueGrid.setOnAction(e -> {
-            grid.setGridColor(Field.FILLED.color());
-            grid.drawFullGrid();
+            canvasPane.setGridColor(Field.BLUE.color());
+            canvasPane.drawAll();
         });
+
         MenuItem whiteGrid = new MenuItem("White");
         whiteGrid.setOnAction(e -> {
-            grid.setGridColor(Color.WHITE);
-            grid.drawFullGrid();
+            canvasPane.setGridColor(Color.WHITE);
+            canvasPane.drawAll();
         });
+
         MenuItem blackGrid = new MenuItem("Black");
         blackGrid.setOnAction(e -> {
-            grid.setGridColor(Color.BLACK);
-            grid.drawFullGrid();
+            canvasPane.setGridColor(Color.BLACK);
+            canvasPane.drawAll();
         });
-        Menu options = new Menu("Options", null, new Menu("Grid Color", null,
-                blueGrid, whiteGrid, blackGrid));
 
-        menuBar = new MenuBar(file, options);
+        Menu gridColor = new Menu("Grid Color", null, blueGrid, whiteGrid,
+                blackGrid);
+
+        MenuItem resizeDungeon = new MenuItem("Resize Map");
+        resizeDungeon.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setTitle("Resize");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(getScene().getWindow());
+            stage.setScene(new Scene(new ResizeDungeonPane(canvasPane)));
+            stage.show();
+        });
+
+        Menu edit = new Menu("Edit", null, gridColor, resizeDungeon);
+        menuBar = new MenuBar(file, edit);
         GridPane.setVgrow(menuBar, Priority.NEVER);
-
-        grid = new Grid(50, 50);
-        GridPane.setHgrow(grid, Priority.ALWAYS);
-        GridPane.setVgrow(grid, Priority.ALWAYS);
-
-        toolPane = new ToolPane(grid);
-        GridPane.setVgrow(toolPane, Priority.ALWAYS);
-
-        mapPane = new MapPane(grid);
-        GridPane.setVgrow(mapPane, Priority.ALWAYS);
-
-        primaryStage.setTitle("New File");
-
-        ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setPercentWidth(20);
-        ColumnConstraints cc2 = new ColumnConstraints();
-        ColumnConstraints cc3 = new ColumnConstraints();
-        cc3.setPercentWidth(20);
-        getColumnConstraints().addAll(cc1, cc2, cc3);
 
         add(menuBar, 0, 0, 3, 1);
         add(mapPane, 0, 1);
-        add(grid, 1, 1);
+        add(canvasPane, 1, 1);
         add(toolPane, 2, 1);
     }
 
-    private void writeFile(Grid grid, File file) throws IOException {
+    private void writeFile(CanvasPane canvasPane, File file)
+            throws IOException {
         try (FileOutputStream fout = new FileOutputStream(file)) {
             try (ObjectOutputStream oos = new ObjectOutputStream(fout)) {
-                oos.writeObject(grid.getFields());
-                oos.writeObject(grid.getFieldObjects());
-                oos.writeObject(grid.getWallGrid());
+                oos.writeObject(canvasPane.getMap());
             }
         }
     }
@@ -151,16 +168,9 @@ public class MainPane extends GridPane {
     private void readFile(File file) throws IOException {
         try (FileInputStream fin = new FileInputStream(file)) {
             try (ObjectInputStream ois = new ObjectInputStream(fin)) {
-                Field[][] fieldGrid = (Field[][])ois.readObject();
-                List<FieldObject> fieldObjects = (List<FieldObject>)
-                        ois.readObject();
-                WallObject[][][] wallGrid = (WallObject[][][])
-                        ois.readObject();
+                Map map = (Map)ois.readObject();
 
-                grid.setFields(fieldGrid);
-                grid.setFieldObjects(fieldObjects);
-                grid.setWallGrid(wallGrid);
-                grid.drawFullGrid();
+                canvasPane.setMap(map);
             } catch (ClassNotFoundException e) {
                 System.err.println("Could not find file");
             }

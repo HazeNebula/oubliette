@@ -25,13 +25,13 @@ public class FieldObjectPane extends GridPane {
 
     private int maxSize;
 
-    private Grid grid;
+    private CanvasPane canvasPane;
     private Canvas resizeCanvas;
     private FieldObjectImage curImg;
     private FieldObject curObject;
 
-    public FieldObjectPane(Grid grid) {
-        this.grid = grid;
+    public FieldObjectPane(CanvasPane canvasPane) {
+        this.canvasPane = canvasPane;
 
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
@@ -55,7 +55,7 @@ public class FieldObjectPane extends GridPane {
                         curObject.getHeight()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                canvasPane.setFieldObject(curObject);
             }
         });
         Button decreaseWidthButton = new Button("-");
@@ -66,7 +66,7 @@ public class FieldObjectPane extends GridPane {
                         curObject.getHeight()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                canvasPane.setFieldObject(curObject);
             }
         });
         Label heightLabel = new Label("Height:");
@@ -79,7 +79,7 @@ public class FieldObjectPane extends GridPane {
                         curObject.getHeight()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                canvasPane.setFieldObject(curObject);
             }
         });
         Button decreaseHeightButton = new Button("-");
@@ -90,7 +90,7 @@ public class FieldObjectPane extends GridPane {
                         curObject.getHeight()));
                 drawCanvas();
 
-                grid.setFieldObject(curObject);
+                canvasPane.setFieldObject(curObject);
             }
         });
         Label rotateLabel = new Label("Rotate:");
@@ -100,14 +100,14 @@ public class FieldObjectPane extends GridPane {
             curObject.setDir(curObject.getDir().next());
             drawCanvas();
 
-            grid.setFieldObject(curObject);
+            canvasPane.setFieldObject(curObject);
         });
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> {
             curObject.setDir(curObject.getDir().prev());
             drawCanvas();
 
-            grid.setFieldObject(curObject);
+            canvasPane.setFieldObject(curObject);
         });
 
         GridPane resizeWrapper = new GridPane();
@@ -133,7 +133,7 @@ public class FieldObjectPane extends GridPane {
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
         eraseButton.setOnAction(e -> {
-            grid.setBrush(Brush.FIELD_OBJECT_ERASE);
+            canvasPane.setBrush(Brush.FIELD_OBJECT_ERASE);
         });
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
@@ -167,7 +167,7 @@ public class FieldObjectPane extends GridPane {
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
-                grid.setBrush(Brush.FIELD_OBJECT);
+                canvasPane.setBrush(Brush.FIELD_OBJECT);
 
                 if (curImg != img) {
                     curImg = img;
@@ -178,7 +178,7 @@ public class FieldObjectPane extends GridPane {
                             curObject.getDir());
                     drawCanvas();
 
-                    grid.setFieldObject(new FieldObject(curObject));
+                    canvasPane.setFieldObject(new FieldObject(curObject));
                 }
             });
 
@@ -191,7 +191,7 @@ public class FieldObjectPane extends GridPane {
         curImg = objects.get(0);
         curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
                 Direction.NORTH);
-        grid.setFieldObject(curObject);
+        canvasPane.setFieldObject(curObject);
         firstButton.setSelected(true);
 
         drawCanvas();
@@ -272,7 +272,7 @@ public class FieldObjectPane extends GridPane {
         gc.setFill(BACK_COLOR);
         gc.fillRect(0, 0, resizeCanvas.getWidth(), resizeCanvas.getHeight());
 
-        // draw grid lines
+        // draw canvasPane lines
         gc.setFill(GRID_COLOR);
         for (int x = 0; x < maxSize; ++x) {
             double xPos = x * gridSize;
@@ -281,7 +281,7 @@ public class FieldObjectPane extends GridPane {
 
         for (int y = 0; y < maxSize; ++y) {
             double yPos = y * gridSize;
-            gc.fillRect(0, yPos, resizeCanvas.getWidth(), Grid.GRIDLINE_SIZE);
+            gc.fillRect(0, yPos, resizeCanvas.getWidth(), CanvasPane.GRIDLINE_SIZE);
         }
 
         // draw object

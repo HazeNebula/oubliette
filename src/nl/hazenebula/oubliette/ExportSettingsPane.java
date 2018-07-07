@@ -24,41 +24,42 @@ public class ExportSettingsPane extends GridPane {
     private static final int MAX_DPI = 1000;
     private static final int MIN_DPI = 25;
 
-    public ExportSettingsPane(Grid grid) {
+    public ExportSettingsPane(CanvasPane canvasPane) {
         Label squaresPerInchLabel = new Label("Squares per inch:");
         GridPane.setHgrow(squaresPerInchLabel, Priority.ALWAYS);
         Spinner<Integer> squaresPerInchField = new Spinner<>(
                 MIN_SQUARES_PER_INCH, MAX_SQUARES_PER_INCH,
                 INIT_SQUARES_PER_INCH, 1);
+        squaresPerInchField.setEditable(true);
 
         Label dpiLabel = new Label("Dots per inch:");
         GridPane.setHgrow(dpiLabel, Priority.ALWAYS);
         Spinner<Integer> dpiField = new Spinner<>(MIN_DPI, MAX_DPI,
-                grid.getGridSize() + 1, 1);
+                canvasPane.getSquareSize() + 1, 1);
         dpiField.setEditable(true);
 
         IntegerProperty gridSize = new SimpleIntegerProperty((
                 dpiField.getValue() - squaresPerInchField.getValue()
-                        * Grid.GRIDLINE_SIZE) / squaresPerInchField.getValue());
+                        * CanvasPane.GRIDLINE_SIZE) / squaresPerInchField.getValue());
         squaresPerInchField.valueProperty().addListener((observable, oldValue,
                                                          newValue) ->
                 gridSize.setValue((dpiField.getValue()
-                        - squaresPerInchField.getValue() * Grid.GRIDLINE_SIZE)
+                        - squaresPerInchField.getValue() * CanvasPane.GRIDLINE_SIZE)
                         / squaresPerInchField.getValue()));
         dpiField.valueProperty().addListener((observable, oldValue, newValue) ->
                 gridSize.setValue((dpiField.getValue()
-                        - squaresPerInchField.getValue() * Grid.GRIDLINE_SIZE)
+                        - squaresPerInchField.getValue() * CanvasPane.GRIDLINE_SIZE)
                         / squaresPerInchField.getValue()));
 
         Label pngWidthTextLabel = new Label("PNG Width:");
         Label pngWidthLabel = new Label();
-        pngWidthLabel.textProperty().bind(gridSize.add(Grid.GRIDLINE_SIZE)
-                .multiply(grid.fieldWidthProperty()).asString());
+        pngWidthLabel.textProperty().bind(gridSize.add(CanvasPane.GRIDLINE_SIZE)
+                .multiply(canvasPane.fieldWidthProperty()).asString());
         GridPane.setHgrow(pngWidthTextLabel, Priority.ALWAYS);
         Label pngHeightTextLabel = new Label("PNG Height:");
         Label pngHeightLabel = new Label();
-        pngHeightLabel.textProperty().bind(gridSize.add(Grid.GRIDLINE_SIZE)
-                .multiply(grid.fieldHeightProperty()).asString());
+        pngHeightLabel.textProperty().bind(gridSize.add(CanvasPane.GRIDLINE_SIZE)
+                .multiply(canvasPane.fieldHeightProperty()).asString());
         GridPane.setHgrow(pngHeightTextLabel, Priority.ALWAYS);
 
         Button exportButton = new Button("Export");
@@ -71,11 +72,11 @@ public class ExportSettingsPane extends GridPane {
 
             File file = fc.showSaveDialog(this.getScene().getWindow());
             if (file != null) {
-                int size = grid.getGridSize();
-                grid.setGridSize(gridSize.get());
-                grid.drawFullGrid();
+                int size = canvasPane.getSquareSize();
+                canvasPane.setSquareSize(gridSize.get());
+                canvasPane.drawAll();
 
-                WritableImage img = grid.snapshot();
+                WritableImage img = canvasPane.snapshot();
                 try {
                     ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png",
                             file);
@@ -84,8 +85,8 @@ public class ExportSettingsPane extends GridPane {
                             file.toString() + ": " + ex.getMessage());
                 }
 
-                grid.setGridSize(size);
-                grid.drawFullGrid();
+                canvasPane.setSquareSize(size);
+                canvasPane.drawAll();
 
                 this.getScene().getWindow().hide();
             }

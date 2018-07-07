@@ -5,8 +5,10 @@ import javafx.scene.paint.Color;
 import java.io.Serializable;
 
 public enum Field implements Serializable {
-    EMPTY(Color.rgb(255, 255, 255), "Empty"),
-    FILLED(Color.rgb(51, 153, 204), "Filled");
+    WHITE(Color.rgb(255, 255, 255), "White"),
+    BLUE(Color.rgb(51, 153, 204), "Blue"),
+    GREY(Color.rgb(211, 211, 211), "Grey"),
+    BLACK(Color.rgb(0, 0, 0), "Black");
 
     private Color color;
     private String str;
@@ -23,5 +25,15 @@ public enum Field implements Serializable {
     @Override
     public String toString() {
         return str;
+    }
+
+    public static Field fromString(String str) {
+        for (Field field : Field.values()) {
+            if (field.toString().equals(str)) {
+                return field;
+            }
+        }
+
+        return null;
     }
 }

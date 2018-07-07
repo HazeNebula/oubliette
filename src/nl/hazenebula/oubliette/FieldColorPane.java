@@ -8,7 +8,7 @@ import javafx.scene.layout.FlowPane;
 public class FieldColorPane extends FlowPane {
     public static final double BRUSH_SIZE = 100.0d;
 
-    public FieldColorPane(Grid grid) {
+    public FieldColorPane(CanvasPane canvasPane) {
         setPadding(new Insets(5, 5, 5, 5));
         setVgap(5.0d);
         setHgap(5.0d);
@@ -17,11 +17,11 @@ public class FieldColorPane extends FlowPane {
         ToggleGroup group = new ToggleGroup();
         for (Field field : Field.values()) {
             FieldColorButton button = new FieldColorButton(field, BRUSH_SIZE,
-                    grid);
+                    canvasPane);
 
             if (field == Field.values()[0]) {
                 button.setSelected(true);
-                grid.setFieldColor(field);
+                canvasPane.setFieldColor(field);
             }
 
             button.setToggleGroup(group);
