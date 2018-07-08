@@ -111,12 +111,17 @@ public class CanvasPane extends ScrollPane {
             cleanHighlight();
         });
 
-        // todo: add field drawing to onClickHandler
         drawHandler = new MouseDrawHandler(e -> { // onClickHandler
             int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
             int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
-            if (curBrush == Brush.FIELD_OBJECT) {
+            if (curBrush == Brush.FIELD) {
+                if (x >= 0 && x < map.getWidth() && y >= 0
+                        && y < map.getHeight()) {
+                    map.setField(x, y, curField);
+                    drawField(x, y);
+                }
+            } else if (curBrush == Brush.FIELD_OBJECT) {
                 FieldObject newObj = new FieldObject(curObject);
                 newObj.setX(x);
                 newObj.setY(y);
