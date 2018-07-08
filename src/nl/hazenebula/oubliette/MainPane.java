@@ -38,11 +38,11 @@ public class MainPane extends GridPane {
         GridPane.setHgrow(canvasPane, Priority.ALWAYS);
         GridPane.setVgrow(canvasPane, Priority.ALWAYS);
 
-        toolPane = new ToolPane(canvasPane);
-        GridPane.setVgrow(toolPane, Priority.ALWAYS);
-
         mapPane = new MapPane(canvasPane);
         GridPane.setVgrow(mapPane, Priority.ALWAYS);
+
+        toolPane = new ToolPane(mapPane, canvasPane);
+        GridPane.setVgrow(toolPane, Priority.ALWAYS);
 
         primaryStage.setTitle("New File");
 
@@ -59,8 +59,8 @@ public class MainPane extends GridPane {
             stage.setTitle("New");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(getScene().getWindow());
-            stage.setScene(new Scene(new NewMapPane(canvasPane,
-                    primaryStage)));
+            stage.setScene(new Scene(new NewMapPane(mapPane,
+                    canvasPane, primaryStage)));
             stage.show();
         });
 
@@ -134,7 +134,8 @@ public class MainPane extends GridPane {
             stage.setTitle("Resize");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(getScene().getWindow());
-            stage.setScene(new Scene(new ResizeDungeonPane(canvasPane)));
+            stage.setScene(new Scene(new ResizeDungeonPane(mapPane,
+                    canvasPane)));
             stage.show();
         });
 
@@ -163,6 +164,7 @@ public class MainPane extends GridPane {
                 Map map = (Map)ois.readObject();
 
                 canvasPane.setMap(map);
+                mapPane.updateMinimap();
             } catch (ClassNotFoundException e) {
                 System.err.println("Could not find file");
             }
