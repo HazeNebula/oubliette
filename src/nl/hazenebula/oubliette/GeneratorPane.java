@@ -163,4 +163,12 @@ public class GeneratorPane extends GridPane {
         add(generatorSettingsLabel, 0, 8, 2, 1);
         add(settingsPane, 0, 9, 2, 1);
     }
+
+    private static void showErrorMessage(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(null);
+        alert.setGraphic(null);
+        alert.setContentText(errorMsg);
+        alert.showAndWait();
+    }
 }
