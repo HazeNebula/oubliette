@@ -5,5 +5,6 @@ public enum Brush {
     FIELD_OBJECT,
     FIELD_OBJECT_ERASE,
     WALL_OBJECT,
-    WALL_OBJECT_ERASE;
+    WALL_OBJECT_ERASE,
+    SELECTION
 }
