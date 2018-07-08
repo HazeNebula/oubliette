@@ -7,6 +7,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import nl.hazenebula.terraingeneration.CaveGenerator;
+import nl.hazenebula.terraingeneration.RoomGenerator;
 import nl.hazenebula.terraingeneration.TerrainGenerator;
 
 public class GeneratorPane extends GridPane {
@@ -68,6 +69,8 @@ public class GeneratorPane extends GridPane {
 
         CaveGeneratorSettingsPane caveGeneratorSettingsPane =
                 new CaveGeneratorSettingsPane();
+        RoomGeneratorSettingsPane roomGeneratorSettingsPane =
+                new RoomGeneratorSettingsPane();
 
         Label generatorLabel = new Label("Procedural Generators:");
         GridPane.setHgrow(generatorLabel, Priority.ALWAYS);
@@ -92,7 +95,8 @@ public class GeneratorPane extends GridPane {
         roomGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         roomGeneratorButton.setToggleGroup(toggleGroup);
         roomGeneratorButton.setOnAction(e -> {
-            // todo: add room generator
+            settingsPane.setContent(roomGeneratorSettingsPane);
+            curGen = Generator.ROOM;
         });
         buttonPane.getChildren().add(roomGeneratorButton);
 
@@ -122,24 +126,40 @@ public class GeneratorPane extends GridPane {
                         Field.BLUE, Field.WHITE);
 
                 if (curGen == Generator.CAVE) {
-                    gen = new CaveGenerator(caveGeneratorSettingsPane
-                            .getOnProb(),
+                    gen = new CaveGenerator(
+                            caveGeneratorSettingsPane.getOnProb(),
                             caveGeneratorSettingsPane.getOffThreshold(),
                             caveGeneratorSettingsPane.getOnThreshold(),
                             caveGeneratorSettingsPane.getNumberOfSteps(),
                             caveGeneratorSettingsPane.getBackTile(),
                             caveGeneratorSettingsPane.getFloorTile());
                 } else if (curGen == Generator.ROOM) {
-
+                    try {
+                        gen = new RoomGenerator(
+                                roomGeneratorSettingsPane.getAttempts(),
+                                roomGeneratorSettingsPane.getMinWidthValue(),
+                                roomGeneratorSettingsPane.getMaxWidthValue(),
+                                roomGeneratorSettingsPane.getMinHeightValue(),
+                                roomGeneratorSettingsPane.getMaxHeightValue(),
+                                roomGeneratorSettingsPane.getFloorTile()
+                        );
+                    } catch (IllegalArgumentException ex) {
+                        showErrorMessage(ex.getMessage());
+                        return;
+                    }
                 } else if (curGen == Generator.MAZE) {
 
                 } else if (curGen == Generator.COMPOUND) {
 
                 }
 
-                canvasPane.setMap(gen.generate(selection.getX(),
-                        selection.getY(), selection.getWidth(),
-                        selection.getHeight(), map));
+                try {
+                    canvasPane.setMap(gen.generate(selection.getX(),
+                            selection.getY(), selection.getWidth(),
+                            selection.getHeight(), map));
+                } catch (IllegalArgumentException ex) {
+                    showErrorMessage(ex.getMessage());
+                }
                 mapPane.updateMinimap();
             }
         });
