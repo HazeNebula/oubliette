@@ -17,7 +17,17 @@ public class RoomGenerator implements TerrainGenerator {
     private int curHeight;
 
     public RoomGenerator(int numberOfAttempts, int minWidth, int maxWidth,
-                         int minHeight, int maxHeight, Field floorTile) {
+                         int minHeight, int maxHeight, Field floorTile)
+            throws IllegalArgumentException {
+        if (maxWidth < minWidth) {
+            throw new IllegalArgumentException("The minimum width of a room " +
+                    "is larger than the maximum width.");
+        }
+        if (maxHeight < minHeight) {
+            throw new IllegalArgumentException("The minimum height of a room " +
+                    "is larger than the maximum height.");
+        }
+
         this.numberOfAttempts = numberOfAttempts;
         this.minWidth = minWidth;
         this.maxWidth = maxWidth;
@@ -27,8 +37,14 @@ public class RoomGenerator implements TerrainGenerator {
     }
 
     private void getRoom(int width, int height) {
-        curWidth = Util.randInt(minWidth, maxWidth + 1);
-        curHeight = Util.randInt(minHeight, maxHeight + 1);
+        curWidth = Integer.MAX_VALUE;
+        curHeight = Integer.MAX_VALUE;
+
+        while (curWidth > width || curHeight > height) {
+            curWidth = Util.randInt(minWidth, maxWidth + 1);
+            curHeight = Util.randInt(minHeight, maxHeight + 1);
+        }
+
         curX = Util.randInt(0, width - curWidth);
         curY = Util.randInt(0, height - curHeight);
     }
@@ -78,7 +94,17 @@ public class RoomGenerator implements TerrainGenerator {
         }
     }
 
-    public Map generate(int x, int y, int width, int height, Map map) {
+    public Map generate(int x, int y, int width, int height, Map map) throws
+            IllegalArgumentException {
+        if (maxWidth > width) {
+            throw new IllegalArgumentException("Maximum width exceeds the " +
+                    "width of the selected area.");
+        }
+        if (maxHeight > height) {
+            throw new IllegalArgumentException("Maximum height exceeds the " +
+                    "height of the selected area.");
+        }
+
         boolean[][] grid = initializeGrid(x, y, width, height, map);
 
         for (int i = 0; i < numberOfAttempts; ++i) {
