@@ -81,7 +81,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         backTileBox = new ComboBox<>();
         backTileBox.setTooltip(backTileTooltip);
         backTileBox.getItems().addAll(Field.values());
-        backTileBox.getSelectionModel().select(Field.BLUE);
+        backTileBox.getSelectionModel().select(CaveGenerator.BACK_TILE);
 
         Tooltip floorTileTooltip = new Tooltip("This color is used for the " +
                 "cave floor.");
@@ -91,7 +91,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
         floorTileBox.getItems().addAll(Field.values());
-        floorTileBox.getSelectionModel().select(Field.WHITE);
+        floorTileBox.getSelectionModel().select(CaveGenerator.FLOOR_TILE);
 
         Button explanationButton = new Button("Explanation");
         explanationButton.setOnAction(e -> {
