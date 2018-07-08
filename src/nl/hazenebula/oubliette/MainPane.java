@@ -134,7 +134,7 @@ public class MainPane extends GridPane {
             stage.setTitle("Resize");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(getScene().getWindow());
-            stage.setScene(new Scene(new ResizeDungeonPane(mapPane,
+            stage.setScene(new Scene(new ResizeMapPane(mapPane,
                     canvasPane)));
             stage.show();
         });
