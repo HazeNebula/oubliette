@@ -6,17 +6,19 @@ import javafx.scene.layout.Priority;
 import nl.hazenebula.terraingeneration.CaveGenerator;
 
 public class CaveGeneratorSettingsPane extends GridPane {
+    private static final double SPINNER_WIDTH = 100.0d;
+
     private Spinner<Double> onProbSpinner;
     private Spinner<Integer> offThresholdSpinner;
     private Spinner<Integer> onThresholdSpinner;
     private Spinner<Integer> stepsSpinner;
-    private ComboBox<Field> backColorBox;
-    private ComboBox<Field> floorColorBox;
+    private ComboBox<Field> backTileBox;
+    private ComboBox<Field> floorTileBox;
 
     public CaveGeneratorSettingsPane() {
         Label onProbLabel = new Label("On probability:");
         onProbLabel.setTooltip(new Tooltip("The probability that any cell " +
-                "will be turned on (traversable) before the first step." +
+                "will be turned on before the first step." +
                 "\nIncreasing this value should create wider caverns, though " +
                 "large changes may not give good results."));
         GridPane.setHgrow(onProbLabel, Priority.ALWAYS);
@@ -29,13 +31,15 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 onProbSpinner.increment(0);
             }
         });
+        onProbSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Label offThresholdLabel = new Label("Off Threshold:");
         offThresholdLabel.setTooltip(new Tooltip("Any cell that is turned " +
                 "on with fewer neighbors that are turned on than this number " +
                 "is turned off."));
         GridPane.setHgrow(offThresholdLabel, Priority.ALWAYS);
-        offThresholdSpinner = new Spinner<>(0, 8, CaveGenerator.OFF_LIMIT, 1);
+        offThresholdSpinner = new Spinner<>(0, 8, CaveGenerator.OFF_THRESHOLD,
+                1);
         offThresholdSpinner.setEditable(true);
         offThresholdSpinner.focusedProperty().addListener((observable, oldValue,
                                                            newValue) -> {
@@ -43,6 +47,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 offThresholdSpinner.increment(0);
             }
         });
+        offThresholdSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Label onThresholdLabel = new Label("On Threshold:");
         onThresholdLabel.setTooltip(new Tooltip("Any cell that is turned " +
@@ -58,6 +63,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 onThresholdSpinner.increment(0);
             }
         });
+        onThresholdSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Label stepsLabel = new Label("Number of steps:");
         stepsLabel.setTooltip(new Tooltip("The number of simulation steps.\n" +
@@ -71,29 +77,27 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 stepsSpinner.increment(0);
             }
         });
+        stepsSpinner.setMaxWidth(SPINNER_WIDTH);
 
-        Tooltip backColorTooltip = new Tooltip("The background color.\nThis " +
+        Tooltip backTileTooltip = new Tooltip("The background color.\nThis " +
                 "color is used for the cave walls.");
-        Label backColorLabel = new Label("Background color:");
-        backColorLabel.setTooltip(backColorTooltip);
-        GridPane.setHgrow(backColorLabel, Priority.ALWAYS);
-        backColorBox = new ComboBox<>();
-        backColorBox.setTooltip(backColorTooltip);
-        backColorBox.getItems().addAll(Field.values());
-        backColorBox.getSelectionModel().select(Field.BLUE);
+        Label backTileLabel = new Label("Background tile:");
+        backTileLabel.setTooltip(backTileTooltip);
+        GridPane.setHgrow(backTileLabel, Priority.ALWAYS);
+        backTileBox = new ComboBox<>();
+        backTileBox.setTooltip(backTileTooltip);
+        backTileBox.getItems().addAll(Field.values());
+        backTileBox.getSelectionModel().select(Field.BLUE);
 
-        Tooltip floorColorTooltip = new Tooltip("This color is used for the " +
+        Tooltip floorTileTooltip = new Tooltip("This color is used for the " +
                 "cave floor.");
-        Label floorColorLabel = new Label("Floor color:");
-        floorColorLabel.setTooltip(floorColorTooltip);
-        GridPane.setHgrow(floorColorLabel, Priority.ALWAYS);
-        floorColorBox = new ComboBox<>();
-        floorColorBox.setTooltip(floorColorTooltip);
-        floorColorBox.getItems().addAll(Field.values());
-        floorColorBox.getSelectionModel().select(Field.WHITE);
-
-        Button confirmButton = new Button("Confirm");
-        confirmButton.setOnAction(e -> getScene().getWindow().hide());
+        Label floorTileLabel = new Label("Floor color:");
+        floorTileLabel.setTooltip(floorTileTooltip);
+        GridPane.setHgrow(floorTileLabel, Priority.ALWAYS);
+        floorTileBox = new ComboBox<>();
+        floorTileBox.setTooltip(floorTileTooltip);
+        floorTileBox.getItems().addAll(Field.values());
+        floorTileBox.getSelectionModel().select(Field.WHITE);
 
         Button explanationButton = new Button("Explanation");
         explanationButton.setOnAction(e -> {
@@ -109,9 +113,12 @@ public class CaveGeneratorSettingsPane extends GridPane {
                     "enough cells that are off, it will turn off. By " +
                     "starting with a grid where each cell is turned on with " +
                     "a certain probability, after we update each cell a " +
-                    "number of times we end up with a configuration that can" +
-                    " look like a cave system.\n\nHover over an item to see a" +
-                    " short explanation.");
+                    "number of times we end up with a configuration. Every " +
+                    "cell that is on is turned into a floor tile, and every " +
+                    "other cell is turned into a tile of the background " +
+                    "color.\n\nHover over an item to see a short explanation " +
+                    "of that parameter.\n\nTake note: this generator will " +
+                    "overwrite everything inside the selected area.");
             explanation.showAndWait();
         });
 
@@ -123,12 +130,11 @@ public class CaveGeneratorSettingsPane extends GridPane {
         add(onThresholdSpinner, 1, 2);
         add(stepsLabel, 0, 3);
         add(stepsSpinner, 1, 3);
-        add(backColorLabel, 0, 4);
-        add(backColorBox, 1, 4);
-        add(floorColorLabel, 0, 5);
-        add(floorColorBox, 1, 5);
-        add(confirmButton, 0, 6);
-        add(explanationButton, 1, 6);
+        add(backTileLabel, 0, 4);
+        add(backTileBox, 1, 4);
+        add(floorTileLabel, 0, 5);
+        add(floorTileBox, 1, 5);
+        add(explanationButton, 0, 6);
     }
 
     public double getOnProb() {
@@ -147,11 +153,11 @@ public class CaveGeneratorSettingsPane extends GridPane {
         return stepsSpinner.getValue();
     }
 
-    public Field getBackColor() {
-        return backColorBox.getValue();
+    public Field getBackTile() {
+        return backTileBox.getValue();
     }
 
-    public Field getFloor() {
-        return floorColorBox.getValue();
+    public Field getFloorTile() {
+        return floorTileBox.getValue();
     }
 }
