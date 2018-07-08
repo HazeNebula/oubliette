@@ -71,7 +71,9 @@ public class RoomGenerator implements TerrainGenerator {
                             boolean[][] grid, Map map) {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                map.setField(x + xoffset, y + yoffset, floorTile);
+                if (grid[x][y]) {
+                    map.setField(x + xoffset, y + yoffset, floorTile);
+                }
             }
         }
     }
