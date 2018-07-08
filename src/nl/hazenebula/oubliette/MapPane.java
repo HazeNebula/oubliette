@@ -19,7 +19,6 @@ public class MapPane extends GridPane {
 
     public MapPane(CanvasPane canvasPane) {
         this.canvasPane = canvasPane;
-        // highptodo: update
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
         setPadding(new Insets(5, 5, 5, 5));
