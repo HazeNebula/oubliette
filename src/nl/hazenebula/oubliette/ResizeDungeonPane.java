@@ -13,9 +13,8 @@ import javafx.scene.text.TextFlow;
 public class ResizeDungeonPane extends GridPane {
     private static final int MIN_SIZE = 1;
     private static final int MAX_SIZE = Integer.MAX_VALUE;
-    private static final int INIT_SIZE = 50;
 
-    public ResizeDungeonPane(CanvasPane canvasPane) {
+    public ResizeDungeonPane(MapPane mapPane, CanvasPane canvasPane) {
         Text instructions = new Text("Changes in size happen at the left and " +
                 "bottom side of the map.");
         TextFlow textFlow = new TextFlow(instructions);
@@ -57,6 +56,7 @@ public class ResizeDungeonPane extends GridPane {
             canvasPane.resize(widthSpinner.getValue(), heightSpinner.getValue(),
                     Field.fromString(fill.getSelectionModel()
                             .getSelectedItem()));
+            mapPane.updateMinimap();
 
             getScene().getWindow().hide();
         });
