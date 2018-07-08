@@ -6,8 +6,6 @@ import javafx.scene.layout.Priority;
 import nl.hazenebula.terraingeneration.CaveGenerator;
 
 public class CaveGeneratorSettingsPane extends GridPane {
-    private static final double SPINNER_WIDTH = 100.0d;
-
     private Spinner<Double> onProbSpinner;
     private Spinner<Integer> offThresholdSpinner;
     private Spinner<Integer> onThresholdSpinner;
@@ -31,7 +29,6 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 onProbSpinner.increment(0);
             }
         });
-        onProbSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Label offThresholdLabel = new Label("Off Threshold:");
         offThresholdLabel.setTooltip(new Tooltip("Any cell that is turned " +
@@ -47,7 +44,6 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 offThresholdSpinner.increment(0);
             }
         });
-        offThresholdSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Label onThresholdLabel = new Label("On Threshold:");
         onThresholdLabel.setTooltip(new Tooltip("Any cell that is turned " +
@@ -63,7 +59,6 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 onThresholdSpinner.increment(0);
             }
         });
-        onThresholdSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Label stepsLabel = new Label("Number of steps:");
         stepsLabel.setTooltip(new Tooltip("The number of simulation steps.\n" +
@@ -77,7 +72,6 @@ public class CaveGeneratorSettingsPane extends GridPane {
                 stepsSpinner.increment(0);
             }
         });
-        stepsSpinner.setMaxWidth(SPINNER_WIDTH);
 
         Tooltip backTileTooltip = new Tooltip("The background color.\nThis " +
                 "color is used for the cave walls.");
@@ -87,7 +81,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         backTileBox = new ComboBox<>();
         backTileBox.setTooltip(backTileTooltip);
         backTileBox.getItems().addAll(Field.values());
-        backTileBox.getSelectionModel().select(Field.BLUE);
+        backTileBox.getSelectionModel().select(CaveGenerator.BACK_TILE);
 
         Tooltip floorTileTooltip = new Tooltip("This color is used for the " +
                 "cave floor.");
@@ -97,7 +91,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
         floorTileBox.getItems().addAll(Field.values());
-        floorTileBox.getSelectionModel().select(Field.WHITE);
+        floorTileBox.getSelectionModel().select(CaveGenerator.FLOOR_TILE);
 
         Button explanationButton = new Button("Explanation");
         explanationButton.setOnAction(e -> {

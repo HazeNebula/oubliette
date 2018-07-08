@@ -8,6 +8,8 @@ public class CaveGenerator implements TerrainGenerator {
     public static final int OFF_THRESHOLD = 3;
     public static final int ON_THRESHOLD = 4;
     public static final int NUMBER_OF_STEPS = 5;
+    public static final Field BACK_TILE = Field.BLUE;
+    public static final Field FLOOR_TILE = Field.WHITE;
 
     private final double onProb;
     private final int offThreshold;
@@ -77,12 +79,12 @@ public class CaveGenerator implements TerrainGenerator {
         return grid;
     }
 
-    private void carvePassages(int xStart, int yStart, boolean[][] grid,
+    private void carvePassages(int xoffset, int yoffset, boolean[][] grid,
                                Map map) {
         for (int x = 0; x < grid.length; ++x) {
             for (int y = 0; y < grid[x].length; ++y) {
                 Field field = (grid[x][y]) ? floor : backColor;
-                map.setField(x + xStart, y + yStart, field);
+                map.setField(x + xoffset, y + yoffset, field);
             }
         }
     }
