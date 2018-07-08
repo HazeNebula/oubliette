@@ -1,16 +1,17 @@
 package nl.hazenebula.oubliette;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import nl.hazenebula.terraingeneration.CaveGenerator;
+import nl.hazenebula.terraingeneration.TerrainGenerator;
 
 public class GeneratorPane extends GridPane {
+    private Generator curGen;
+
     public GeneratorPane(CanvasPane canvasPane) {
         Selection selection = new Selection();
         canvasPane.setSelection(selection);
@@ -56,12 +57,25 @@ public class GeneratorPane extends GridPane {
             canvasPane.drawAll();
         });
 
+        Label generatorSettingsLabel = new Label("Generator Settings:");
+        GridPane.setHgrow(generatorSettingsLabel, Priority.ALWAYS);
+        ScrollPane settingsPane = new ScrollPane();
+        settingsPane.setStyle("-fx-focus-color: transparent;\n" +
+                "-fx-background: #D3D3D3");
+        GridPane.setHgrow(settingsPane, Priority.ALWAYS);
+        GridPane.setVgrow(settingsPane, Priority.ALWAYS);
+        settingsPane.setFitToWidth(true);
+
+        CaveGeneratorSettingsPane caveGeneratorSettingsPane =
+                new CaveGeneratorSettingsPane();
+
         Label generatorLabel = new Label("Procedural Generators:");
         GridPane.setHgrow(generatorLabel, Priority.ALWAYS);
-        generatorLabel.setPadding(new Insets(5, 5, 5, 5));
+        generatorLabel.setPadding(new Insets(5, 0, 0, 0));
 
         VBox buttonPane = new VBox();
         buttonPane.setSpacing(5);
+        buttonPane.setPadding(new Insets(5, 5, 5, 5));
 
         ToggleGroup toggleGroup = new ToggleGroup();
 
@@ -69,7 +83,8 @@ public class GeneratorPane extends GridPane {
         caveGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         caveGeneratorButton.setToggleGroup(toggleGroup);
         caveGeneratorButton.setOnAction(e -> {
-            // todo: add cave generator
+            settingsPane.setContent(caveGeneratorSettingsPane);
+            curGen = Generator.CAVE;
         });
         buttonPane.getChildren().add(caveGeneratorButton);
 
@@ -98,6 +113,40 @@ public class GeneratorPane extends GridPane {
         });
         buttonPane.getChildren().add(compoundGeneratorButton);
 
+        Button generateButton = new Button("Generate");
+        generateButton.setMaxWidth(Double.MAX_VALUE);
+        generateButton.setOnAction(e -> {
+            if (selection.isSelecting()) {
+                Map map = canvasPane.getMap();
+                TerrainGenerator gen = new CaveGenerator(0.45d, 3, 4, 5,
+                        Field.BLUE, Field.WHITE);
+
+                if (curGen == Generator.CAVE) {
+                    gen = new CaveGenerator(caveGeneratorSettingsPane
+                            .getOnProb(),
+                            caveGeneratorSettingsPane.getOffThreshold(),
+                            caveGeneratorSettingsPane.getOnThreshold(),
+                            caveGeneratorSettingsPane.getNumberOfSteps(),
+                            caveGeneratorSettingsPane.getBackTile(),
+                            caveGeneratorSettingsPane.getFloorTile());
+                } else if (curGen == Generator.ROOM) {
+
+                } else if (curGen == Generator.MAZE) {
+
+                } else if (curGen == Generator.COMPOUND) {
+
+                }
+
+                canvasPane.setMap(gen.generate(selection.getX(),
+                        selection.getY(), selection.getWidth(),
+                        selection.getHeight(), map));
+            }
+        });
+
+        settingsPane.setContent(caveGeneratorSettingsPane);
+        curGen = Generator.CAVE;
+        toggleGroup.getToggles().get(0).setSelected(true);
+
         add(selectionXLabel, 0, 0);
         add(selectionX, 1, 0);
         add(selectionYLabel, 0, 1);
@@ -109,5 +158,8 @@ public class GeneratorPane extends GridPane {
         add(selectAllButton, 0, 4, 2, 1);
         add(generatorLabel, 0, 5, 2, 1);
         add(buttonPane, 0, 6, 2, 1);
+        add(generateButton, 0, 7, 2, 1);
+        add(generatorSettingsLabel, 0, 8, 2, 1);
+        add(settingsPane, 0, 9, 2, 1);
     }
 }
