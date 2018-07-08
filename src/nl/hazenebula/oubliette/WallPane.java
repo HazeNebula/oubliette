@@ -159,10 +159,11 @@ public class WallPane extends GridPane {
 
         setVgrow(buttonPane, Priority.ALWAYS);
 
-        colorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            loadButtons(buttons, toggleGroup, objects, newValue);
-        });
+        colorBox.valueProperty().addListener((observable, oldValue, newValue) ->
+                loadButtons(buttons, toggleGroup, objects, newValue));
 
+        curImg = objects.get(0);
+        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
         loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
         drawCanvas();
 
@@ -283,10 +284,22 @@ public class WallPane extends GridPane {
             buttons.getChildren().add(button);
         }
 
-        curImg = objects.get(0);
-        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
+        int lastSpaceIndex = curImg.getName().lastIndexOf(' ');
+        if (lastSpaceIndex != -1) {
+            for (WallImage obj : objects) {
+                if (obj.getName().startsWith(curImg.getName().substring(0,
+                        lastSpaceIndex))) {
+                    curImg = obj;
+                }
+            }
+        }
+
+        curObject = new Wall(curImg.getImage(curObject.getWidth()),
+                curObject.getWidth(), curObject.getDir());
         canvasPane.setWallObject(curObject);
         firstButton.setSelected(true);
+
+        drawCanvas();
     }
 
     private void drawCanvas() {

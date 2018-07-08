@@ -241,6 +241,9 @@ public class FieldObjectPane extends GridPane {
             numberButton.setGraphic(img);
         });
 
+        curImg = objects.get(0);
+        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
+                Direction.NORTH);
         loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
         drawCanvas();
 
@@ -366,11 +369,23 @@ public class FieldObjectPane extends GridPane {
             buttons.getChildren().add(button);
         }
 
-        curImg = objects.get(0);
-        curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
-                Direction.NORTH);
+        int lastSpaceIndex = curImg.getName().lastIndexOf(' ');
+        if (lastSpaceIndex != -1) {
+            for (FieldObjectImage obj : objects) {
+                if (obj.getName().startsWith(curImg.getName().substring(0,
+                        lastSpaceIndex))) {
+                    curImg = obj;
+                }
+            }
+        }
+
+        curObject = new FieldObject(curImg.getImage(curObject.getWidth(),
+                curObject.getHeight()), 0, 0, curObject.getWidth(),
+                curObject.getHeight(), curObject.getDir());
         canvasPane.setFieldObject(curObject);
         firstButton.setSelected(true);
+
+        drawCanvas();
     }
 
     private void drawCanvas() {
