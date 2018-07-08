@@ -12,7 +12,7 @@ import nl.hazenebula.terraingeneration.TerrainGenerator;
 public class GeneratorPane extends GridPane {
     private Generator curGen;
 
-    public GeneratorPane(CanvasPane canvasPane) {
+    public GeneratorPane(MapPane mapPane, CanvasPane canvasPane) {
         Selection selection = new Selection();
         canvasPane.setSelection(selection);
 
@@ -140,6 +140,7 @@ public class GeneratorPane extends GridPane {
                 canvasPane.setMap(gen.generate(selection.getX(),
                         selection.getY(), selection.getWidth(),
                         selection.getHeight(), map));
+                mapPane.updateMinimap();
             }
         });
 
