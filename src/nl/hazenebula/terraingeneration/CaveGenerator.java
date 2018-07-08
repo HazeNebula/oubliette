@@ -5,23 +5,25 @@ import nl.hazenebula.oubliette.Map;
 
 public class CaveGenerator implements TerrainGenerator {
     public static final double ON_PROB = 0.45d;
-    public static final int OFF_LIMIT = 3;
+    public static final int OFF_THRESHOLD = 3;
     public static final int ON_THRESHOLD = 4;
     public static final int NUMBER_OF_STEPS = 5;
 
     private final double onProb;
-    private final int offLimit;
+    private final int offThreshold;
     private final int onThreshold;
     private final int numberOfSteps;
-    private final Field openField;
+    private final Field backColor;
+    private final Field floor;
 
-    public CaveGenerator(double onProb, int offLimit, int onThreshold,
-                         int numberOfSteps, Field openField) {
+    public CaveGenerator(double onProb, int offThreshold, int onThreshold,
+                         int numberOfSteps, Field backTile, Field floorTile) {
         this.onProb = onProb;
-        this.offLimit = offLimit;
+        this.offThreshold = offThreshold;
         this.onThreshold = onThreshold;
         this.numberOfSteps = numberOfSteps;
-        this.openField = openField;
+        this.backColor = backTile;
+        this.floor = floorTile;
     }
 
     private boolean[][] initializeGrid(int width, int height) {
@@ -65,7 +67,7 @@ public class CaveGenerator implements TerrainGenerator {
             for (int y = 0; y < grid[x].length; ++y) {
                 int nNeighbours = countAliveNeighbours(oldGrid, x, y);
                 if (oldGrid[x][y]) {
-                    grid[x][y] = nNeighbours >= offLimit;
+                    grid[x][y] = nNeighbours >= offThreshold;
                 } else {
                     grid[x][y] = nNeighbours > onThreshold;
                 }
@@ -75,26 +77,26 @@ public class CaveGenerator implements TerrainGenerator {
         return grid;
     }
 
-    private Map carvePassages(Map map, boolean[][] grid) {
+    private void carvePassages(int xStart, int yStart, boolean[][] grid,
+                               Map map) {
         for (int x = 0; x < grid.length; ++x) {
             for (int y = 0; y < grid[x].length; ++y) {
-                if (grid[x][y]) {
-                    map.setField(x, y, openField);
-                }
+                Field field = (grid[x][y]) ? floor : backColor;
+                map.setField(x + xStart, y + yStart, field);
             }
         }
-
-        return map;
     }
 
     @Override
-    public Map generate(Map map) {
-        boolean[][] grid = initializeGrid(map.getWidth(), map.getHeight());
+    public Map generate(int x, int y, int width, int height, Map map) {
+        boolean[][] grid = initializeGrid(width, height);
 
         for (int i = 0; i < numberOfSteps; ++i) {
             grid = doSimulationStep(grid);
         }
 
-        return carvePassages(map, grid);
+        carvePassages(x, y, grid, map);
+
+        return map;
     }
 }
