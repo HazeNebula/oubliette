@@ -38,15 +38,14 @@ public class MouseDrawHandler implements EventHandler<MouseEvent> {
 
             isPressing = false;
             hasMoved = false;
-        } else if (e.getEventType() == MouseEvent.MOUSE_MOVED ||
-                e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+        } else if (e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             hasMoved = true;
+        } else if (e.getEventType() == MouseEvent.MOUSE_MOVED) {
+            onSlideEventHandler.handle(e);
         }
 
         if (hasMoved && isPressing) {
             onDrawEventHandler.handle(e);
-        } else if (hasMoved) {
-            onSlideEventHandler.handle(e);
         }
     }
 
