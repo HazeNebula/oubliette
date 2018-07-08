@@ -5,36 +5,51 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseDrawHandler implements EventHandler<MouseEvent> {
     private final EventHandler<MouseEvent> onClickEventHandler;
+    private final EventHandler<MouseEvent> onReleaseEventHandler;
     private final EventHandler<MouseEvent> onDrawEventHandler;
     private final EventHandler<MouseEvent> onSlideEventHandler;
 
-    private boolean pressing = false;
+    private boolean isPressing;
+    private boolean hasMoved;
 
     public MouseDrawHandler(EventHandler<MouseEvent> onClickEventHandler,
+                            EventHandler<MouseEvent> onReleaseEventHandler,
                             EventHandler<MouseEvent> onDrawEventHandler,
                             EventHandler<MouseEvent> onSlideEventHandler) {
         this.onClickEventHandler = onClickEventHandler;
+        this.onReleaseEventHandler = onReleaseEventHandler;
         this.onDrawEventHandler = onDrawEventHandler;
         this.onSlideEventHandler = onSlideEventHandler;
+
+        isPressing = false;
+        hasMoved = false;
     }
 
     @Override
     public void handle(MouseEvent e) {
         if (e.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            pressing = true;
-            onClickEventHandler.handle(e);
+            isPressing = true;
         } else if (e.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            pressing = false;
+            if (hasMoved) {
+                onReleaseEventHandler.handle(e);
+            } else {
+                onClickEventHandler.handle(e);
+            }
+
+            isPressing = false;
+            hasMoved = false;
+        } else if (isPressing && e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+            hasMoved = true;
         }
 
-        if (pressing) {
+        if (hasMoved && isPressing) {
             onDrawEventHandler.handle(e);
-        } else {
+        } else if (hasMoved && !isPressing) {
             onSlideEventHandler.handle(e);
         }
     }
 
     public boolean isPressing() {
-        return pressing;
+        return isPressing;
     }
 }
