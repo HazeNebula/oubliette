@@ -14,6 +14,7 @@ import javafx.scene.transform.Affine;
 
 public class CanvasPane extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
+    private static final Color SELECTION_COLOR = Color.DARKSEAGREEN;
 
     public static final int GRIDLINE_SIZE = 1;
     public static final int MAX_SQUARE_SIZE = 60;
@@ -47,6 +48,8 @@ public class CanvasPane extends ScrollPane {
     private Color gridColor;
     private FieldObject curObject;
     private Wall curWall;
+    private Selection selection;
+    private boolean draggingSelection;
 
     public CanvasPane(Map map) {
         setStyle("-fx-focus-color: transparent;\n-fx-background: #D3D3D3");
@@ -80,6 +83,8 @@ public class CanvasPane extends ScrollPane {
         curField = null;
         gridColor = Field.BLUE.color();
         curObject = null;
+        selection = null;
+        draggingSelection = false;
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {
             double hmin = getHmin();
@@ -106,7 +111,8 @@ public class CanvasPane extends ScrollPane {
             cleanHighlight();
         });
 
-        drawHandler = new MouseDrawHandler(e -> {
+        // todo: add field drawing to onClickHandler
+        drawHandler = new MouseDrawHandler(e -> { // onClickHandler
             int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
             int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
@@ -222,8 +228,15 @@ public class CanvasPane extends ScrollPane {
                 }
 
                 drawAll();
+            } else if (curBrush == Brush.SELECTION) {
+                selection.setSelecting(false);
+                drawAll();
             }
-        }, e -> {
+        }, e -> { // onReleaseHandler
+            if (curBrush == Brush.SELECTION) {
+                draggingSelection = false;
+            }
+        }, e -> { // onDragHandler
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -237,10 +250,26 @@ public class CanvasPane extends ScrollPane {
                     if (curBrush == Brush.FIELD) {
                         map.setField(x, y, curField);
                         drawField(x, y);
+                    } else if (curBrush == Brush.SELECTION) {
+                        if (draggingSelection) {
+                            if (x > selection.getX() && y > selection.getY()) {
+                                selection.setWidth(x - selection.getX());
+                                selection.setHeight(y - selection.getY());
+                            }
+                        } else {
+                            selection.setSelecting(true);
+                            draggingSelection = true;
+                            selection.setX(x);
+                            selection.setY(y);
+                            selection.setWidth(1);
+                            selection.setHeight(1);
+                        }
+
+                        drawAll();
                     }
                 }
             }
-        }, e -> {
+        }, e -> { // onSlideHandler
             Bounds bounds = new BoundingBox(hoffset, voffset,
                     getViewportBounds().getWidth(),
                     getViewportBounds().getHeight());
@@ -569,6 +598,26 @@ public class CanvasPane extends ScrollPane {
         }
     }
 
+    public void drawSelection() {
+        if (selection != null && curBrush == Brush.SELECTION &&
+                selection.isSelecting()) {
+            double gridSize = size.get() + GRIDLINE_SIZE;
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            double xPos = selection.getX() * gridSize;
+            double yPos = selection.getY() * gridSize;
+            double width = selection.getWidth() * gridSize;
+            double height = selection.getHeight() * gridSize;
+
+            gc.save();
+            gc.setFill(SELECTION_COLOR);
+            gc.setGlobalAlpha(0.5d);
+
+            gc.fillRect(xPos, yPos, width, height);
+
+            gc.restore();
+        }
+    }
+
     public void drawAll() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -600,6 +649,8 @@ public class CanvasPane extends ScrollPane {
                 drawWall(map.getWall(x, y, Direction.EAST));
             }
         }
+
+        drawSelection();
     }
 
     public void resize(int width, int height, Field fill) {
@@ -641,6 +692,10 @@ public class CanvasPane extends ScrollPane {
 
     public void setBrush(Brush newBrush) {
         curBrush = newBrush;
+    }
+
+    public void setSelection(Selection selection) {
+        this.selection = selection;
     }
 
     public void setMap(Map map) {
