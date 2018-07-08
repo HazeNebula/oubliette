@@ -13,7 +13,8 @@ public class NewMapPane extends GridPane {
     private static final int MIN_SIZE = 1;
     private static final int MAX_SIZE = Integer.MAX_VALUE;
 
-    public NewMapPane(CanvasPane canvasPane, Stage primaryStage) {
+    public NewMapPane(MapPane mapPane, CanvasPane canvasPane,
+                      Stage primaryStage) {
         Label widthLabel = new Label("Width: ");
         GridPane.setHgrow(widthLabel, Priority.ALWAYS);
         Spinner<Integer> widthSpinner = new Spinner<>(MIN_SIZE, MAX_SIZE,
@@ -55,6 +56,7 @@ public class NewMapPane extends GridPane {
                 }
             }
             primaryStage.setTitle("New File");
+            mapPane.updateMinimap();
 
             getScene().getWindow().hide();
         });
