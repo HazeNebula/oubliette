@@ -258,8 +258,8 @@ public class CanvasPane extends ScrollPane {
                     } else if (curBrush == Brush.SELECTION) {
                         if (draggingSelection) {
                             if (x > selection.getX() && y > selection.getY()) {
-                                selection.setWidth(x - selection.getX());
-                                selection.setHeight(y - selection.getY());
+                                selection.setWidth(x - selection.getX() + 1);
+                                selection.setHeight(y - selection.getY() + 1);
                             }
                         } else {
                             selection.setSelecting(true);
