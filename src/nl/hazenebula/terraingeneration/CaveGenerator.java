@@ -77,12 +77,12 @@ public class CaveGenerator implements TerrainGenerator {
         return grid;
     }
 
-    private void carvePassages(int xStart, int yStart, boolean[][] grid,
+    private void carvePassages(int xoffset, int yoffset, boolean[][] grid,
                                Map map) {
         for (int x = 0; x < grid.length; ++x) {
             for (int y = 0; y < grid[x].length; ++y) {
                 Field field = (grid[x][y]) ? floor : backColor;
-                map.setField(x + xStart, y + yStart, field);
+                map.setField(x + xoffset, y + yoffset, field);
             }
         }
     }
