@@ -7,7 +7,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 
 public class ToolPane extends TabPane {
-    public ToolPane(CanvasPane canvasPane) {
+    public ToolPane(MapPane mapPane, CanvasPane canvasPane) {
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
@@ -42,7 +42,7 @@ public class ToolPane extends TabPane {
             }
         });
 
-        GeneratorPane generatorPane = new GeneratorPane(canvasPane);
+        GeneratorPane generatorPane = new GeneratorPane(mapPane, canvasPane);
         Tab generatorTab = new Tab("Generators", generatorPane);
         getTabs().add(generatorTab);
         generatorTab.setOnSelectionChanged(e -> {
