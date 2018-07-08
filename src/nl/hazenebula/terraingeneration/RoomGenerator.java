@@ -4,6 +4,13 @@ import nl.hazenebula.oubliette.Field;
 import nl.hazenebula.oubliette.Map;
 
 public class RoomGenerator implements TerrainGenerator {
+    public static final int NUMBER_OF_ATTEMPTS = 100;
+    public static final int MIN_WIDTH = 4;
+    public static final int MAX_WIDTH = 8;
+    public static final int MIN_HEIGHT = 4;
+    public static final int MAX_HEIGHT = 8;
+    public static final Field FLOOR_TILE = Field.WHITE;
+
     private final int numberOfAttempts;
     private final int minWidth;
     private final int maxWidth;
