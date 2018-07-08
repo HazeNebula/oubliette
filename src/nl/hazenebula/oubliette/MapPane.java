@@ -14,9 +14,12 @@ import javafx.util.Duration;
 public class MapPane extends GridPane {
     private static final int UPDATE_SECONDS = 10;
 
+    private final CanvasPane canvasPane;
     private final Minimap minimap;
 
     public MapPane(CanvasPane canvasPane) {
+        this.canvasPane = canvasPane;
+        // highptodo: update
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null,
                 null)));
         setPadding(new Insets(5, 5, 5, 5));
@@ -33,7 +36,7 @@ public class MapPane extends GridPane {
         timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(
                 UPDATE_SECONDS), e -> {
             if (!canvasPane.isDrawing()) {
-                minimap.update(canvasPane.snapshot());
+                updateMinimap();
             }
         }));
         timeline.playFromStart();
@@ -49,5 +52,9 @@ public class MapPane extends GridPane {
         add(minimap, 0, 0);
         add(sizeLabel, 0, 1);
         add(sizeField, 1, 1);
+    }
+
+    public void updateMinimap() {
+        minimap.update(canvasPane.snapshot());
     }
 }
