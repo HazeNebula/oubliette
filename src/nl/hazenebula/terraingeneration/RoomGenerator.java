@@ -35,7 +35,6 @@ public class RoomGenerator implements TerrainGenerator {
             throw new IllegalArgumentException("The minimum height of a room " +
                     "is larger than the maximum height.");
         } else if (snapToOddPos && minWidth % 2 == 0) {
-            // todo: add assertions for illegal parameters if snapToOddPos is true
             throw new IllegalArgumentException("The minimum width should be " +
                     "odd.");
         } else if (snapToOddPos && maxWidth % 2 == 0) {
