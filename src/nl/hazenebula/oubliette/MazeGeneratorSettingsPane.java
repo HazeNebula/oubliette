@@ -1,8 +1,6 @@
 package nl.hazenebula.oubliette;
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import nl.hazenebula.terraingeneration.*;
@@ -36,10 +34,25 @@ public class MazeGeneratorSettingsPane extends GridPane {
         floorTileBox.getItems().addAll(Tile.values());
         floorTileBox.getSelectionModel().select(RoomGenerator.FLOOR_TILE);
 
+        Button explanationButton = new Button("Explanation");
+        explanationButton.setOnAction(e -> {
+            Alert explanation = new Alert(Alert.AlertType.INFORMATION);
+            explanation.setTitle("Explanation");
+            explanation.setHeaderText(null);
+            explanation.setGraphic(null);
+            explanation.setContentText("This generator will generate a " +
+                    "connected maze of corridors. Corridors will be " +
+                    "separated by squares. This requires an odd " +
+                    "sized area, so selections of an even width/height " +
+                    "will have one row/column left over.");
+            explanation.showAndWait();
+        });
+
         add(mazeTypeLabel, 0, 0);
         add(mazeTypeBox, 1, 0);
         add(floorTileLabel, 0, 1);
         add(floorTileBox, 1, 1);
+        add(explanationButton, 0, 2, 2, 1);
     }
 
     public ElementPicker<Point> getElementPicker() {
