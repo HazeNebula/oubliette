@@ -73,8 +73,7 @@ public class MazeGenerator implements TerrainGenerator {
         for (int x = 0; x < width; x += 2) {
             for (int y = 0; y < height; y += 2) {
                 Point cell = new Point(x, y);
-                if (!grid[cell.x][cell.y] &&
-                        getUnvisitedDirections(grid, cell).size() > 0) {
+                if (!grid[cell.x][cell.y]) {
                     cells.add(cell);
                 }
             }
@@ -83,8 +82,11 @@ public class MazeGenerator implements TerrainGenerator {
         return cells;
     }
 
-    private Point carvePath(boolean[][] grid, Point cell, Direction dir) {
+    private void expandCell(boolean[][] grid, Point cell) {
         grid[cell.x][cell.y] = true;
+    }
+
+    private Point addPath(boolean[][] grid, Point cell, Direction dir) {
         grid[cell.x + dir.dx()][cell.y + dir.dy()] = true;
         grid[cell.x + 2 * dir.dx()][cell.y + 2 * dir.dy()] = true;
 
@@ -92,15 +94,15 @@ public class MazeGenerator implements TerrainGenerator {
     }
 
     private Point performStep(boolean[][] grid, Point cell) {
-        List<Direction> dirs = getUnvisitedDirections(grid, cell);
+        expandCell(grid, cell);
 
+        List<Direction> dirs = getUnvisitedDirections(grid, cell);
         if (dirs.isEmpty()) {
             return null;
         }
-
         Direction dir = dirs.get(Util.randInt(0, dirs.size()));
 
-        return carvePath(grid, cell, dir);
+        return addPath(grid, cell, dir);
     }
 
     private void carveMaze(int xoffset, int yoffset, boolean[][] grid,
