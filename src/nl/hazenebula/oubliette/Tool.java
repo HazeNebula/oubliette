@@ -1,6 +1,6 @@
 package nl.hazenebula.oubliette;
 
-public enum Brush {
+public enum Tool {
     FIELD,
     FIELD_OBJECT,
     FIELD_OBJECT_ERASE,
