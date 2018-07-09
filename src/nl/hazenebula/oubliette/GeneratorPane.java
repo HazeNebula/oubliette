@@ -149,6 +149,7 @@ public class GeneratorPane extends GridPane {
                 } else if (curGen == Generator.ROOM) {
                     try {
                         gen = new RoomGenerator(
+                                roomGeneratorSettingsPane.getSnapToOddPos(),
                                 roomGeneratorSettingsPane.getAttempts(),
                                 roomGeneratorSettingsPane.getMinWidthValue(),
                                 roomGeneratorSettingsPane.getMaxWidthValue(),

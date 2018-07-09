@@ -6,13 +6,7 @@ import javafx.scene.layout.Priority;
 import nl.hazenebula.terraingeneration.RoomGenerator;
 
 public class RoomGeneratorSettingsPane extends GridPane {
-//    public static final int NUMBER_OF_ATTEMPTS = 100;
-//    public static final int MIN_WIDTH = 4;
-//    public static final int MAX_WIDTH = 8;
-//    public static final int MIN_HEIGHT = 4;
-//    public static final int MAX_HEIGHT = 8;
-//    public static final Tile FLOOR_TILE = Tile.WHITE;
-
+    private CheckBox snapToOddPosLabel;
     private Spinner<Integer> attemptsSpinner;
     private Spinner<Integer> minWidthSpinner;
     private Spinner<Integer> maxWidthSpinner;
@@ -21,6 +15,15 @@ public class RoomGeneratorSettingsPane extends GridPane {
     private ComboBox<Tile> floorTileBox;
 
     public RoomGeneratorSettingsPane() {
+        Tooltip snapToOddPosTooltip = new Tooltip("Checking this box will " +
+                "make the generator only spawn rooms at odd positions and of " +
+                "odd lengths.\nThis requires the min/max widths/heights to " +
+                "be odd.\nMay be useful in combination with the maze " +
+                "generator.");
+        snapToOddPosLabel = new CheckBox("Spawn odd rooms only.");
+        snapToOddPosLabel.setTooltip(snapToOddPosTooltip);
+        GridPane.setHgrow(snapToOddPosLabel, Priority.ALWAYS);
+
         Label attemptsLabel = new Label("Attempts:");
         attemptsLabel.setTooltip(new Tooltip("The number of attempts that " +
                 "the generator will do to spawn rooms."));
@@ -136,7 +139,12 @@ public class RoomGeneratorSettingsPane extends GridPane {
         add(maxHeightSpinner, 1, 4);
         add(floorTileLabel, 0, 5);
         add(floorTileBox, 1, 5);
-        add(explanationButton, 0, 6);
+        add(snapToOddPosLabel, 0, 6, 2, 1);
+        add(explanationButton, 0, 7);
+    }
+
+    public boolean getSnapToOddPos() {
+        return snapToOddPosLabel.isSelected();
     }
 
     public int getAttempts() {
