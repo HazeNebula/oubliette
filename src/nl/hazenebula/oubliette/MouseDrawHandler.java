@@ -8,6 +8,7 @@ public class MouseDrawHandler implements EventHandler<MouseEvent> {
     private final EventHandler<MouseEvent> onReleaseEventHandler;
     private final EventHandler<MouseEvent> onDrawEventHandler;
     private final EventHandler<MouseEvent> onSlideEventHandler;
+    private final EventHandler<MouseEvent> onExitEventHandler;
 
     private boolean isPressing;
     private boolean hasMoved;
@@ -15,11 +16,13 @@ public class MouseDrawHandler implements EventHandler<MouseEvent> {
     public MouseDrawHandler(EventHandler<MouseEvent> onClickEventHandler,
                             EventHandler<MouseEvent> onReleaseEventHandler,
                             EventHandler<MouseEvent> onDrawEventHandler,
-                            EventHandler<MouseEvent> onSlideEventHandler) {
+                            EventHandler<MouseEvent> onSlideEventHandler,
+                            EventHandler<MouseEvent> onExitEventHandler) {
         this.onClickEventHandler = onClickEventHandler;
         this.onReleaseEventHandler = onReleaseEventHandler;
         this.onDrawEventHandler = onDrawEventHandler;
         this.onSlideEventHandler = onSlideEventHandler;
+        this.onExitEventHandler = onExitEventHandler;
 
         isPressing = false;
         hasMoved = false;
@@ -40,12 +43,11 @@ public class MouseDrawHandler implements EventHandler<MouseEvent> {
             hasMoved = false;
         } else if (e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             hasMoved = true;
+            onDrawEventHandler.handle(e);
         } else if (e.getEventType() == MouseEvent.MOUSE_MOVED) {
             onSlideEventHandler.handle(e);
-        }
-
-        if (hasMoved && isPressing) {
-            onDrawEventHandler.handle(e);
+        } else if (e.getEventType() == MouseEvent.MOUSE_EXITED) {
+            onExitEventHandler.handle(e);
         }
     }
 
