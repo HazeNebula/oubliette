@@ -14,7 +14,7 @@ import javafx.scene.transform.Affine;
 
 public class CanvasPane extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
-    private static final Color SELECTION_COLOR = Color.DARKSEAGREEN;
+    private static final Color SELECTION_COLOR = Color.YELLOW;
 
     public static final int GRIDLINE_SIZE = 1;
     public static final int MAX_SQUARE_SIZE = 60;
@@ -400,6 +400,7 @@ public class CanvasPane extends ScrollPane {
 
     }
 
+    // todo: highlight is not removed if mouse leaves scrollpane
     private void cleanHighlight() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double gridSize = size.get() + GRIDLINE_SIZE;
