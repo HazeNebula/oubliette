@@ -4,7 +4,7 @@ import nl.hazenebula.oubliette.Map;
 import nl.hazenebula.oubliette.Tile;
 
 public class RoomGenerator implements TerrainGenerator {
-    public static final int NUMBER_OF_ATTEMPTS = 1000;
+    public static final int NUMBER_OF_ATTEMPTS = 100;
     public static final int MIN_WIDTH = 3;
     public static final int MAX_WIDTH = 7;
     public static final int MIN_HEIGHT = 3;
