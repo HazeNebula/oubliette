@@ -17,7 +17,7 @@ public class ToolPane extends TabPane {
         getTabs().add(fieldTab);
         fieldTab.setOnSelectionChanged(e -> {
             if (fieldTab.isSelected()) {
-                canvasPane.setBrush(Brush.FIELD);
+                canvasPane.setBrush(Tool.FIELD);
                 canvasPane.drawAll();
             }
         });
@@ -27,7 +27,7 @@ public class ToolPane extends TabPane {
         getTabs().add(fieldObjectTab);
         fieldObjectTab.setOnSelectionChanged(e -> {
             if (fieldObjectTab.isSelected()) {
-                canvasPane.setBrush(Brush.FIELD_OBJECT);
+                canvasPane.setBrush(Tool.FIELD_OBJECT);
                 canvasPane.drawAll();
             }
         });
@@ -37,7 +37,7 @@ public class ToolPane extends TabPane {
         getTabs().add(wallObjectTab);
         wallObjectTab.setOnSelectionChanged(e -> {
             if (wallObjectTab.isSelected()) {
-                canvasPane.setBrush(Brush.WALL_OBJECT);
+                canvasPane.setBrush(Tool.WALL);
                 canvasPane.drawAll();
             }
         });
@@ -47,7 +47,7 @@ public class ToolPane extends TabPane {
         getTabs().add(generatorTab);
         generatorTab.setOnSelectionChanged(e -> {
             if (generatorTab.isSelected()) {
-                canvasPane.setBrush(Brush.SELECTION);
+                canvasPane.setBrush(Tool.SELECTION);
                 canvasPane.drawAll();
             }
         });

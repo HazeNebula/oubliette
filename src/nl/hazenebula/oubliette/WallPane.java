@@ -128,7 +128,7 @@ public class WallPane extends GridPane {
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
-        eraseButton.setOnAction(e -> canvasPane.setBrush(Brush.WALL_OBJECT_ERASE));
+        eraseButton.setOnAction(e -> canvasPane.setBrush(Tool.WALL_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -266,7 +266,7 @@ public class WallPane extends GridPane {
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
-                canvasPane.setBrush(Brush.WALL_OBJECT);
+                canvasPane.setBrush(Tool.WALL);
 
                 if (curImg != img) {
                     curImg = img;

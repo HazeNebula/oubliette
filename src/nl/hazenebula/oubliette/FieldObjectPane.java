@@ -149,7 +149,7 @@ public class FieldObjectPane extends GridPane {
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
         eraseButton.setOnAction(e -> canvasPane.setBrush(
-                Brush.FIELD_OBJECT_ERASE));
+                Tool.FIELD_OBJECT_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -210,7 +210,7 @@ public class FieldObjectPane extends GridPane {
         numberSpinner.valueProperty().addListener((observable, oldValue,
                                                    newValue) -> {
             drawingNumbers = true;
-            canvasPane.setBrush(Brush.FIELD_OBJECT);
+            canvasPane.setBrush(Tool.FIELD_OBJECT);
             numberButton.setSelected(true);
 
             curObject = new FieldObject(curNumImg.getImage(numberSpinner
@@ -222,7 +222,7 @@ public class FieldObjectPane extends GridPane {
 
         numberButton.setOnAction(e -> {
             drawingNumbers = true;
-            canvasPane.setBrush(Brush.FIELD_OBJECT);
+            canvasPane.setBrush(Tool.FIELD_OBJECT);
 
             curObject = new FieldObject(curNumImg.getImage(numberSpinner
                     .getValue()), 0, 0, 1, 1, Direction.NORTH);
@@ -349,7 +349,7 @@ public class FieldObjectPane extends GridPane {
 
             button.setOnAction(e -> {
                 drawingNumbers = false;
-                canvasPane.setBrush(Brush.FIELD_OBJECT);
+                canvasPane.setBrush(Tool.FIELD_OBJECT);
 
                 if (curImg != img) {
                     curImg = img;
