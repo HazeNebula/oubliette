@@ -82,7 +82,6 @@ public class GeneratorPane extends GridPane {
 
         ToggleGroup toggleGroup = new ToggleGroup();
 
-        // todo: add an option for the room generator to generate rooms that have odd widths/positions
         ToggleButton fillButton = new ToggleButton("Fill");
         fillButton.setMaxWidth(Double.MAX_VALUE);
         fillButton.setToggleGroup(toggleGroup);
@@ -181,8 +180,8 @@ public class GeneratorPane extends GridPane {
             }
         });
 
-        settingsPane.setContent(caveGeneratorSettingsPane);
-        curGen = Generator.CAVE;
+        settingsPane.setContent(fillSettingsPane);
+        curGen = Generator.FILL;
         toggleGroup.getToggles().get(0).setSelected(true);
 
         add(selectionXLabel, 0, 0);
