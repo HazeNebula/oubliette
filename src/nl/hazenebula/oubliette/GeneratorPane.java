@@ -7,6 +7,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import nl.hazenebula.terraingeneration.CaveGenerator;
+import nl.hazenebula.terraingeneration.MazeGenerator;
 import nl.hazenebula.terraingeneration.RoomGenerator;
 import nl.hazenebula.terraingeneration.TerrainGenerator;
 
@@ -82,6 +83,8 @@ public class GeneratorPane extends GridPane {
 
         ToggleGroup toggleGroup = new ToggleGroup();
 
+        // todo: add a fill generator
+        // todo: add an option for the room generator to generate rooms that have odd widths/positions
         ToggleButton caveGeneratorButton = new ToggleButton("Cave Generator");
         caveGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         caveGeneratorButton.setToggleGroup(toggleGroup);
@@ -104,7 +107,8 @@ public class GeneratorPane extends GridPane {
         mazeGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         mazeGeneratorButton.setToggleGroup(toggleGroup);
         mazeGeneratorButton.setOnAction(e -> {
-            // todo: add maze generator
+            // todo: add maze settings pane
+            curGen = Generator.MAZE;
         });
         buttonPane.getChildren().add(mazeGeneratorButton);
 
@@ -117,6 +121,7 @@ public class GeneratorPane extends GridPane {
         });
         buttonPane.getChildren().add(compoundGeneratorButton);
 
+        // todo: generate button should stand out more
         Button generateButton = new Button("Generate");
         generateButton.setMaxWidth(Double.MAX_VALUE);
         generateButton.setOnAction(e -> {
@@ -148,7 +153,8 @@ public class GeneratorPane extends GridPane {
                         return;
                     }
                 } else if (curGen == Generator.MAZE) {
-
+                    gen = new MazeGenerator(MazeGenerator.ELEMENT_PICKER,
+                            MazeGenerator.FLOOR_TILE);
                 } else if (curGen == Generator.COMPOUND) {
 
                 }
