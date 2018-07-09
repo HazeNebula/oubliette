@@ -83,7 +83,7 @@ public class CanvasPane extends ScrollPane {
         curField = null;
         gridColor = Field.BLUE.color();
         curObject = null;
-        selection = null;
+        selection = new Selection();
         draggingSelection = false;
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {
@@ -704,10 +704,6 @@ public class CanvasPane extends ScrollPane {
         curTool = newTool;
     }
 
-    public void setSelection(Selection selection) {
-        this.selection = selection;
-    }
-
     public void setMap(Map map) {
         this.map.setFields(map.getFields());
         this.map.setObjects(map.getObjects());
@@ -739,6 +735,10 @@ public class CanvasPane extends ScrollPane {
 
     public int getSquareSize() {
         return size.get();
+    }
+
+    public Selection getSelection() {
+        return selection;
     }
 
     public Map getMap() {

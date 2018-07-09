@@ -15,8 +15,7 @@ public class GeneratorPane extends GridPane {
     private Generator curGen;
 
     public GeneratorPane(MapPane mapPane, CanvasPane canvasPane) {
-        Selection selection = new Selection();
-        canvasPane.setSelection(selection);
+        Selection selection = canvasPane.getSelection();
 
         Label selectionXLabel = new Label("Selection X:");
         GridPane.setHgrow(selectionXLabel, Priority.SOMETIMES);
@@ -85,7 +84,6 @@ public class GeneratorPane extends GridPane {
 
         ToggleGroup toggleGroup = new ToggleGroup();
 
-        // todo: add a fill generator
         // todo: add an option for the room generator to generate rooms that have odd widths/positions
         ToggleButton caveGeneratorButton = new ToggleButton("Cave Generator");
         caveGeneratorButton.setMaxWidth(Double.MAX_VALUE);
