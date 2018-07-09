@@ -71,6 +71,8 @@ public class GeneratorPane extends GridPane {
                 new RoomGeneratorSettingsPane();
         MazeGeneratorSettingsPane mazeGeneratorSettingsPane =
                 new MazeGeneratorSettingsPane();
+        CompoundGeneratorSettingsPane compoundGeneratorSettingsPane =
+                new CompoundGeneratorSettingsPane();
 
         Label generatorLabel = new Label("Procedural Generators:");
         GridPane.setHgrow(generatorLabel, Priority.ALWAYS);
@@ -123,12 +125,30 @@ public class GeneratorPane extends GridPane {
         compoundGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         compoundGeneratorButton.setToggleGroup(toggleGroup);
         compoundGeneratorButton.setOnAction(e -> {
-            // todo: add compound generator
+            settingsPane.setContent(compoundGeneratorSettingsPane);
+            curGen = Generator.COMPOUND;
         });
         buttonPane.getChildren().add(compoundGeneratorButton);
 
-        // todo: generate button should stand out more
         Button generateButton = new Button("Generate");
+        generateButton.setStyle("-fx-background-color: " +
+                "-fx-shadow-highlight-color, " +
+                "-fx-outer-border, " +
+                "-fx-inner-border, " +
+                "linear-gradient(to bottom,\n" +
+                "            ladder(\n" +
+                "                #90ee90,\n" +
+                "                derive(#90ee90,8%) 75%,\n" +
+                "                derive(#90ee90,10%) 80%\n" +
+                "            ),\n" +
+                "            derive(#90ee90,-8%));\n" +
+                "    -fx-background-insets: 0 0 -1 0, 0, 1, 2;\n" +
+                "    -fx-background-radius: 3px, 3px, 2px, 1px;\n" +
+                "    -fx-padding: 0.333333em 0.666667em 0.333333em " +
+                "0.666667em;\n" +
+                "    -fx-text-fill: -fx-text-base-color;\n" +
+                "    -fx-alignment: CENTER;\n" +
+                "    -fx-content-display: LEFT;");
         generateButton.setMaxWidth(Double.MAX_VALUE);
         generateButton.setOnAction(e -> {
             if (selection.isSelecting()) {
@@ -166,7 +186,26 @@ public class GeneratorPane extends GridPane {
                             mazeGeneratorSettingsPane.getFloorTile()
                     );
                 } else if (curGen == Generator.COMPOUND) {
-
+                    try {
+                        gen = new CompoundGenerator(
+                                compoundGeneratorSettingsPane.getAttempts(),
+                                compoundGeneratorSettingsPane
+                                        .getMinWidthValue(),
+                                compoundGeneratorSettingsPane
+                                        .getMaxWidthValue(),
+                                compoundGeneratorSettingsPane
+                                        .getMinHeightValue(),
+                                compoundGeneratorSettingsPane
+                                        .getMaxHeightValue(),
+                                compoundGeneratorSettingsPane
+                                        .getElementPicker(),
+                                compoundGeneratorSettingsPane
+                                        .getConnectionProb(),
+                                compoundGeneratorSettingsPane.getFloorTile()
+                        );
+                    } catch (IllegalArgumentException ex) {
+                        showErrorMessage(ex.getMessage());
+                    }
                 }
 
                 try {
