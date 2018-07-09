@@ -1,5 +1,6 @@
 package nl.hazenebula.oubliette;
 
+import javafx.geometry.HPos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -15,9 +16,11 @@ public class FillSettingsPane extends GridPane {
         colorBox = new ComboBox<>();
         colorBox.getItems().addAll(Tile.values());
         colorBox.getSelectionModel().select(Fill.FILL_COLOR);
+        GridPane.setHgrow(colorBox, Priority.ALWAYS);
+        GridPane.setHalignment(colorBox, HPos.RIGHT);
 
         add(colorLabel, 0, 0);
-        add(colorBox, 0, 1);
+        add(colorBox, 1, 0);
     }
 
     public Tile getColor() {
