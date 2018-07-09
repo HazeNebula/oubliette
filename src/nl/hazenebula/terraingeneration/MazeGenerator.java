@@ -11,8 +11,8 @@ public class MazeGenerator implements TerrainGenerator {
     public static final MazeType MAZE_TYPE = MazeType.LAST;
     public static final Tile FLOOR_TILE = Tile.WHITE;
 
-    private ElementPicker<Point> ep;
-    private Tile floorTile;
+    private final ElementPicker<Point> ep;
+    private final Tile floorTile;
 
     private int width;
     private int height;
