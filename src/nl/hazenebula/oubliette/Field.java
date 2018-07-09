@@ -7,6 +7,8 @@ import java.io.Serializable;
 public enum Field implements Serializable {
     WHITE(Color.WHITE, "White"),
     BLUE(Color.rgb(51, 153, 204), "Blue"),
+    RED(Color.rgb(183, 65, 14), "Red"),
+    GREEN(Color.rgb(169, 186, 157), "Green"),
     GRAY(Color.GRAY, "Gray"),
     BLACK(Color.BLACK, "Black");
 
