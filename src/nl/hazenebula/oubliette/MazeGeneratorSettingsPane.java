@@ -3,7 +3,10 @@ package nl.hazenebula.oubliette;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import nl.hazenebula.terraingeneration.*;
+import nl.hazenebula.terraingeneration.ElementPicker;
+import nl.hazenebula.terraingeneration.MazeGenerator;
+import nl.hazenebula.terraingeneration.MazeType;
+import nl.hazenebula.terraingeneration.Point;
 
 public class MazeGeneratorSettingsPane extends GridPane {
     private ComboBox<MazeType> mazeTypeBox;
@@ -32,7 +35,7 @@ public class MazeGeneratorSettingsPane extends GridPane {
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
         floorTileBox.getItems().addAll(Tile.values());
-        floorTileBox.getSelectionModel().select(RoomGenerator.FLOOR_TILE);
+        floorTileBox.getSelectionModel().select(MazeGenerator.FLOOR_TILE);
 
         Button explanationButton = new Button("Explanation");
         explanationButton.setOnAction(e -> {
