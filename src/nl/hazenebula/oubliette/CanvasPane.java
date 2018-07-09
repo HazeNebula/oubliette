@@ -14,7 +14,7 @@ import javafx.scene.transform.Affine;
 
 public class CanvasPane extends ScrollPane {
     private static final Color HIGHLIGHT_COLOR = Color.DARKGRAY;
-    private static final Color SELECTION_COLOR = Color.DARKSEAGREEN;
+    private static final Color SELECTION_COLOR = Color.YELLOW;
 
     public static final int GRIDLINE_SIZE = 1;
     public static final int MAX_SQUARE_SIZE = 60;
@@ -43,7 +43,7 @@ public class CanvasPane extends ScrollPane {
     private double voffset;
     private final MouseDrawHandler drawHandler;
 
-    private Brush curBrush;
+    private Tool curTool;
     private Field curField;
     private Color gridColor;
     private FieldObject curObject;
@@ -79,7 +79,7 @@ public class CanvasPane extends ScrollPane {
 
         setContent(canvas);
 
-        curBrush = Brush.FIELD;
+        curTool = Tool.FIELD;
         curField = null;
         gridColor = Field.BLUE.color();
         curObject = null;
@@ -96,7 +96,7 @@ public class CanvasPane extends ScrollPane {
             hoffset = Math.max(0, contentWidth - viewportWidth) *
                     (hvalue - hmin) / (hmax - hmin);
 
-            cleanHighlight();
+            removeHighlight();
         });
         vvalueProperty().addListener((observable, oldValue, newValue) -> {
             double vmin = getVmin();
@@ -108,27 +108,27 @@ public class CanvasPane extends ScrollPane {
             voffset = Math.max(0, contentHeight - viewportHeight) *
                     (vvalue - vmin) / (vmax - vmin);
 
-            cleanHighlight();
+            removeHighlight();
         });
 
         drawHandler = new MouseDrawHandler(e -> { // onClickHandler
             int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
             int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
-            if (curBrush == Brush.FIELD) {
+            if (curTool == Tool.FIELD) {
                 if (x >= 0 && x < map.getWidth() && y >= 0
                         && y < map.getHeight()) {
                     map.setField(x, y, curField);
                     drawField(x, y);
                 }
-            } else if (curBrush == Brush.FIELD_OBJECT) {
+            } else if (curTool == Tool.FIELD_OBJECT) {
                 FieldObject newObj = new FieldObject(curObject);
                 newObj.setX(x);
                 newObj.setY(y);
                 map.getObjects().add(newObj);
 
                 drawObject(newObj);
-            } else if (curBrush == Brush.WALL_OBJECT) {
+            } else if (curTool == Tool.WALL) {
                 double gridSize = size.get() + GRIDLINE_SIZE;
                 Direction orient = (curWall.getDir()
                         == Direction.NORTH || curWall.getDir()
@@ -194,7 +194,7 @@ public class CanvasPane extends ScrollPane {
                 }
 
                 drawAll();
-            } else if (curBrush == Brush.FIELD_OBJECT_ERASE) {
+            } else if (curTool == Tool.FIELD_OBJECT_ERASE) {
                 for (FieldObject obj : map.getObjects()) {
                     if (obj.inBounds(x, y)) {
                         map.getObjects().remove(obj);
@@ -202,7 +202,7 @@ public class CanvasPane extends ScrollPane {
                         break;
                     }
                 }
-            } else if (curBrush == Brush.WALL_OBJECT_ERASE) {
+            } else if (curTool == Tool.WALL_ERASE) {
                 double gridSize = size.get() + GRIDLINE_SIZE;
                 Direction orient = (curWall.getDir()
                         == Direction.NORTH || curWall.getDir()
@@ -233,12 +233,12 @@ public class CanvasPane extends ScrollPane {
                 }
 
                 drawAll();
-            } else if (curBrush == Brush.SELECTION) {
+            } else if (curTool == Tool.SELECTION) {
                 selection.setSelecting(false);
                 drawAll();
             }
         }, e -> { // onReleaseHandler
-            if (curBrush == Brush.SELECTION) {
+            if (curTool == Tool.SELECTION) {
                 draggingSelection = false;
             }
         }, e -> { // onDragHandler
@@ -252,10 +252,10 @@ public class CanvasPane extends ScrollPane {
 
                 if (x >= 0 && x < map.getWidth() && y >= 0
                         && y < map.getHeight()) {
-                    if (curBrush == Brush.FIELD) {
+                    if (curTool == Tool.FIELD) {
                         map.setField(x, y, curField);
                         drawField(x, y);
-                    } else if (curBrush == Brush.SELECTION) {
+                    } else if (curTool == Tool.SELECTION) {
                         if (draggingSelection) {
                             if (x > selection.getX() && y > selection.getY()) {
                                 selection.setWidth(x - selection.getX() + 1);
@@ -282,13 +282,13 @@ public class CanvasPane extends ScrollPane {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.save();
 
-            cleanHighlight();
+            removeHighlight();
 
             if (bounds.contains(e.getX(), e.getY())) {
                 int x = (int)(e.getX() / (size.get() + GRIDLINE_SIZE));
                 int y = (int)(e.getY() / (size.get() + GRIDLINE_SIZE));
 
-                if (curBrush == Brush.FIELD) {
+                if (curTool == Tool.FIELD) {
                     double xPos = x * (size.get() + GRIDLINE_SIZE);
                     double yPos = y * (size.get() + GRIDLINE_SIZE);
 
@@ -301,7 +301,7 @@ public class CanvasPane extends ScrollPane {
                     prevWidth = 1;
                     prevHeight = 1;
                     prevHighlight = true;
-                } else if (curBrush == Brush.FIELD_OBJECT) {
+                } else if (curTool == Tool.FIELD_OBJECT) {
                     double xPos = x * (size.get() + GRIDLINE_SIZE);
                     double yPos = y * (size.get() + GRIDLINE_SIZE);
                     double width = curObject.getWidth()
@@ -336,7 +336,7 @@ public class CanvasPane extends ScrollPane {
                     prevHeight = (int)(c * curObject.getHeight()
                             + s * curObject.getWidth());
                     prevHighlight = true;
-                } else if (curBrush == Brush.WALL_OBJECT) {
+                } else if (curTool == Tool.WALL) {
                     double gridSize = size.get() + GRIDLINE_SIZE;
                     if (curWall.getDir() == Direction.NORTH
                             || curWall.getDir() == Direction.SOUTH) {
@@ -393,6 +393,11 @@ public class CanvasPane extends ScrollPane {
 
                 gc.restore();
             }
+        }, e -> {
+            if (curTool == Tool.FIELD || curTool == Tool.FIELD_OBJECT
+                    || curTool == Tool.WALL) {
+                removeHighlight();
+            }
         });
         canvas.addEventHandler(MouseEvent.ANY, drawHandler);
 
@@ -400,7 +405,7 @@ public class CanvasPane extends ScrollPane {
 
     }
 
-    private void cleanHighlight() {
+    private void removeHighlight() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double gridSize = size.get() + GRIDLINE_SIZE;
 
@@ -604,7 +609,7 @@ public class CanvasPane extends ScrollPane {
     }
 
     public void drawSelection() {
-        if (selection != null && curBrush == Brush.SELECTION &&
+        if (selection != null && curTool == Tool.SELECTION &&
                 selection.isSelecting()) {
             double gridSize = size.get() + GRIDLINE_SIZE;
             GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -695,8 +700,8 @@ public class CanvasPane extends ScrollPane {
         }
     }
 
-    public void setBrush(Brush newBrush) {
-        curBrush = newBrush;
+    public void setBrush(Tool newTool) {
+        curTool = newTool;
     }
 
     public void setSelection(Selection selection) {
@@ -720,7 +725,7 @@ public class CanvasPane extends ScrollPane {
     }
 
     public WritableImage snapshot() {
-        cleanHighlight();
+        removeHighlight();
         return canvas.snapshot(null, null);
     }
 

@@ -116,11 +116,11 @@ public class RoomGeneratorSettingsPane extends GridPane {
                     " that make it fit within the selected area. If no part" +
                     " of this area is occupied by another room, the room is " +
                     "placed. The generator will attempt to place a certain " +
-                    "number of rooms, after which it terminates.\n\nHover " +
-                    "over an item to see a short explanation of that " +
-                    "parameter.\n\nIf anything exists of the floor color " +
-                    "within the selected area, no room will be placed within " +
-                    "the tiles of that color.");
+                    "number of rooms, after which it terminates.\n\nIf " +
+                    "anything exists of the floor color within the selected " +
+                    "area, no room will be placed within the tiles of that " +
+                    "color.\n\nHover over an item to see a short explanation " +
+                    "of that parameter.");
             explanation.showAndWait();
         });
 

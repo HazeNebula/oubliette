@@ -128,7 +128,7 @@ public class WallPane extends GridPane {
         ToggleButton eraseButton = new ToggleButton("Erase");
         eraseButton.setToggleGroup(toggleGroup);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
-        eraseButton.setOnAction(e -> canvasPane.setBrush(Brush.WALL_OBJECT_ERASE));
+        eraseButton.setOnAction(e -> canvasPane.setBrush(Tool.WALL_ERASE));
         setHgrow(eraseButton, Priority.ALWAYS);
         setHalignment(eraseButton, HPos.CENTER);
 
@@ -159,10 +159,11 @@ public class WallPane extends GridPane {
 
         setVgrow(buttonPane, Priority.ALWAYS);
 
-        colorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            loadButtons(buttons, toggleGroup, objects, newValue);
-        });
+        colorBox.valueProperty().addListener((observable, oldValue, newValue) ->
+                loadButtons(buttons, toggleGroup, objects, newValue));
 
+        curImg = objects.get(0);
+        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
         loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
         drawCanvas();
 
@@ -265,7 +266,7 @@ public class WallPane extends GridPane {
             button.setTooltip(new Tooltip(img.getName()));
 
             button.setOnAction(e -> {
-                canvasPane.setBrush(Brush.WALL_OBJECT);
+                canvasPane.setBrush(Tool.WALL);
 
                 if (curImg != img) {
                     curImg = img;
@@ -283,10 +284,22 @@ public class WallPane extends GridPane {
             buttons.getChildren().add(button);
         }
 
-        curImg = objects.get(0);
-        curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
+        int lastSpaceIndex = curImg.getName().lastIndexOf(' ');
+        if (lastSpaceIndex != -1) {
+            for (WallImage obj : objects) {
+                if (obj.getName().startsWith(curImg.getName().substring(0,
+                        lastSpaceIndex))) {
+                    curImg = obj;
+                }
+            }
+        }
+
+        curObject = new Wall(curImg.getImage(curObject.getWidth()),
+                curObject.getWidth(), curObject.getDir());
         canvasPane.setWallObject(curObject);
         firstButton.setSelected(true);
+
+        drawCanvas();
     }
 
     private void drawCanvas() {

@@ -110,9 +110,10 @@ public class CaveGeneratorSettingsPane extends GridPane {
                     "number of times we end up with a configuration. Every " +
                     "cell that is on is turned into a floor tile, and every " +
                     "other cell is turned into a tile of the background " +
-                    "color.\n\nHover over an item to see a short explanation " +
-                    "of that parameter.\n\nTake note: this generator will " +
-                    "overwrite everything inside the selected area.");
+                    "color.\n\n\n\nTake note: this generator will " +
+                    "overwrite everything inside the selected area.\n\nHover " +
+                    "over an item to see a short explanation of that " +
+                    "parameter.");
             explanation.showAndWait();
         });
 
