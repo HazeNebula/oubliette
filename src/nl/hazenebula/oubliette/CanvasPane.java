@@ -620,7 +620,7 @@ public class CanvasPane extends ScrollPane {
 
             gc.save();
             gc.setFill(SELECTION_COLOR);
-            gc.setGlobalAlpha(0.5d);
+            gc.setGlobalAlpha(0.25d);
 
             gc.fillRect(xPos, yPos, width, height);
 
