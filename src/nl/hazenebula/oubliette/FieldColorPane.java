@@ -15,13 +15,13 @@ public class FieldColorPane extends FlowPane {
         setAlignment(Pos.TOP_CENTER);
 
         ToggleGroup group = new ToggleGroup();
-        for (Field field : Field.values()) {
-            FieldColorButton button = new FieldColorButton(field, BRUSH_SIZE,
+        for (Tile tile : Tile.values()) {
+            FieldColorButton button = new FieldColorButton(tile, BRUSH_SIZE,
                     canvasPane);
 
-            if (field == Field.values()[0]) {
+            if (tile == Tile.values()[0]) {
                 button.setSelected(true);
-                canvasPane.setFieldColor(field);
+                canvasPane.setFieldColor(tile);
             }
 
             button.setToggleGroup(group);

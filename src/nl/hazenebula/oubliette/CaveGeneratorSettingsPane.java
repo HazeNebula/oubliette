@@ -10,8 +10,8 @@ public class CaveGeneratorSettingsPane extends GridPane {
     private Spinner<Integer> offThresholdSpinner;
     private Spinner<Integer> onThresholdSpinner;
     private Spinner<Integer> stepsSpinner;
-    private ComboBox<Field> backTileBox;
-    private ComboBox<Field> floorTileBox;
+    private ComboBox<Tile> backTileBox;
+    private ComboBox<Tile> floorTileBox;
 
     public CaveGeneratorSettingsPane() {
         Label onProbLabel = new Label("On probability:");
@@ -80,7 +80,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(backTileLabel, Priority.ALWAYS);
         backTileBox = new ComboBox<>();
         backTileBox.setTooltip(backTileTooltip);
-        backTileBox.getItems().addAll(Field.values());
+        backTileBox.getItems().addAll(Tile.values());
         backTileBox.getSelectionModel().select(CaveGenerator.BACK_TILE);
 
         Tooltip floorTileTooltip = new Tooltip("This color is used for the " +
@@ -90,7 +90,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(floorTileLabel, Priority.ALWAYS);
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
-        floorTileBox.getItems().addAll(Field.values());
+        floorTileBox.getItems().addAll(Tile.values());
         floorTileBox.getSelectionModel().select(CaveGenerator.FLOOR_TILE);
 
         Button explanationButton = new Button("Explanation");
@@ -118,18 +118,18 @@ public class CaveGeneratorSettingsPane extends GridPane {
         });
 
         add(onProbLabel, 0, 0);
-        add(onProbSpinner, 1, 0);
-        add(offThresholdLabel, 0, 1);
-        add(offThresholdSpinner, 1, 1);
-        add(onThresholdLabel, 0, 2);
-        add(onThresholdSpinner, 1, 2);
-        add(stepsLabel, 0, 3);
-        add(stepsSpinner, 1, 3);
-        add(backTileLabel, 0, 4);
-        add(backTileBox, 1, 4);
-        add(floorTileLabel, 0, 5);
-        add(floorTileBox, 1, 5);
-        add(explanationButton, 0, 6);
+        add(onProbSpinner, 0, 1);
+        add(offThresholdLabel, 0, 2);
+        add(offThresholdSpinner, 0, 3);
+        add(onThresholdLabel, 0, 4);
+        add(onThresholdSpinner, 0, 5);
+        add(stepsLabel, 0, 6);
+        add(stepsSpinner, 0, 7);
+        add(backTileLabel, 0, 8);
+        add(backTileBox, 0, 9);
+        add(floorTileLabel, 0, 10);
+        add(floorTileBox, 0, 11);
+        add(explanationButton, 0, 12);
     }
 
     public double getOnProb() {
@@ -148,11 +148,11 @@ public class CaveGeneratorSettingsPane extends GridPane {
         return stepsSpinner.getValue();
     }
 
-    public Field getBackTile() {
+    public Tile getBackTile() {
         return backTileBox.getValue();
     }
 
-    public Field getFloorTile() {
+    public Tile getFloorTile() {
         return floorTileBox.getValue();
     }
 }

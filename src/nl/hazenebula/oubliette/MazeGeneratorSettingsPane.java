@@ -1,15 +1,16 @@
 package nl.hazenebula.oubliette;
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import nl.hazenebula.terraingeneration.*;
+import nl.hazenebula.terraingeneration.ElementPicker;
+import nl.hazenebula.terraingeneration.MazeGenerator;
+import nl.hazenebula.terraingeneration.MazeType;
+import nl.hazenebula.terraingeneration.Point;
 
 public class MazeGeneratorSettingsPane extends GridPane {
     private ComboBox<MazeType> mazeTypeBox;
-    private ComboBox<Field> floorTileBox;
+    private ComboBox<Tile> floorTileBox;
 
     public MazeGeneratorSettingsPane() {
         Tooltip mazeTypeTooltip = new Tooltip("The method by which mazes " +
@@ -33,20 +34,35 @@ public class MazeGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(floorTileLabel, Priority.ALWAYS);
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
-        floorTileBox.getItems().addAll(Field.values());
-        floorTileBox.getSelectionModel().select(RoomGenerator.FLOOR_TILE);
+        floorTileBox.getItems().addAll(Tile.values());
+        floorTileBox.getSelectionModel().select(MazeGenerator.FLOOR_TILE);
+
+        Button explanationButton = new Button("Explanation");
+        explanationButton.setOnAction(e -> {
+            Alert explanation = new Alert(Alert.AlertType.INFORMATION);
+            explanation.setTitle("Explanation");
+            explanation.setHeaderText(null);
+            explanation.setGraphic(null);
+            explanation.setContentText("This generator will generate a " +
+                    "connected maze of corridors. Corridors will be " +
+                    "separated by squares. This requires an odd " +
+                    "sized area, so selections of an even width/height " +
+                    "will have one row/column left over.");
+            explanation.showAndWait();
+        });
 
         add(mazeTypeLabel, 0, 0);
-        add(mazeTypeBox, 1, 0);
-        add(floorTileLabel, 0, 1);
-        add(floorTileBox, 1, 1);
+        add(mazeTypeBox, 0, 1);
+        add(floorTileLabel, 0, 2);
+        add(floorTileBox, 0, 3);
+        add(explanationButton, 0, 4);
     }
 
     public ElementPicker<Point> getElementPicker() {
         return mazeTypeBox.getValue().getElementPicker();
     }
 
-    public Field getFloorTile() {
+    public Tile getFloorTile() {
         return floorTileBox.getValue();
     }
 }

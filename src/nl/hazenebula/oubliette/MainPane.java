@@ -34,7 +34,7 @@ public class MainPane extends GridPane {
             }
         });
 
-        canvasPane = new CanvasPane(new Map(50, 50, Field.BLUE));
+        canvasPane = new CanvasPane(new Map(50, 50, Tile.BLUE));
         GridPane.setHgrow(canvasPane, Priority.ALWAYS);
         GridPane.setVgrow(canvasPane, Priority.ALWAYS);
 
@@ -118,10 +118,10 @@ public class MainPane extends GridPane {
                 pngExport);
 
         Menu gridColor = new Menu("Grid Color");
-        for (Field field : Field.values()) {
-            MenuItem color = new MenuItem(field.toString());
+        for (Tile tile : Tile.values()) {
+            MenuItem color = new MenuItem(tile.toString());
             color.setOnAction(e -> {
-                canvasPane.setGridColor(field.color());
+                canvasPane.setGridColor(tile.color());
                 canvasPane.drawAll();
             });
 

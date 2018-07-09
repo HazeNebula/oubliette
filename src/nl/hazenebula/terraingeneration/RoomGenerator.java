@@ -1,40 +1,54 @@
 package nl.hazenebula.terraingeneration;
 
-import nl.hazenebula.oubliette.Field;
 import nl.hazenebula.oubliette.Map;
+import nl.hazenebula.oubliette.Tile;
 
 public class RoomGenerator implements TerrainGenerator {
     public static final int NUMBER_OF_ATTEMPTS = 100;
-    public static final int MIN_WIDTH = 4;
-    public static final int MAX_WIDTH = 8;
-    public static final int MIN_HEIGHT = 4;
-    public static final int MAX_HEIGHT = 8;
-    public static final Field FLOOR_TILE = Field.WHITE;
+    public static final int MIN_WIDTH = 3;
+    public static final int MAX_WIDTH = 7;
+    public static final int MIN_HEIGHT = 3;
+    public static final int MAX_HEIGHT = 7;
+    public static final Tile FLOOR_TILE = Tile.WHITE;
 
+    private final boolean snapToOddPos;
     private final int numberOfAttempts;
     private final int minWidth;
     private final int maxWidth;
     private final int minHeight;
     private final int maxHeight;
-    private final Field floorTile;
+    private final Tile floorTile;
 
     private int curX;
     private int curY;
     private int curWidth;
     private int curHeight;
 
-    public RoomGenerator(int numberOfAttempts, int minWidth, int maxWidth,
-                         int minHeight, int maxHeight, Field floorTile)
+    public RoomGenerator(boolean snapToOddPos, int numberOfAttempts,
+                         int minWidth, int maxWidth, int minHeight,
+                         int maxHeight, Tile floorTile)
             throws IllegalArgumentException {
         if (maxWidth < minWidth) {
             throw new IllegalArgumentException("The minimum width of a room " +
                     "is larger than the maximum width.");
-        }
-        if (maxHeight < minHeight) {
+        } else if (maxHeight < minHeight) {
             throw new IllegalArgumentException("The minimum height of a room " +
                     "is larger than the maximum height.");
+        } else if (snapToOddPos && minWidth % 2 == 0) {
+            throw new IllegalArgumentException("The minimum width should be " +
+                    "odd.");
+        } else if (snapToOddPos && maxWidth % 2 == 0) {
+            throw new IllegalArgumentException("The maximum width should be " +
+                    "odd.");
+        } else if (snapToOddPos && minHeight % 2 == 0) {
+            throw new IllegalArgumentException("The minimum height should be " +
+                    "odd.");
+        } else if (snapToOddPos && maxHeight % 2 == 0) {
+            throw new IllegalArgumentException("The maximum height should be " +
+                    "odd.");
         }
 
+        this.snapToOddPos = snapToOddPos;
         this.numberOfAttempts = numberOfAttempts;
         this.minWidth = minWidth;
         this.maxWidth = maxWidth;
@@ -44,16 +58,26 @@ public class RoomGenerator implements TerrainGenerator {
     }
 
     private void getRoom(int width, int height) {
-        curWidth = Integer.MAX_VALUE;
-        curHeight = Integer.MAX_VALUE;
+        if (snapToOddPos) {
+            curWidth = Util.randInt(0, (maxWidth - minWidth) / 2 + 1) * 2
+                    + minWidth;
+            curHeight = Util.randInt(0, (maxHeight - minHeight) / 2 + 1) * 2
+                    + minHeight;
 
-        while (curWidth > width || curHeight > height) {
-            curWidth = Util.randInt(minWidth, maxWidth + 1);
-            curHeight = Util.randInt(minHeight, maxHeight + 1);
+            curX = Util.randInt(0, (width - curWidth) / 2 + 1) * 2;
+            curY = Util.randInt(0, (height - curHeight) / 2 + 1) * 2;
+        } else {
+            curWidth = Integer.MAX_VALUE;
+            curHeight = Integer.MAX_VALUE;
+
+            while (curWidth > width || curHeight > height) {
+                curWidth = Util.randInt(minWidth, maxWidth + 1);
+                curHeight = Util.randInt(minHeight, maxHeight + 1);
+            }
+
+            curX = Util.randInt(0, width - curWidth);
+            curY = Util.randInt(0, height - curHeight);
         }
-
-        curX = Util.randInt(0, width - curWidth);
-        curY = Util.randInt(0, height - curHeight);
     }
 
     private boolean[][] initializeGrid(int xoffset, int yoffset, int width,
@@ -110,6 +134,11 @@ public class RoomGenerator implements TerrainGenerator {
         if (maxHeight > height) {
             throw new IllegalArgumentException("Maximum height exceeds the " +
                     "height of the selected area.");
+        }
+
+        if (snapToOddPos) {
+            width = width - (1 - width % 2);
+            height = height - (1 - height % 2);
         }
 
         boolean[][] grid = initializeGrid(x, y, width, height, map);

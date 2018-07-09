@@ -5,16 +5,16 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Rectangle;
 
 public class FieldColorButton extends ToggleButton {
-    private final Field field;
+    private final Tile tile;
 
-    public FieldColorButton(Field field, double size, CanvasPane canvasPane) {
+    public FieldColorButton(Tile tile, double size, CanvasPane canvasPane) {
         super();
 
-        this.field = field;
+        this.tile = tile;
 
-        setGraphic(new Rectangle(0.9d * size, 0.9d * size, field.color()));
-        setTooltip(new Tooltip(field.toString()));
+        setGraphic(new Rectangle(0.9d * size, 0.9d * size, tile.color()));
+        setTooltip(new Tooltip(tile.toString()));
 
-        setOnAction(e -> canvasPane.setFieldColor(field));
+        setOnAction(e -> canvasPane.setFieldColor(tile));
     }
 }

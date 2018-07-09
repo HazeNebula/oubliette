@@ -42,17 +42,17 @@ public class NewMapPane extends GridPane {
         Label methodLabel = new Label("Fill:");
         GridPane.setHgrow(methodLabel, Priority.ALWAYS);
         ComboBox<String> methodBox = new ComboBox<>();
-        for (Field field : Field.values()) {
-            methodBox.getItems().add(field.toString());
+        for (Tile tile : Tile.values()) {
+            methodBox.getItems().add(tile.toString());
         }
         methodBox.getSelectionModel().select(0);
 
         Button newMapButton = new Button("New");
         newMapButton.setOnAction(e -> {
-            for (Field field : Field.values()) {
-                if (methodBox.getValue().equals(field.toString())) {
+            for (Tile tile : Tile.values()) {
+                if (methodBox.getValue().equals(tile.toString())) {
                     canvasPane.setMap(new Map(widthSpinner.getValue(),
-                            heightSpinner.getValue(), field));
+                            heightSpinner.getValue(), tile));
                 }
             }
             primaryStage.setTitle("New File");

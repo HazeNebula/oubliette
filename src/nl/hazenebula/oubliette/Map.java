@@ -5,15 +5,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Map implements Serializable {
-    private Field[][] fields;
+    private Tile[][] tiles;
     private List<FieldObject> objects;
     private Wall[][][] walls;
 
-    public Map(int width, int height, Field fill) {
-        fields = new Field[width][height];
-        for (int x = 0; x < fields.length; ++x) {
-            for (int y = 0; y < fields[x].length; ++y) {
-                fields[x][y] = fill;
+    public Map(int width, int height, Tile fill) {
+        tiles = new Tile[width][height];
+        for (int x = 0; x < tiles.length; ++x) {
+            for (int y = 0; y < tiles[x].length; ++y) {
+                tiles[x][y] = fill;
             }
         }
 
@@ -22,18 +22,18 @@ public class Map implements Serializable {
         walls = new Wall[width + 1][height + 1][2];
     }
 
-    public void resize(int width, int height, Field fill) {
-        Field[][] newFields = new Field[width][height];
-        for (int x = 0; x < newFields.length; ++x) {
-            for (int y = 0; y < newFields[x].length; ++y) {
-                if (x < fields.length && y < fields[x].length) {
-                    newFields[x][y] = fields[x][y];
+    public void resize(int width, int height, Tile fill) {
+        Tile[][] newTiles = new Tile[width][height];
+        for (int x = 0; x < newTiles.length; ++x) {
+            for (int y = 0; y < newTiles[x].length; ++y) {
+                if (x < tiles.length && y < tiles[x].length) {
+                    newTiles[x][y] = tiles[x][y];
                 } else {
-                    newFields[x][y] = fill;
+                    newTiles[x][y] = fill;
                 }
             }
         }
-        fields = newFields;
+        tiles = newTiles;
 
         List<FieldObject> newObjects = new LinkedList<>();
         for (FieldObject obj : objects) {
@@ -57,27 +57,27 @@ public class Map implements Serializable {
     }
 
     public int getWidth() {
-        return fields.length;
+        return tiles.length;
     }
 
     public int getHeight() {
-        return fields[0].length;
+        return tiles[0].length;
     }
 
-    public Field getField(int x, int y) {
-        return fields[x][y];
+    public Tile getField(int x, int y) {
+        return tiles[x][y];
     }
 
-    public Field[][] getFields() {
-        return fields;
+    public Tile[][] getTiles() {
+        return tiles;
     }
 
-    public void setField(int x, int y, Field field) {
-        fields[x][y] = field;
+    public void setField(int x, int y, Tile tile) {
+        tiles[x][y] = tile;
     }
 
-    public void setFields(Field[][] fields) {
-        this.fields = fields;
+    public void setTiles(Tile[][] tiles) {
+        this.tiles = tiles;
     }
 
     public List<FieldObject> getObjects() {

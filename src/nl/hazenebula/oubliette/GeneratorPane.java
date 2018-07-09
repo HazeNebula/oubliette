@@ -6,17 +6,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-import nl.hazenebula.terraingeneration.CaveGenerator;
-import nl.hazenebula.terraingeneration.MazeGenerator;
-import nl.hazenebula.terraingeneration.RoomGenerator;
-import nl.hazenebula.terraingeneration.TerrainGenerator;
+import nl.hazenebula.terraingeneration.*;
 
 public class GeneratorPane extends GridPane {
     private Generator curGen;
 
     public GeneratorPane(MapPane mapPane, CanvasPane canvasPane) {
-        Selection selection = new Selection();
-        canvasPane.setSelection(selection);
+        Selection selection = canvasPane.getSelection();
 
         Label selectionXLabel = new Label("Selection X:");
         GridPane.setHgrow(selectionXLabel, Priority.SOMETIMES);
@@ -68,12 +64,15 @@ public class GeneratorPane extends GridPane {
         GridPane.setVgrow(settingsPane, Priority.ALWAYS);
         settingsPane.setFitToWidth(true);
 
+        FillSettingsPane fillSettingsPane = new FillSettingsPane();
         CaveGeneratorSettingsPane caveGeneratorSettingsPane =
                 new CaveGeneratorSettingsPane();
         RoomGeneratorSettingsPane roomGeneratorSettingsPane =
                 new RoomGeneratorSettingsPane();
         MazeGeneratorSettingsPane mazeGeneratorSettingsPane =
                 new MazeGeneratorSettingsPane();
+        CompoundGeneratorSettingsPane compoundGeneratorSettingsPane =
+                new CompoundGeneratorSettingsPane();
 
         Label generatorLabel = new Label("Procedural Generators:");
         GridPane.setHgrow(generatorLabel, Priority.ALWAYS);
@@ -85,8 +84,15 @@ public class GeneratorPane extends GridPane {
 
         ToggleGroup toggleGroup = new ToggleGroup();
 
-        // todo: add a fill generator
-        // todo: add an option for the room generator to generate rooms that have odd widths/positions
+        ToggleButton fillButton = new ToggleButton("Fill");
+        fillButton.setMaxWidth(Double.MAX_VALUE);
+        fillButton.setToggleGroup(toggleGroup);
+        fillButton.setOnAction(e -> {
+            settingsPane.setContent(fillSettingsPane);
+            curGen = Generator.FILL;
+        });
+        buttonPane.getChildren().add(fillButton);
+
         ToggleButton caveGeneratorButton = new ToggleButton("Cave Generator");
         caveGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         caveGeneratorButton.setToggleGroup(toggleGroup);
@@ -119,20 +125,39 @@ public class GeneratorPane extends GridPane {
         compoundGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         compoundGeneratorButton.setToggleGroup(toggleGroup);
         compoundGeneratorButton.setOnAction(e -> {
-            // todo: add compound generator
+            settingsPane.setContent(compoundGeneratorSettingsPane);
+            curGen = Generator.COMPOUND;
         });
         buttonPane.getChildren().add(compoundGeneratorButton);
 
-        // todo: generate button should stand out more
         Button generateButton = new Button("Generate");
+        generateButton.setStyle("-fx-background-color: " +
+                "-fx-shadow-highlight-color, " +
+                "-fx-outer-border, " +
+                "-fx-inner-border, " +
+                "linear-gradient(to bottom,\n" +
+                "            ladder(\n" +
+                "                #90ee90,\n" +
+                "                derive(#90ee90,8%) 75%,\n" +
+                "                derive(#90ee90,10%) 80%\n" +
+                "            ),\n" +
+                "            derive(#90ee90,-8%));\n" +
+                "    -fx-background-insets: 0 0 -1 0, 0, 1, 2;\n" +
+                "    -fx-background-radius: 3px, 3px, 2px, 1px;\n" +
+                "    -fx-padding: 0.333333em 0.666667em 0.333333em " +
+                "0.666667em;\n" +
+                "    -fx-text-fill: -fx-text-base-color;\n" +
+                "    -fx-alignment: CENTER;\n" +
+                "    -fx-content-display: LEFT;");
         generateButton.setMaxWidth(Double.MAX_VALUE);
         generateButton.setOnAction(e -> {
             if (selection.isSelecting()) {
                 Map map = canvasPane.getMap();
                 TerrainGenerator gen = new CaveGenerator(0.45d, 3, 4, 5,
-                        Field.BLUE, Field.WHITE);
-
-                if (curGen == Generator.CAVE) {
+                        Tile.BLUE, Tile.WHITE);
+                if (curGen == Generator.FILL) {
+                    gen = new Fill(fillSettingsPane.getColor());
+                } else if (curGen == Generator.CAVE) {
                     gen = new CaveGenerator(
                             caveGeneratorSettingsPane.getOnProb(),
                             caveGeneratorSettingsPane.getOffThreshold(),
@@ -143,6 +168,7 @@ public class GeneratorPane extends GridPane {
                 } else if (curGen == Generator.ROOM) {
                     try {
                         gen = new RoomGenerator(
+                                roomGeneratorSettingsPane.getSnapToOddPos(),
                                 roomGeneratorSettingsPane.getAttempts(),
                                 roomGeneratorSettingsPane.getMinWidthValue(),
                                 roomGeneratorSettingsPane.getMaxWidthValue(),
@@ -160,7 +186,26 @@ public class GeneratorPane extends GridPane {
                             mazeGeneratorSettingsPane.getFloorTile()
                     );
                 } else if (curGen == Generator.COMPOUND) {
-
+                    try {
+                        gen = new CompoundGenerator(
+                                compoundGeneratorSettingsPane.getAttempts(),
+                                compoundGeneratorSettingsPane
+                                        .getMinWidthValue(),
+                                compoundGeneratorSettingsPane
+                                        .getMaxWidthValue(),
+                                compoundGeneratorSettingsPane
+                                        .getMinHeightValue(),
+                                compoundGeneratorSettingsPane
+                                        .getMaxHeightValue(),
+                                compoundGeneratorSettingsPane
+                                        .getElementPicker(),
+                                compoundGeneratorSettingsPane
+                                        .getConnectionProb(),
+                                compoundGeneratorSettingsPane.getFloorTile()
+                        );
+                    } catch (IllegalArgumentException ex) {
+                        showErrorMessage(ex.getMessage());
+                    }
                 }
 
                 try {
@@ -174,8 +219,8 @@ public class GeneratorPane extends GridPane {
             }
         });
 
-        settingsPane.setContent(caveGeneratorSettingsPane);
-        curGen = Generator.CAVE;
+        settingsPane.setContent(fillSettingsPane);
+        curGen = Generator.FILL;
         toggleGroup.getToggles().get(0).setSelected(true);
 
         add(selectionXLabel, 0, 0);

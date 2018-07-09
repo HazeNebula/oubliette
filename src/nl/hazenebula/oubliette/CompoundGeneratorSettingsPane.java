@@ -3,33 +3,28 @@ package nl.hazenebula.oubliette;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import nl.hazenebula.terraingeneration.RoomGenerator;
+import nl.hazenebula.terraingeneration.CompoundGenerator;
+import nl.hazenebula.terraingeneration.ElementPicker;
+import nl.hazenebula.terraingeneration.MazeType;
+import nl.hazenebula.terraingeneration.Point;
 
-public class RoomGeneratorSettingsPane extends GridPane {
-    private CheckBox snapToOddPosCheckBox;
+public class CompoundGeneratorSettingsPane extends GridPane {
     private Spinner<Integer> attemptsSpinner;
     private Spinner<Integer> minWidthSpinner;
     private Spinner<Integer> maxWidthSpinner;
     private Spinner<Integer> minHeightSpinner;
     private Spinner<Integer> maxHeightSpinner;
+    private ComboBox<MazeType> mazeTypeBox;
+    private Spinner<Double> connectionProbSpinner;
     private ComboBox<Tile> floorTileBox;
 
-    public RoomGeneratorSettingsPane() {
-        Tooltip snapToOddPosTooltip = new Tooltip("Checking this box will " +
-                "make the generator only spawn rooms at odd positions and of " +
-                "odd lengths.\nThis requires the min/max widths/heights to " +
-                "be odd.\nMay be useful in combination with the maze " +
-                "generator.");
-        snapToOddPosCheckBox = new CheckBox("Spawn odd rooms only.");
-        snapToOddPosCheckBox.setTooltip(snapToOddPosTooltip);
-        GridPane.setHgrow(snapToOddPosCheckBox, Priority.ALWAYS);
-
+    public CompoundGeneratorSettingsPane() {
         Label attemptsLabel = new Label("Attempts:");
         attemptsLabel.setTooltip(new Tooltip("The number of attempts that " +
                 "the generator will do to spawn rooms."));
         GridPane.setHgrow(attemptsLabel, Priority.ALWAYS);
         attemptsSpinner = new Spinner<>(1, Integer.MAX_VALUE,
-                RoomGenerator.NUMBER_OF_ATTEMPTS, 1);
+                CompoundGenerator.NUMBER_OF_ATTEMPTS, 1);
         attemptsSpinner.setEditable(true);
         attemptsSpinner.focusedProperty().addListener((observable, oldValue,
                                                        newValue) -> {
@@ -43,7 +38,7 @@ public class RoomGeneratorSettingsPane extends GridPane {
                 "(inclusive)."));
         GridPane.setHgrow(minWidthLabel, Priority.ALWAYS);
         minWidthSpinner = new Spinner<>(1, Integer.MAX_VALUE,
-                RoomGenerator.MIN_WIDTH, 1);
+                CompoundGenerator.MIN_WIDTH, 1);
         minWidthSpinner.setEditable(true);
         minWidthSpinner.focusedProperty().addListener((observable, oldValue,
                                                        newValue) -> {
@@ -57,7 +52,7 @@ public class RoomGeneratorSettingsPane extends GridPane {
                 "room (inclusive)"));
         GridPane.setHgrow(maxWidthLabel, Priority.ALWAYS);
         maxWidthSpinner = new Spinner<>(0, Integer.MAX_VALUE,
-                RoomGenerator.MAX_WIDTH, 1);
+                CompoundGenerator.MAX_WIDTH, 1);
         maxWidthSpinner.setEditable(true);
         maxWidthSpinner.focusedProperty().addListener((observable, oldValue,
                                                        newValue) -> {
@@ -71,7 +66,7 @@ public class RoomGeneratorSettingsPane extends GridPane {
                 "room (inclusive)"));
         GridPane.setHgrow(minHeightLabel, Priority.ALWAYS);
         minHeightSpinner = new Spinner<>(0, Integer.MAX_VALUE,
-                RoomGenerator.MIN_HEIGHT, 1);
+                CompoundGenerator.MIN_HEIGHT, 1);
         minHeightSpinner.setEditable(true);
         minHeightSpinner.focusedProperty().addListener((observable, oldValue,
                                                         newValue) -> {
@@ -85,13 +80,54 @@ public class RoomGeneratorSettingsPane extends GridPane {
                 "room (inclusive)"));
         GridPane.setHgrow(maxHeightLabel, Priority.ALWAYS);
         maxHeightSpinner = new Spinner<>(0, Integer.MAX_VALUE,
-                RoomGenerator.MAX_HEIGHT, 1);
+                CompoundGenerator.MAX_HEIGHT, 1);
         maxHeightSpinner.setEditable(true);
         maxHeightSpinner.focusedProperty().addListener((observable, oldValue,
                                                         newValue) -> {
             if (!newValue) {
                 maxHeightSpinner.increment(0);
             }
+        });
+
+        Label connectionProbLabel = new Label("Connection probability:");
+        connectionProbLabel.setTooltip(new Tooltip("The probability that " +
+                "two squares separated by a wall will be joined."));
+        GridPane.setHgrow(connectionProbLabel, Priority.ALWAYS);
+        connectionProbSpinner = new Spinner<>(0.0d, 1.0d,
+                CompoundGenerator.CONNECTION_PROB, 0.05d);
+        connectionProbSpinner.setEditable(true);
+        connectionProbSpinner.focusedProperty().addListener((observable, oldValue,
+                                                             newValue) -> {
+            if (!newValue) {
+                connectionProbSpinner.increment(0);
+            }
+        });
+
+        Tooltip mazeTypeTooltip = new Tooltip("The method by which corridors " +
+                "will be generated.\nLast will usually give longer, winding " +
+                "corridors,\nRandom can have shorter corridors.");
+        Label mazeTypeLabel = new Label("Maze Type:");
+        mazeTypeLabel.setTooltip(mazeTypeTooltip);
+        GridPane.setHgrow(mazeTypeLabel, Priority.ALWAYS);
+        mazeTypeBox = new ComboBox<>();
+        mazeTypeBox.setTooltip(mazeTypeTooltip);
+        mazeTypeBox.getItems().addAll(MazeType.values());
+        mazeTypeBox.getSelectionModel().select(CompoundGenerator.MAZE_TYPE);
+
+        Button explanationButton = new Button("Explanation");
+        explanationButton.setOnAction(e -> {
+            Alert explanation = new Alert(Alert.AlertType.INFORMATION);
+            explanation.setTitle("Explanation");
+            explanation.setHeaderText(null);
+            explanation.setGraphic(null);
+            explanation.setContentText("This generator will generate random " +
+                    "rooms connected by random corridors. Rooms must have an " +
+                    "odd min/max width/height. First, attempts are made to " +
+                    "generate rooms. After that has finished, the rest of " +
+                    "the available space is filled up by random mazes. All " +
+                    "separate areas are then connected, and corridors that " +
+                    "lead nowhere are removed.");
+            explanation.showAndWait();
         });
 
         Tooltip floorTileTooltip = new Tooltip("The floor color.\nThis " +
@@ -104,47 +140,23 @@ public class RoomGeneratorSettingsPane extends GridPane {
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
         floorTileBox.getItems().addAll(Tile.values());
-        floorTileBox.getSelectionModel().select(RoomGenerator.FLOOR_TILE);
+        floorTileBox.getSelectionModel().select(CompoundGenerator.FLOOR_TILE);
 
-        Button explanationButton = new Button("Explanation");
-        explanationButton.setOnAction(e -> {
-            Alert explanation = new Alert(Alert.AlertType.INFORMATION);
-            explanation.setTitle("Explanation");
-            explanation.setHeaderText(null);
-            explanation.setGraphic(null);
-            explanation.setContentText("This generator will generate random," +
-                    " rectangular, non-overlapping rooms. It does so by " +
-                    "generating a rectangle with a certain width and height." +
-                    " It will then try to generate random x and y attributes" +
-                    " that make it fit within the selected area. If no part" +
-                    " of this area is occupied by another room, the room is " +
-                    "placed. The generator will attempt to place a certain " +
-                    "number of rooms, after which it terminates.\n\nIf " +
-                    "anything exists of the floor color within the selected " +
-                    "area, no room will be placed within the tiles of that " +
-                    "color.\n\nHover over an item to see a short explanation " +
-                    "of that parameter.");
-            explanation.showAndWait();
-        });
-
-        add(snapToOddPosCheckBox, 0, 1);
-        add(attemptsLabel, 0, 2);
-        add(attemptsSpinner, 0, 3);
-        add(minWidthLabel, 0, 4);
-        add(minWidthSpinner, 0, 5);
-        add(maxWidthLabel, 0, 6);
-        add(maxWidthSpinner, 0, 7);
-        add(minHeightLabel, 0, 8);
-        add(minHeightSpinner, 0, 9);
-        add(maxHeightLabel, 0, 10);
-        add(maxHeightSpinner, 0, 11);
-        add(floorTileLabel, 0, 12);
-        add(floorTileBox, 0, 13);
+        add(attemptsLabel, 0, 0);
+        add(attemptsSpinner, 0, 1);
+        add(minWidthLabel, 0, 2);
+        add(minWidthSpinner, 0, 3);
+        add(maxWidthLabel, 0, 4);
+        add(maxWidthSpinner, 0, 5);
+        add(minHeightLabel, 0, 6);
+        add(minHeightSpinner, 0, 7);
+        add(maxHeightLabel, 0, 8);
+        add(maxHeightSpinner, 0, 9);
+        add(mazeTypeLabel, 0, 10);
+        add(mazeTypeBox, 0, 11);
+        add(connectionProbLabel, 0, 12);
+        add(connectionProbSpinner, 0, 13);
         add(explanationButton, 0, 14);
-    }
-
-    public boolean getSnapToOddPos() {
-        return snapToOddPosCheckBox.isSelected();
     }
 
     public int getAttempts() {
@@ -165,6 +177,14 @@ public class RoomGeneratorSettingsPane extends GridPane {
 
     public int getMaxHeightValue() {
         return maxHeightSpinner.getValue();
+    }
+
+    public ElementPicker<Point> getElementPicker() {
+        return mazeTypeBox.getValue().getElementPicker();
+    }
+
+    public double getConnectionProb() {
+        return connectionProbSpinner.getValue();
     }
 
     public Tile getFloorTile() {

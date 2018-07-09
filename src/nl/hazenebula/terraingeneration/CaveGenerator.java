@@ -1,25 +1,25 @@
 package nl.hazenebula.terraingeneration;
 
-import nl.hazenebula.oubliette.Field;
 import nl.hazenebula.oubliette.Map;
+import nl.hazenebula.oubliette.Tile;
 
 public class CaveGenerator implements TerrainGenerator {
     public static final double ON_PROB = 0.45d;
     public static final int OFF_THRESHOLD = 3;
     public static final int ON_THRESHOLD = 4;
     public static final int NUMBER_OF_STEPS = 5;
-    public static final Field BACK_TILE = Field.BLUE;
-    public static final Field FLOOR_TILE = Field.WHITE;
+    public static final Tile BACK_TILE = Tile.BLUE;
+    public static final Tile FLOOR_TILE = Tile.WHITE;
 
     private final double onProb;
     private final int offThreshold;
     private final int onThreshold;
     private final int numberOfSteps;
-    private final Field backColor;
-    private final Field floor;
+    private final Tile backColor;
+    private final Tile floor;
 
     public CaveGenerator(double onProb, int offThreshold, int onThreshold,
-                         int numberOfSteps, Field backTile, Field floorTile) {
+                         int numberOfSteps, Tile backTile, Tile floorTile) {
         this.onProb = onProb;
         this.offThreshold = offThreshold;
         this.onThreshold = onThreshold;
@@ -83,8 +83,8 @@ public class CaveGenerator implements TerrainGenerator {
                                Map map) {
         for (int x = 0; x < grid.length; ++x) {
             for (int y = 0; y < grid[x].length; ++y) {
-                Field field = (grid[x][y]) ? floor : backColor;
-                map.setField(x + xoffset, y + yoffset, field);
+                Tile tile = (grid[x][y]) ? floor : backColor;
+                map.setField(x + xoffset, y + yoffset, tile);
             }
         }
     }

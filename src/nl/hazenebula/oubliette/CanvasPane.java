@@ -44,7 +44,7 @@ public class CanvasPane extends ScrollPane {
     private final MouseDrawHandler drawHandler;
 
     private Tool curTool;
-    private Field curField;
+    private Tile curTile;
     private Color gridColor;
     private FieldObject curObject;
     private Wall curWall;
@@ -80,10 +80,10 @@ public class CanvasPane extends ScrollPane {
         setContent(canvas);
 
         curTool = Tool.FIELD;
-        curField = null;
-        gridColor = Field.BLUE.color();
+        curTile = null;
+        gridColor = Tile.BLUE.color();
         curObject = null;
-        selection = null;
+        selection = new Selection();
         draggingSelection = false;
 
         hvalueProperty().addListener((observable, oldValue, newValue) -> {
@@ -118,7 +118,7 @@ public class CanvasPane extends ScrollPane {
             if (curTool == Tool.FIELD) {
                 if (x >= 0 && x < map.getWidth() && y >= 0
                         && y < map.getHeight()) {
-                    map.setField(x, y, curField);
+                    map.setField(x, y, curTile);
                     drawField(x, y);
                 }
             } else if (curTool == Tool.FIELD_OBJECT) {
@@ -253,11 +253,11 @@ public class CanvasPane extends ScrollPane {
                 if (x >= 0 && x < map.getWidth() && y >= 0
                         && y < map.getHeight()) {
                     if (curTool == Tool.FIELD) {
-                        map.setField(x, y, curField);
+                        map.setField(x, y, curTile);
                         drawField(x, y);
                     } else if (curTool == Tool.SELECTION) {
                         if (draggingSelection) {
-                            if (x > selection.getX() && y > selection.getY()) {
+                            if (x >= selection.getX() && y >= selection.getY()) {
                                 selection.setWidth(x - selection.getX() + 1);
                                 selection.setHeight(y - selection.getY() + 1);
                             }
@@ -620,7 +620,7 @@ public class CanvasPane extends ScrollPane {
 
             gc.save();
             gc.setFill(SELECTION_COLOR);
-            gc.setGlobalAlpha(0.5d);
+            gc.setGlobalAlpha(0.25d);
 
             gc.fillRect(xPos, yPos, width, height);
 
@@ -663,7 +663,7 @@ public class CanvasPane extends ScrollPane {
         drawSelection();
     }
 
-    public void resize(int width, int height, Field fill) {
+    public void resize(int width, int height, Tile fill) {
         map.resize(width, height, fill);
 
         fieldWidthProperty.setValue(width);
@@ -674,8 +674,8 @@ public class CanvasPane extends ScrollPane {
         drawAll();
     }
 
-    public void setFieldColor(Field field) {
-        curField = field;
+    public void setFieldColor(Tile tile) {
+        curTile = tile;
     }
 
     public void setFieldObject(FieldObject object) {
@@ -704,12 +704,8 @@ public class CanvasPane extends ScrollPane {
         curTool = newTool;
     }
 
-    public void setSelection(Selection selection) {
-        this.selection = selection;
-    }
-
     public void setMap(Map map) {
-        this.map.setFields(map.getFields());
+        this.map.setTiles(map.getTiles());
         this.map.setObjects(map.getObjects());
         this.map.setWalls(map.getWalls());
 
@@ -739,6 +735,10 @@ public class CanvasPane extends ScrollPane {
 
     public int getSquareSize() {
         return size.get();
+    }
+
+    public Selection getSelection() {
+        return selection;
     }
 
     public Map getMap() {

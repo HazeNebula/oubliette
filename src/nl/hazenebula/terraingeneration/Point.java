@@ -10,7 +10,17 @@ public class Point {
     }
 
     @Override
-    public String toString() {
-        return x + "\t" + y;
+    public boolean equals(Object o) {
+        if (o instanceof Point) {
+            Point other = (Point)o;
+            return this.x == other.x && this.y == other.y;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * x + 31 * y;
     }
 }
