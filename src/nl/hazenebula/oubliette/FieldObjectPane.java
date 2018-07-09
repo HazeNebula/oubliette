@@ -155,9 +155,9 @@ public class FieldObjectPane extends GridPane {
 
         Label colorLabel = new Label("Object Color:");
         ComboBox<String> colorBox = new ComboBox<>();
-        for (Field field : Field.values()) {
-            if (field != Field.WHITE) {
-                colorBox.getItems().add(field.toString());
+        for (Tile tile : Tile.values()) {
+            if (tile != Tile.WHITE) {
+                colorBox.getItems().add(tile.toString());
             }
         }
         colorBox.getSelectionModel().select("Blue");
@@ -182,7 +182,7 @@ public class FieldObjectPane extends GridPane {
 
         drawingNumbers = false;
         curNumImg = new NumberObjectImage("Times New Roman",
-                Field.BLUE.color());
+                Tile.BLUE.color());
         GridPane numberPane = new GridPane();
 
         Spinner<Integer> numberSpinner = new Spinner<>(MIN_NUM, MAX_NUM,
@@ -233,7 +233,7 @@ public class FieldObjectPane extends GridPane {
 
         colorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             loadButtons(buttons, toggleGroup, objects, newValue);
-            curNumImg.setColor(Field.fromString(newValue).color());
+            curNumImg.setColor(Tile.fromString(newValue).color());
 
             ImageView img = new ImageView(curNumImg.getImage(INIT_NUM));
             img.setFitWidth(BUTTON_SIZE);
@@ -244,7 +244,7 @@ public class FieldObjectPane extends GridPane {
         curImg = objects.get(0);
         curObject = new FieldObject(curImg.getImage(1, 1), 0, 0, 1, 1,
                 Direction.NORTH);
-        loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
+        loadButtons(buttons, toggleGroup, objects, Tile.BLUE.toString());
         drawCanvas();
 
         add(resizeWrapper, 0, 0, 2, 1);

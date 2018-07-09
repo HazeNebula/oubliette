@@ -1,18 +1,18 @@
 package nl.hazenebula.terraingeneration;
 
 import nl.hazenebula.oubliette.CanvasPane;
-import nl.hazenebula.oubliette.Field;
 import nl.hazenebula.oubliette.Map;
+import nl.hazenebula.oubliette.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MazeGenerator implements TerrainGenerator {
     public static final MazeType MAZE_TYPE = MazeType.LAST;
-    public static final Field FLOOR_TILE = Field.WHITE;
+    public static final Tile FLOOR_TILE = Tile.WHITE;
 
     private ElementPicker<Point> ep;
-    private Field floorTile;
+    private Tile floorTile;
 
     private int width;
     private int height;
@@ -20,7 +20,7 @@ public class MazeGenerator implements TerrainGenerator {
 
     private CanvasPane canvas;
 
-    public MazeGenerator(ElementPicker<Point> ep, Field floorTile) {
+    public MazeGenerator(ElementPicker<Point> ep, Tile floorTile) {
         this.ep = ep;
         this.floorTile = floorTile;
         this.canvas = canvas;

@@ -11,14 +11,14 @@ public class RoomGeneratorSettingsPane extends GridPane {
 //    public static final int MAX_WIDTH = 8;
 //    public static final int MIN_HEIGHT = 4;
 //    public static final int MAX_HEIGHT = 8;
-//    public static final Field FLOOR_TILE = Field.WHITE;
+//    public static final Tile FLOOR_TILE = Tile.WHITE;
 
     private Spinner<Integer> attemptsSpinner;
     private Spinner<Integer> minWidthSpinner;
     private Spinner<Integer> maxWidthSpinner;
     private Spinner<Integer> minHeightSpinner;
     private Spinner<Integer> maxHeightSpinner;
-    private ComboBox<Field> floorTileBox;
+    private ComboBox<Tile> floorTileBox;
 
     public RoomGeneratorSettingsPane() {
         Label attemptsLabel = new Label("Attempts:");
@@ -100,7 +100,7 @@ public class RoomGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(floorTileLabel, Priority.ALWAYS);
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
-        floorTileBox.getItems().addAll(Field.values());
+        floorTileBox.getItems().addAll(Tile.values());
         floorTileBox.getSelectionModel().select(RoomGenerator.FLOOR_TILE);
 
         Button explanationButton = new Button("Explanation");
@@ -159,7 +159,7 @@ public class RoomGeneratorSettingsPane extends GridPane {
         return maxHeightSpinner.getValue();
     }
 
-    public Field getFloorTile() {
+    public Tile getFloorTile() {
         return floorTileBox.getValue();
     }
 }

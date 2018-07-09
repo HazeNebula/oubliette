@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 
 import java.io.Serializable;
 
-public enum Field implements Serializable {
+public enum Tile implements Serializable {
     WHITE(Color.WHITE, "White"),
     BLUE(Color.rgb(51, 153, 204), "Blue"),
     RED(Color.rgb(183, 65, 14), "Red"),
@@ -15,7 +15,7 @@ public enum Field implements Serializable {
     private Color color;
     private String str;
 
-    Field(Color color, String str) {
+    Tile(Color color, String str) {
         this.color = color;
         this.str = str;
     }
@@ -29,10 +29,10 @@ public enum Field implements Serializable {
         return str;
     }
 
-    public static Field fromString(String str) {
-        for (Field field : Field.values()) {
-            if (field.toString().equals(str)) {
-                return field;
+    public static Tile fromString(String str) {
+        for (Tile tile : Tile.values()) {
+            if (tile.toString().equals(str)) {
+                return tile;
             }
         }
 

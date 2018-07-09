@@ -10,8 +10,8 @@ public class CaveGeneratorSettingsPane extends GridPane {
     private Spinner<Integer> offThresholdSpinner;
     private Spinner<Integer> onThresholdSpinner;
     private Spinner<Integer> stepsSpinner;
-    private ComboBox<Field> backTileBox;
-    private ComboBox<Field> floorTileBox;
+    private ComboBox<Tile> backTileBox;
+    private ComboBox<Tile> floorTileBox;
 
     public CaveGeneratorSettingsPane() {
         Label onProbLabel = new Label("On probability:");
@@ -80,7 +80,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(backTileLabel, Priority.ALWAYS);
         backTileBox = new ComboBox<>();
         backTileBox.setTooltip(backTileTooltip);
-        backTileBox.getItems().addAll(Field.values());
+        backTileBox.getItems().addAll(Tile.values());
         backTileBox.getSelectionModel().select(CaveGenerator.BACK_TILE);
 
         Tooltip floorTileTooltip = new Tooltip("This color is used for the " +
@@ -90,7 +90,7 @@ public class CaveGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(floorTileLabel, Priority.ALWAYS);
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
-        floorTileBox.getItems().addAll(Field.values());
+        floorTileBox.getItems().addAll(Tile.values());
         floorTileBox.getSelectionModel().select(CaveGenerator.FLOOR_TILE);
 
         Button explanationButton = new Button("Explanation");
@@ -148,11 +148,11 @@ public class CaveGeneratorSettingsPane extends GridPane {
         return stepsSpinner.getValue();
     }
 
-    public Field getBackTile() {
+    public Tile getBackTile() {
         return backTileBox.getValue();
     }
 
-    public Field getFloorTile() {
+    public Tile getFloorTile() {
         return floorTileBox.getValue();
     }
 }

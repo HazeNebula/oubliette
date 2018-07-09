@@ -46,15 +46,15 @@ public class ResizeMapPane extends GridPane {
         Label fillLabel = new Label("Fill:");
         GridPane.setHgrow(fillLabel, Priority.ALWAYS);
         ComboBox<String> fill = new ComboBox<>();
-        for (Field field : Field.values()) {
-            fill.getItems().add(field.toString());
+        for (Tile tile : Tile.values()) {
+            fill.getItems().add(tile.toString());
         }
         fill.getSelectionModel().select(0);
 
         Button newMapButton = new Button("Resize");
         newMapButton.setOnAction(e -> {
             canvasPane.resize(widthSpinner.getValue(), heightSpinner.getValue(),
-                    Field.fromString(fill.getSelectionModel()
+                    Tile.fromString(fill.getSelectionModel()
                             .getSelectedItem()));
             mapPane.updateMinimap();
 

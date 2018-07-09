@@ -9,7 +9,7 @@ import nl.hazenebula.terraingeneration.*;
 
 public class MazeGeneratorSettingsPane extends GridPane {
     private ComboBox<MazeType> mazeTypeBox;
-    private ComboBox<Field> floorTileBox;
+    private ComboBox<Tile> floorTileBox;
 
     public MazeGeneratorSettingsPane() {
         Tooltip mazeTypeTooltip = new Tooltip("The method by which mazes " +
@@ -33,7 +33,7 @@ public class MazeGeneratorSettingsPane extends GridPane {
         GridPane.setHgrow(floorTileLabel, Priority.ALWAYS);
         floorTileBox = new ComboBox<>();
         floorTileBox.setTooltip(floorTileTooltip);
-        floorTileBox.getItems().addAll(Field.values());
+        floorTileBox.getItems().addAll(Tile.values());
         floorTileBox.getSelectionModel().select(RoomGenerator.FLOOR_TILE);
 
         add(mazeTypeLabel, 0, 0);
@@ -46,7 +46,7 @@ public class MazeGeneratorSettingsPane extends GridPane {
         return mazeTypeBox.getValue().getElementPicker();
     }
 
-    public Field getFloorTile() {
+    public Tile getFloorTile() {
         return floorTileBox.getValue();
     }
 }

@@ -44,7 +44,7 @@ public class CanvasPane extends ScrollPane {
     private final MouseDrawHandler drawHandler;
 
     private Tool curTool;
-    private Field curField;
+    private Tile curTile;
     private Color gridColor;
     private FieldObject curObject;
     private Wall curWall;
@@ -80,8 +80,8 @@ public class CanvasPane extends ScrollPane {
         setContent(canvas);
 
         curTool = Tool.FIELD;
-        curField = null;
-        gridColor = Field.BLUE.color();
+        curTile = null;
+        gridColor = Tile.BLUE.color();
         curObject = null;
         selection = new Selection();
         draggingSelection = false;
@@ -118,7 +118,7 @@ public class CanvasPane extends ScrollPane {
             if (curTool == Tool.FIELD) {
                 if (x >= 0 && x < map.getWidth() && y >= 0
                         && y < map.getHeight()) {
-                    map.setField(x, y, curField);
+                    map.setField(x, y, curTile);
                     drawField(x, y);
                 }
             } else if (curTool == Tool.FIELD_OBJECT) {
@@ -253,7 +253,7 @@ public class CanvasPane extends ScrollPane {
                 if (x >= 0 && x < map.getWidth() && y >= 0
                         && y < map.getHeight()) {
                     if (curTool == Tool.FIELD) {
-                        map.setField(x, y, curField);
+                        map.setField(x, y, curTile);
                         drawField(x, y);
                     } else if (curTool == Tool.SELECTION) {
                         if (draggingSelection) {
@@ -663,7 +663,7 @@ public class CanvasPane extends ScrollPane {
         drawSelection();
     }
 
-    public void resize(int width, int height, Field fill) {
+    public void resize(int width, int height, Tile fill) {
         map.resize(width, height, fill);
 
         fieldWidthProperty.setValue(width);
@@ -674,8 +674,8 @@ public class CanvasPane extends ScrollPane {
         drawAll();
     }
 
-    public void setFieldColor(Field field) {
-        curField = field;
+    public void setFieldColor(Tile tile) {
+        curTile = tile;
     }
 
     public void setFieldObject(FieldObject object) {
@@ -705,7 +705,7 @@ public class CanvasPane extends ScrollPane {
     }
 
     public void setMap(Map map) {
-        this.map.setFields(map.getFields());
+        this.map.setTiles(map.getTiles());
         this.map.setObjects(map.getObjects());
         this.map.setWalls(map.getWalls());
 

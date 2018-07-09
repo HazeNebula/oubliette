@@ -135,7 +135,7 @@ public class GeneratorPane extends GridPane {
             if (selection.isSelecting()) {
                 Map map = canvasPane.getMap();
                 TerrainGenerator gen = new CaveGenerator(0.45d, 3, 4, 5,
-                        Field.BLUE, Field.WHITE);
+                        Tile.BLUE, Tile.WHITE);
                 if (curGen == Generator.FILL) {
                     gen = new Fill(fillSettingsPane.getColor());
                 } else if (curGen == Generator.CAVE) {

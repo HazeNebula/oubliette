@@ -134,9 +134,9 @@ public class WallPane extends GridPane {
 
         Label colorLabel = new Label("Object Color:");
         ComboBox<String> colorBox = new ComboBox<>();
-        for (Field field : Field.values()) {
-            if (field != Field.WHITE) {
-                colorBox.getItems().add(field.toString());
+        for (Tile tile : Tile.values()) {
+            if (tile != Tile.WHITE) {
+                colorBox.getItems().add(tile.toString());
             }
         }
         colorBox.getSelectionModel().select("Blue");
@@ -164,7 +164,7 @@ public class WallPane extends GridPane {
 
         curImg = objects.get(0);
         curObject = new Wall(curImg.getImage(1), 1, Direction.NORTH);
-        loadButtons(buttons, toggleGroup, objects, Field.BLUE.toString());
+        loadButtons(buttons, toggleGroup, objects, Tile.BLUE.toString());
         drawCanvas();
 
         add(resizeWrapper, 0, 0, 2, 1);

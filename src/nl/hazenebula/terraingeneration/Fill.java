@@ -1,14 +1,14 @@
 package nl.hazenebula.terraingeneration;
 
-import nl.hazenebula.oubliette.Field;
 import nl.hazenebula.oubliette.Map;
+import nl.hazenebula.oubliette.Tile;
 
 public class Fill implements TerrainGenerator {
-    public static final Field FILL_COLOR = Field.BLUE;
+    public static final Tile FILL_COLOR = Tile.BLUE;
 
-    private Field color;
+    private Tile color;
 
-    public Fill(Field color) {
+    public Fill(Tile color) {
         this.color = color;
     }
 

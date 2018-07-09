@@ -1,7 +1,7 @@
 package nl.hazenebula.terraingeneration;
 
-import nl.hazenebula.oubliette.Field;
 import nl.hazenebula.oubliette.Map;
+import nl.hazenebula.oubliette.Tile;
 
 public class RoomGenerator implements TerrainGenerator {
     public static final int NUMBER_OF_ATTEMPTS = 100;
@@ -9,14 +9,14 @@ public class RoomGenerator implements TerrainGenerator {
     public static final int MAX_WIDTH = 8;
     public static final int MIN_HEIGHT = 4;
     public static final int MAX_HEIGHT = 8;
-    public static final Field FLOOR_TILE = Field.WHITE;
+    public static final Tile FLOOR_TILE = Tile.WHITE;
 
     private final int numberOfAttempts;
     private final int minWidth;
     private final int maxWidth;
     private final int minHeight;
     private final int maxHeight;
-    private final Field floorTile;
+    private final Tile floorTile;
 
     private int curX;
     private int curY;
@@ -24,7 +24,7 @@ public class RoomGenerator implements TerrainGenerator {
     private int curHeight;
 
     public RoomGenerator(int numberOfAttempts, int minWidth, int maxWidth,
-                         int minHeight, int maxHeight, Field floorTile)
+                         int minHeight, int maxHeight, Tile floorTile)
             throws IllegalArgumentException {
         if (maxWidth < minWidth) {
             throw new IllegalArgumentException("The minimum width of a room " +
