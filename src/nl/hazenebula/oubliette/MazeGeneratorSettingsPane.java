@@ -52,10 +52,10 @@ public class MazeGeneratorSettingsPane extends GridPane {
         });
 
         add(mazeTypeLabel, 0, 0);
-        add(mazeTypeBox, 1, 0);
-        add(floorTileLabel, 0, 1);
-        add(floorTileBox, 1, 1);
-        add(explanationButton, 0, 2, 2, 1);
+        add(mazeTypeBox, 0, 1);
+        add(floorTileLabel, 0, 2);
+        add(floorTileBox, 0, 3);
+        add(explanationButton, 0, 4);
     }
 
     public ElementPicker<Point> getElementPicker() {

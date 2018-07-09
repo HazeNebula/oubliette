@@ -6,7 +6,7 @@ import javafx.scene.layout.Priority;
 import nl.hazenebula.terraingeneration.RoomGenerator;
 
 public class RoomGeneratorSettingsPane extends GridPane {
-    private CheckBox snapToOddPosLabel;
+    private CheckBox snapToOddPosCheckBox;
     private Spinner<Integer> attemptsSpinner;
     private Spinner<Integer> minWidthSpinner;
     private Spinner<Integer> maxWidthSpinner;
@@ -20,9 +20,9 @@ public class RoomGeneratorSettingsPane extends GridPane {
                 "odd lengths.\nThis requires the min/max widths/heights to " +
                 "be odd.\nMay be useful in combination with the maze " +
                 "generator.");
-        snapToOddPosLabel = new CheckBox("Spawn odd rooms only.");
-        snapToOddPosLabel.setTooltip(snapToOddPosTooltip);
-        GridPane.setHgrow(snapToOddPosLabel, Priority.ALWAYS);
+        snapToOddPosCheckBox = new CheckBox("Spawn odd rooms only.");
+        snapToOddPosCheckBox.setTooltip(snapToOddPosTooltip);
+        GridPane.setHgrow(snapToOddPosCheckBox, Priority.ALWAYS);
 
         Label attemptsLabel = new Label("Attempts:");
         attemptsLabel.setTooltip(new Tooltip("The number of attempts that " +
@@ -127,24 +127,24 @@ public class RoomGeneratorSettingsPane extends GridPane {
             explanation.showAndWait();
         });
 
-        add(attemptsLabel, 0, 0);
-        add(attemptsSpinner, 1, 0);
-        add(minWidthLabel, 0, 1);
-        add(minWidthSpinner, 1, 1);
-        add(maxWidthLabel, 0, 2);
-        add(maxWidthSpinner, 1, 2);
-        add(minHeightLabel, 0, 3);
-        add(minHeightSpinner, 1, 3);
-        add(maxHeightLabel, 0, 4);
-        add(maxHeightSpinner, 1, 4);
-        add(floorTileLabel, 0, 5);
-        add(floorTileBox, 1, 5);
-        add(snapToOddPosLabel, 0, 6, 2, 1);
-        add(explanationButton, 0, 7);
+        add(snapToOddPosCheckBox, 0, 1);
+        add(attemptsLabel, 0, 2);
+        add(attemptsSpinner, 0, 3);
+        add(minWidthLabel, 0, 4);
+        add(minWidthSpinner, 0, 5);
+        add(maxWidthLabel, 0, 6);
+        add(maxWidthSpinner, 0, 7);
+        add(minHeightLabel, 0, 8);
+        add(minHeightSpinner, 0, 9);
+        add(maxHeightLabel, 0, 10);
+        add(maxHeightSpinner, 0, 11);
+        add(floorTileLabel, 0, 12);
+        add(floorTileBox, 0, 13);
+        add(explanationButton, 0, 14);
     }
 
     public boolean getSnapToOddPos() {
-        return snapToOddPosLabel.isSelected();
+        return snapToOddPosCheckBox.isSelected();
     }
 
     public int getAttempts() {

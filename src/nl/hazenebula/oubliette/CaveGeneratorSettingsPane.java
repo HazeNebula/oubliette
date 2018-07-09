@@ -118,18 +118,18 @@ public class CaveGeneratorSettingsPane extends GridPane {
         });
 
         add(onProbLabel, 0, 0);
-        add(onProbSpinner, 1, 0);
-        add(offThresholdLabel, 0, 1);
-        add(offThresholdSpinner, 1, 1);
-        add(onThresholdLabel, 0, 2);
-        add(onThresholdSpinner, 1, 2);
-        add(stepsLabel, 0, 3);
-        add(stepsSpinner, 1, 3);
-        add(backTileLabel, 0, 4);
-        add(backTileBox, 1, 4);
-        add(floorTileLabel, 0, 5);
-        add(floorTileBox, 1, 5);
-        add(explanationButton, 0, 6);
+        add(onProbSpinner, 0, 1);
+        add(offThresholdLabel, 0, 2);
+        add(offThresholdSpinner, 0, 3);
+        add(onThresholdLabel, 0, 4);
+        add(onThresholdSpinner, 0, 5);
+        add(stepsLabel, 0, 6);
+        add(stepsSpinner, 0, 7);
+        add(backTileLabel, 0, 8);
+        add(backTileBox, 0, 9);
+        add(floorTileLabel, 0, 10);
+        add(floorTileBox, 0, 11);
+        add(explanationButton, 0, 12);
     }
 
     public double getOnProb() {

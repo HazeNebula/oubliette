@@ -143,20 +143,20 @@ public class CompoundGeneratorSettingsPane extends GridPane {
         floorTileBox.getSelectionModel().select(CompoundGenerator.FLOOR_TILE);
 
         add(attemptsLabel, 0, 0);
-        add(attemptsSpinner, 1, 0);
-        add(minWidthLabel, 0, 1);
-        add(minWidthSpinner, 1, 1);
-        add(maxWidthLabel, 0, 2);
-        add(maxWidthSpinner, 1, 2);
-        add(minHeightLabel, 0, 3);
-        add(minHeightSpinner, 1, 3);
-        add(maxHeightLabel, 0, 4);
-        add(maxHeightSpinner, 1, 4);
-        add(mazeTypeLabel, 0, 5);
-        add(mazeTypeBox, 1, 5);
-        add(connectionProbLabel, 0, 6);
-        add(connectionProbSpinner, 1, 6);
-        add(explanationButton, 0, 7, 2, 1);
+        add(attemptsSpinner, 0, 1);
+        add(minWidthLabel, 0, 2);
+        add(minWidthSpinner, 0, 3);
+        add(maxWidthLabel, 0, 4);
+        add(maxWidthSpinner, 0, 5);
+        add(minHeightLabel, 0, 6);
+        add(minHeightSpinner, 0, 7);
+        add(maxHeightLabel, 0, 8);
+        add(maxHeightSpinner, 0, 9);
+        add(mazeTypeLabel, 0, 10);
+        add(mazeTypeBox, 0, 11);
+        add(connectionProbLabel, 0, 12);
+        add(connectionProbSpinner, 0, 13);
+        add(explanationButton, 0, 14);
     }
 
     public int getAttempts() {
