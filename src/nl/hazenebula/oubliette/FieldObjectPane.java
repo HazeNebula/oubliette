@@ -328,7 +328,7 @@ public class FieldObjectPane extends GridPane {
 
         List<FieldObjectImage> objects = new LinkedList<>();
         for (FieldObjectImage img : allObjects) {
-            if (img.getName().toLowerCase().contains(color.toLowerCase())) {
+            if (img.getName().toLowerCase().endsWith(color.toLowerCase())) {
                 objects.add(img);
             }
         }

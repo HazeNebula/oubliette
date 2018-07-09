@@ -246,7 +246,7 @@ public class WallPane extends GridPane {
 
         List<WallImage> objects = new LinkedList<>();
         for (WallImage img : allObjects) {
-            if (img.getName().toLowerCase().contains(color.toLowerCase())) {
+            if (img.getName().toLowerCase().endsWith(color.toLowerCase())) {
                 objects.add(img);
             }
         }
