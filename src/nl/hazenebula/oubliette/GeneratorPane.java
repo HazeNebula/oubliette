@@ -6,10 +6,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-import nl.hazenebula.terraingeneration.CaveGenerator;
-import nl.hazenebula.terraingeneration.MazeGenerator;
-import nl.hazenebula.terraingeneration.RoomGenerator;
-import nl.hazenebula.terraingeneration.TerrainGenerator;
+import nl.hazenebula.terraingeneration.*;
 
 public class GeneratorPane extends GridPane {
     private Generator curGen;
@@ -67,6 +64,7 @@ public class GeneratorPane extends GridPane {
         GridPane.setVgrow(settingsPane, Priority.ALWAYS);
         settingsPane.setFitToWidth(true);
 
+        FillSettingsPane fillSettingsPane = new FillSettingsPane();
         CaveGeneratorSettingsPane caveGeneratorSettingsPane =
                 new CaveGeneratorSettingsPane();
         RoomGeneratorSettingsPane roomGeneratorSettingsPane =
@@ -85,6 +83,15 @@ public class GeneratorPane extends GridPane {
         ToggleGroup toggleGroup = new ToggleGroup();
 
         // todo: add an option for the room generator to generate rooms that have odd widths/positions
+        ToggleButton fillButton = new ToggleButton("Fill");
+        fillButton.setMaxWidth(Double.MAX_VALUE);
+        fillButton.setToggleGroup(toggleGroup);
+        fillButton.setOnAction(e -> {
+            settingsPane.setContent(fillSettingsPane);
+            curGen = Generator.FILL;
+        });
+        buttonPane.getChildren().add(fillButton);
+
         ToggleButton caveGeneratorButton = new ToggleButton("Cave Generator");
         caveGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         caveGeneratorButton.setToggleGroup(toggleGroup);
@@ -129,8 +136,9 @@ public class GeneratorPane extends GridPane {
                 Map map = canvasPane.getMap();
                 TerrainGenerator gen = new CaveGenerator(0.45d, 3, 4, 5,
                         Field.BLUE, Field.WHITE);
-
-                if (curGen == Generator.CAVE) {
+                if (curGen == Generator.FILL) {
+                    gen = new Fill(fillSettingsPane.getColor());
+                } else if (curGen == Generator.CAVE) {
                     gen = new CaveGenerator(
                             caveGeneratorSettingsPane.getOnProb(),
                             caveGeneratorSettingsPane.getOffThreshold(),
