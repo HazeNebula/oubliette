@@ -1,6 +1,5 @@
 package nl.hazenebula.terraingeneration;
 
-import nl.hazenebula.oubliette.CanvasPane;
 import nl.hazenebula.oubliette.Map;
 import nl.hazenebula.oubliette.Tile;
 
@@ -18,12 +17,9 @@ public class MazeGenerator implements TerrainGenerator {
     private int height;
     private boolean[][] prohibitedToDraw;
 
-    private CanvasPane canvas;
-
     public MazeGenerator(ElementPicker<Point> ep, Tile floorTile) {
         this.ep = ep;
         this.floorTile = floorTile;
-        this.canvas = canvas;
     }
 
     private boolean[][] initializeGrid(int xoffset, int yoffset, Map map) {
