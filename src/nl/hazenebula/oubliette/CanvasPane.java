@@ -257,7 +257,7 @@ public class CanvasPane extends ScrollPane {
                         drawField(x, y);
                     } else if (curTool == Tool.SELECTION) {
                         if (draggingSelection) {
-                            if (x > selection.getX() && y > selection.getY()) {
+                            if (x >= selection.getX() && y >= selection.getY()) {
                                 selection.setWidth(x - selection.getX() + 1);
                                 selection.setHeight(y - selection.getY() + 1);
                             }
