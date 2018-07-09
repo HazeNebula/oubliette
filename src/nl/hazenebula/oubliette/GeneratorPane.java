@@ -72,6 +72,8 @@ public class GeneratorPane extends GridPane {
                 new CaveGeneratorSettingsPane();
         RoomGeneratorSettingsPane roomGeneratorSettingsPane =
                 new RoomGeneratorSettingsPane();
+        MazeGeneratorSettingsPane mazeGeneratorSettingsPane =
+                new MazeGeneratorSettingsPane();
 
         Label generatorLabel = new Label("Procedural Generators:");
         GridPane.setHgrow(generatorLabel, Priority.ALWAYS);
@@ -107,7 +109,7 @@ public class GeneratorPane extends GridPane {
         mazeGeneratorButton.setMaxWidth(Double.MAX_VALUE);
         mazeGeneratorButton.setToggleGroup(toggleGroup);
         mazeGeneratorButton.setOnAction(e -> {
-            // todo: add maze settings pane
+            settingsPane.setContent(mazeGeneratorSettingsPane);
             curGen = Generator.MAZE;
         });
         buttonPane.getChildren().add(mazeGeneratorButton);
@@ -153,8 +155,10 @@ public class GeneratorPane extends GridPane {
                         return;
                     }
                 } else if (curGen == Generator.MAZE) {
-                    gen = new MazeGenerator(MazeGenerator.ELEMENT_PICKER,
-                            MazeGenerator.FLOOR_TILE);
+                    gen = new MazeGenerator(
+                            mazeGeneratorSettingsPane.getElementPicker(),
+                            mazeGeneratorSettingsPane.getFloorTile()
+                    );
                 } else if (curGen == Generator.COMPOUND) {
 
                 }
