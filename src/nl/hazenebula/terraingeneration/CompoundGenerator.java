@@ -9,15 +9,15 @@ public class CompoundGenerator implements TerrainGenerator {
     // room generation defaults
     public static final int NUMBER_OF_ATTEMPTS = 100;
     public static final int MIN_WIDTH = 3;
-    public static final int MAX_WIDTH = 7;
+    public static final int MAX_WIDTH = 5;
     public static final int MIN_HEIGHT = 3;
-    public static final int MAX_HEIGHT = 7;
+    public static final int MAX_HEIGHT = 5;
 
     // maze generation defaults
     public static final MazeType MAZE_TYPE = MazeType.LAST;
 
     // compound generation defaults
-    public static final double CONNECTION_PROB = 0.02d;
+    public static final double CONNECTION_PROB = 0.1d;
     public static final Tile FLOOR_TILE = Tile.WHITE;
 
     // room generation fields
@@ -35,7 +35,6 @@ public class CompoundGenerator implements TerrainGenerator {
     private final Tile floorTile;
 
     // variable fields
-    private boolean[][] prohibitedToDraw;
     private int width;
     private int height;
     private int curX;
@@ -82,27 +81,57 @@ public class CompoundGenerator implements TerrainGenerator {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 if (map.getField(x + xoffset, y + yoffset) == floorTile) {
-                    for (int dx = -1; dx <= 1; ++dx) {
-                        for (int dy = -1; dy <= 1; ++dy) {
-                            int newX = x + dx;
-                            int newY = y + dy;
-
-                            if (newX >= 0 && newX < width && newY >= 0
-                                    && newY < height) {
-                                grid[newX][newY] = true;
-                            }
-                        }
-                    }
+                    grid[x][y] = true;
                 }
             }
         }
 
-        prohibitedToDraw = new boolean[width][height];
-        for (int x = 0; x < width; ++x) {
-            System.arraycopy(grid[x], 0, prohibitedToDraw[x], 0, height);
+        return grid;
+    }
+
+    private List<Point> getNeighbors(Point cell) {
+        List<Point> neighbors = new ArrayList<>(Direction.values().length);
+        for (Direction dir : Direction.values()) {
+            Point neighbor = new Point(cell.x + dir.dx(), cell.y + dir.dy());
+            if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0
+                    && neighbor.y < height) {
+                neighbors.add(neighbor);
+            }
         }
 
-        return grid;
+        return neighbors;
+    }
+
+    private Set<Point> getRegion(boolean[][] grid, Point source) {
+        Set<Point> region = new HashSet<>();
+        List<Point> frontier = new ArrayList<>();
+        frontier.add(source);
+
+        while (!frontier.isEmpty()) {
+            Point cell = frontier.remove(0);
+            region.add(cell);
+
+            for (Point neighbor : getNeighbors(cell)) {
+                if (!region.contains(neighbor)
+                        && grid[neighbor.x][neighbor.y]) {
+                    frontier.add(neighbor);
+                }
+            }
+        }
+
+        return region;
+    }
+
+    private void initializeRegions(boolean[][] grid) {
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                Point cell = new Point(x, y);
+                if (grid[x][y] && regions.stream()
+                        .noneMatch(r -> r.contains(cell))) {
+                    regions.add(getRegion(grid, cell));
+                }
+            }
+        }
     }
 
     private void getRoom(int width, int height) {
@@ -242,19 +271,6 @@ public class CompoundGenerator implements TerrainGenerator {
         }
     }
 
-    private List<Point> getNeighbors(boolean[][] grid, Point cell) {
-        List<Point> neighbors = new ArrayList<>(Direction.values().length);
-        for (Direction dir : Direction.values()) {
-            Point neighbor = new Point(cell.x + dir.dx(), cell.y + dir.dy());
-            if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0
-                    && neighbor.y < height) {
-                neighbors.add(neighbor);
-            }
-        }
-
-        return neighbors;
-    }
-
     private boolean connectsTwoRegions(Point cell, boolean[][] grid,
                                        Set<Point> region) {
         boolean connectsTwoRegions = false;
@@ -294,7 +310,7 @@ public class CompoundGenerator implements TerrainGenerator {
     private List<Point> getConnectors(boolean[][] grid, Set<Point> region) {
         List<Point> connectors = new ArrayList<>();
         for (Point cell : region) {
-            for (Point neighbor : getNeighbors(grid, cell)) {
+            for (Point neighbor : getNeighbors(cell)) {
                 if (connectsTwoRegions(neighbor, grid, region)) {
                     connectors.add(neighbor);
                 }
@@ -308,7 +324,7 @@ public class CompoundGenerator implements TerrainGenerator {
                                       Set<Point> r2) {
         List<Point> connectors = new ArrayList<>();
         for (Point cell : r1) {
-            for (Point neighbor : getNeighbors(grid, cell)) {
+            for (Point neighbor : getNeighbors(cell)) {
                 if (connectsTwoRegions(neighbor, grid, r1, r2)) {
                     connectors.add(neighbor);
                 }
@@ -398,7 +414,7 @@ public class CompoundGenerator implements TerrainGenerator {
                                Map map) {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                if (grid[x][y] && !prohibitedToDraw[x][y]) {
+                if (grid[x][y]) {
                     map.setField(x + xoffset, y + yoffset, floorTile);
                 }
             }
@@ -409,6 +425,9 @@ public class CompoundGenerator implements TerrainGenerator {
     public Map generate(int x, int y, int selectionWidth, int selectionHeight,
                         Map map)
             throws IllegalArgumentException {
+        width = selectionWidth - (1 - selectionWidth % 2);
+        height = selectionHeight - (1 - selectionHeight % 2);
+
         if (maxWidth > width) {
             throw new IllegalArgumentException("Maximum width exceeds the " +
                     "width of the selected area.");
@@ -418,10 +437,9 @@ public class CompoundGenerator implements TerrainGenerator {
                     "height of the selected area.");
         }
 
-        width = selectionWidth - (1 - selectionWidth % 2);
-        height = selectionHeight - (1 - selectionHeight % 2);
-
         boolean[][] grid = initializeGrid(x, y, map);
+        initializeRegions(grid);
+
         generateRooms(grid);
         generateMazes(grid);
         connectRegions(grid);
