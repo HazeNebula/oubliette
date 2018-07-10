@@ -407,7 +407,7 @@ public class CanvasPane extends ScrollPane {
 
     }
 
-    private void removeHighlight() {
+    public void removeHighlight() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double gridSize = size.get() + GRIDLINE_SIZE;
 
@@ -723,7 +723,6 @@ public class CanvasPane extends ScrollPane {
     }
 
     public WritableImage snapshot() {
-        removeHighlight();
         return canvas.snapshot(null, null);
     }
 
