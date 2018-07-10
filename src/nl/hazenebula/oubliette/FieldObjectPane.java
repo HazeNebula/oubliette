@@ -36,6 +36,8 @@ public class FieldObjectPane extends GridPane {
     private FieldObject curObject;
     private boolean drawingNumbers;
 
+    private Spinner<Integer> numberSpinner;
+
     public FieldObjectPane(CanvasPane canvasPane) {
         this.canvasPane = canvasPane;
 
@@ -185,7 +187,7 @@ public class FieldObjectPane extends GridPane {
                 Tile.BLUE.color());
         GridPane numberPane = new GridPane();
 
-        Spinner<Integer> numberSpinner = new Spinner<>(MIN_NUM, MAX_NUM,
+        numberSpinner = new Spinner<>(MIN_NUM, MAX_NUM,
                 INIT_NUM, 1);
         numberSpinner.setEditable(true);
         numberSpinner.focusedProperty().addListener((observable, oldValue,
@@ -239,6 +241,10 @@ public class FieldObjectPane extends GridPane {
             img.setFitWidth(BUTTON_SIZE);
             img.setFitHeight(BUTTON_SIZE);
             numberButton.setGraphic(img);
+
+            if (drawingNumbers) {
+                numberButton.setSelected(true);
+            }
         });
 
         curImg = objects.get(0);
@@ -379,11 +385,24 @@ public class FieldObjectPane extends GridPane {
             }
         }
 
-        curObject = new FieldObject(curImg.getImage(curObject.getWidth(),
-                curObject.getHeight()), 0, 0, curObject.getWidth(),
-                curObject.getHeight(), curObject.getDir());
-        canvasPane.setFieldObject(curObject);
-        firstButton.setSelected(true);
+        if (drawingNumbers) {
+            for (Tile tile : Tile.values()) {
+                if (tile.toString().toLowerCase().equals(color.toLowerCase())) {
+                    curNumImg.setColor(tile.color());
+                    break;
+                }
+            }
+
+            curObject = new FieldObject(curNumImg.getImage(
+                    numberSpinner.getValue()), 0, 0, 1, 1, Direction.NORTH);
+            canvasPane.setFieldObject(curObject);
+        } else {
+            curObject = new FieldObject(curImg.getImage(curObject.getWidth(),
+                    curObject.getHeight()), 0, 0, curObject.getWidth(),
+                    curObject.getHeight(), curObject.getDir());
+            canvasPane.setFieldObject(curObject);
+            firstButton.setSelected(true);
+        }
 
         drawCanvas();
     }
