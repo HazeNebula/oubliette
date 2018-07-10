@@ -76,6 +76,7 @@ public class ExportSettingsPane extends GridPane {
                 canvasPane.setSquareSize(gridSize.get());
                 canvasPane.drawAll();
 
+                canvasPane.removeHighlight();
                 WritableImage img = canvasPane.snapshot();
                 try {
                     ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png",
