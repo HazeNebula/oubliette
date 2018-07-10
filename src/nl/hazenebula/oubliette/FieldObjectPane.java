@@ -5,12 +5,12 @@ import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -257,12 +257,12 @@ public class FieldObjectPane extends GridPane {
     }
 
     private List<FieldObjectImage> loadObjects() {
-        List<List<File>> files = ObjectFileSearcher.getObjects(
+        List<List<String>> files = ObjectFileSearcher.getIndexedPaths(
                 ObjectFileSearcher.FIELDOBJECT_DIR);
         maxSize = 1;
         List<FieldObjectImage> objects = new LinkedList<>();
 
-        for (List<File> objectFiles : files) {
+        for (List<String> objectFiles : files) {
             int size = (int)Math.sqrt(objectFiles.size());
             FieldObjectImage img = new FieldObjectImage(size, size);
 
@@ -270,12 +270,11 @@ public class FieldObjectPane extends GridPane {
                 maxSize = size;
             }
 
-            for (File objFile : objectFiles) {
-                String filename = objFile.getName();
-                int lastHyphenIndex = filename.lastIndexOf('-');
+            for (String objFile : objectFiles) {
+                int lastHyphenIndex = objFile.lastIndexOf('-');
 
                 if (img.getName() == null) {
-                    String[] words = filename.substring(0, lastHyphenIndex)
+                    String[] words = objFile.substring(0, lastHyphenIndex)
                             .split("-");
                     String name = String.join(" ", Arrays.stream(words).map(s ->
                     {
@@ -288,8 +287,8 @@ public class FieldObjectPane extends GridPane {
                 }
 
                 if (lastHyphenIndex > -1) {
-                    String[] sizesStr = filename.substring(lastHyphenIndex + 1,
-                            filename.indexOf('.')).split("x");
+                    String[] sizesStr = objFile.substring(lastHyphenIndex + 1,
+                            objFile.indexOf('.')).split("x");
                     int[] sizes = new int[2];
 
                     for (int i = 0; i < sizes.length; ++i) {
@@ -300,11 +299,12 @@ public class FieldObjectPane extends GridPane {
                                     sizesStr[i]);
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.err.println("Could not parse file name: " +
-                                    filename);
+                                    objFile);
                         }
                     }
 
-                    img.setImage(sizes[0], sizes[1], objFile);
+                    img.setImage(sizes[0], sizes[1], new Image(getClass()
+                            .getResourceAsStream(objFile)));
                 }
             }
 
