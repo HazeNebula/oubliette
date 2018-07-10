@@ -2,8 +2,6 @@ package nl.hazenebula.oubliette;
 
 import javafx.scene.image.Image;
 
-import java.io.File;
-
 public class WallImage implements Comparable<WallImage> {
     private Image[] images;
     private String name;
@@ -13,9 +11,9 @@ public class WallImage implements Comparable<WallImage> {
         name = null;
     }
 
-    public void setImage(int sizeX, File file) {
+    public void setImage(int sizeX, Image image) {
         if (sizeX >= 1 && sizeX <= images.length) {
-            images[sizeX - 1] = new Image("file:" + file.toString());
+            images[sizeX - 1] = image;
         }
     }
 

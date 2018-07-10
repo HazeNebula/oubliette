@@ -208,13 +208,15 @@ public class CanvasPane extends ScrollPane {
                         == Direction.NORTH || curWall.getDir()
                         == Direction.SOUTH) ? Direction.NORTH :
                         Direction.EAST;
-                double x1 = x * gridSize;
-                double x2 = (x + 1) * gridSize;
-                x = (e.getX() - x1 <= x2 - e.getX()) ? x - 1 : x;
-
-                double y1 = y * gridSize;
-                double y2 = (y + 1) * gridSize;
-                y = (e.getY() - y1 <= y2 - e.getY()) ? y - 1 : y;
+                if (orient == Direction.NORTH) {
+                    double y1 = y * gridSize;
+                    double y2 = (y + 1) * gridSize;
+                    y = (e.getY() - y1 <= y2 - e.getY()) ? y - 1 : y;
+                } else {
+                    double x1 = x * gridSize;
+                    double x2 = (x + 1) * gridSize;
+                    x = (e.getX() - x1 <= x2 - e.getX()) ? x - 1 : x;
+                }
 
                 Wall wall = map.getWall(x + 1, y + 1, orient);
 
