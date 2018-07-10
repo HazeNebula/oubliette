@@ -2,8 +2,6 @@ package nl.hazenebula.oubliette;
 
 import javafx.scene.image.Image;
 
-import java.io.File;
-
 public class FieldObjectImage implements Comparable<FieldObjectImage> {
     private Image[][] images;
     private String name;
@@ -13,10 +11,10 @@ public class FieldObjectImage implements Comparable<FieldObjectImage> {
         name = null;
     }
 
-    public void setImage(int sizeX, int sizeY, File file) {
+    public void setImage(int sizeX, int sizeY, Image image) {
         if (sizeX >= 1 && sizeX <= images.length
                 && sizeY >= 0 && sizeY <= images[sizeX - 1].length) {
-            images[sizeX - 1][sizeY - 1] = new Image("file:" + file.toString());
+            images[sizeX - 1][sizeY - 1] = image;
         }
     }
 
