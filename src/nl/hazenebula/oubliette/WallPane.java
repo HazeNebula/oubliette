@@ -191,10 +191,12 @@ public class WallPane extends GridPane {
             }
 
             for (String objFile : objectFiles) {
-                int lastHyphenIndex = objFile.lastIndexOf('-');
+                String filename = objFile.substring(objFile.lastIndexOf('/')
+                        + 1, objFile.length());
+                int lastHyphenIndex = filename.lastIndexOf('-');
 
                 if (img.getName() == null) {
-                    String[] words = objFile.substring(0, lastHyphenIndex)
+                    String[] words = filename.substring(0, lastHyphenIndex)
                             .split("-");
                     String name = String.join(" ", Arrays.stream(words).map(s ->
                     {
@@ -207,8 +209,8 @@ public class WallPane extends GridPane {
                 }
 
                 if (lastHyphenIndex > -1) {
-                    String[] sizesStr = objFile.substring(lastHyphenIndex + 1,
-                            objFile.indexOf('.')).split("x");
+                    String[] sizesStr = filename.substring(lastHyphenIndex + 1,
+                            filename.indexOf('.')).split("x");
                     int width = 1;
 
                     try {
@@ -218,7 +220,7 @@ public class WallPane extends GridPane {
                                 sizesStr[0]);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.err.println("Could not parse file name: " +
-                                objFile);
+                                filename);
                     }
 
                     img.setImage(width, new Image(getClass()
