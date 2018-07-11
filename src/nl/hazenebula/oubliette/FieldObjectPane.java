@@ -24,6 +24,13 @@ public class FieldObjectPane extends GridPane {
     private static final Color BACK_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = Color.BLACK;
 
+    private static final String INCREASE_WIDTH_BUTTON = "s";
+    private static final String DECREASE_WIDTH_BUTTON = "a";
+    private static final String INCREASE_HEIGHT_BUTTON = "w";
+    private static final String DECREASE_HEIGHT_BUTTON = "q";
+    private static final String ROTATE_CLOCKWISE_BUTTON = "x";
+    private static final String ROTATE_COUNTERCLOCKWISE_BUTTON = "z";
+
     private static final double BUTTON_SIZE = 80.0d;
 
     private CanvasPane canvasPane;
@@ -56,77 +63,21 @@ public class FieldObjectPane extends GridPane {
         Label widthLabel = new Label("Width:");
         GridPane.setHgrow(widthLabel, Priority.ALWAYS);
         Button increaseWidthButton = new Button("+");
-        increaseWidthButton.setOnAction(e -> {
-            if (!drawingNumbers) {
-                if (curObject.getWidth() < maxSize) {
-                    curObject.setWidth(curObject.getWidth() + 1);
-                    curObject.setImage(curImg.getImage(curObject.getWidth(),
-                            curObject.getHeight()));
-                    drawCanvas();
-
-                    canvasPane.setFieldObject(curObject);
-                }
-            }
-        });
+        increaseWidthButton.setOnAction(e -> increaseWidth());
         Button decreaseWidthButton = new Button("-");
-        decreaseWidthButton.setOnAction(e -> {
-            if (!drawingNumbers) {
-                if (curObject.getWidth() > 1) {
-                    curObject.setWidth(curObject.getWidth() - 1);
-                    curObject.setImage(curImg.getImage(curObject.getWidth(),
-                            curObject.getHeight()));
-                    drawCanvas();
-
-                    canvasPane.setFieldObject(curObject);
-                }
-            }
-        });
+        decreaseWidthButton.setOnAction(e -> decreaseWidth());
         Label heightLabel = new Label("Height:");
         GridPane.setHgrow(heightLabel, Priority.ALWAYS);
         Button increaseHeightButton = new Button("+");
-        increaseHeightButton.setOnAction(e -> {
-            if (!drawingNumbers) {
-                if (curObject.getHeight() < maxSize) {
-                    curObject.setHeight(curObject.getHeight() + 1);
-                    curObject.setImage(curImg.getImage(curObject.getWidth(),
-                            curObject.getHeight()));
-                    drawCanvas();
-
-                    canvasPane.setFieldObject(curObject);
-                }
-            }
-        });
+        increaseHeightButton.setOnAction(e -> increaseHeight());
         Button decreaseHeightButton = new Button("-");
-        decreaseHeightButton.setOnAction(e -> {
-            if (!drawingNumbers) {
-                if (curObject.getHeight() > 1) {
-                    curObject.setHeight(curObject.getHeight() - 1);
-                    curObject.setImage(curImg.getImage(curObject.getWidth(),
-                            curObject.getHeight()));
-                    drawCanvas();
-
-                    canvasPane.setFieldObject(curObject);
-                }
-            }
-        });
+        decreaseHeightButton.setOnAction(e -> decreaseHeight());
         Label rotateLabel = new Label("Rotate:");
         GridPane.setHgrow(rotateLabel, Priority.ALWAYS);
         Button rotateClockwiseButton = new Button("\u21BB");
-        rotateClockwiseButton.setOnAction(e -> {
-            curObject.setDir(curObject.getDir().next());
-            drawCanvas();
-
-            canvasPane.setFieldObject(curObject);
-        });
+        rotateClockwiseButton.setOnAction(e -> rotateClockwise());
         Button rotateCounterclockwiseButton = new Button("\u21BA");
-        rotateCounterclockwiseButton.setOnAction(e -> {
-            if (!drawingNumbers) {
-                curObject.setDir(curObject.getDir().prev());
-                drawCanvas();
-
-                canvasPane.setFieldObject(curObject);
-            }
-        });
+        rotateCounterclockwiseButton.setOnAction(e -> rotateCounterclockwise());
 
         GridPane resizeWrapper = new GridPane();
         resizeWrapper.add(resizeCanvas, 0, 0);
@@ -260,6 +211,105 @@ public class FieldObjectPane extends GridPane {
         add(colorBox, 1, 3);
         add(buttonPane, 0, 4, 2, 1);
         add(numberPane, 0, 5, 2, 1);
+    }
+
+    private void increaseWidth() {
+        if (!drawingNumbers) {
+            if (curObject.getWidth() < maxSize) {
+                curObject.setWidth(curObject.getWidth() + 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
+                drawCanvas();
+
+                canvasPane.setFieldObject(curObject);
+                canvasPane.drawAll();
+            }
+        }
+    }
+
+    private void decreaseWidth() {
+        if (!drawingNumbers) {
+            if (curObject.getWidth() > 1) {
+                curObject.setWidth(curObject.getWidth() - 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
+                drawCanvas();
+
+                canvasPane.setFieldObject(curObject);
+                canvasPane.drawAll();
+            }
+        }
+    }
+
+    private void increaseHeight() {
+        if (!drawingNumbers) {
+            if (curObject.getHeight() < maxSize) {
+                curObject.setHeight(curObject.getHeight() + 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
+                drawCanvas();
+
+                canvasPane.setFieldObject(curObject);
+                canvasPane.drawAll();
+            }
+        }
+    }
+
+    private void decreaseHeight() {
+        if (!drawingNumbers) {
+            if (curObject.getHeight() > 1) {
+                curObject.setHeight(curObject.getHeight() - 1);
+                curObject.setImage(curImg.getImage(curObject.getWidth(),
+                        curObject.getHeight()));
+                drawCanvas();
+
+                canvasPane.setFieldObject(curObject);
+                canvasPane.drawAll();
+            }
+        }
+    }
+
+    private void rotateClockwise() {
+        if (!drawingNumbers) {
+            curObject.setDir(curObject.getDir().next());
+            drawCanvas();
+
+            canvasPane.setFieldObject(curObject);
+            canvasPane.drawAll();
+        }
+    }
+
+    private void rotateCounterclockwise() {
+        if (!drawingNumbers) {
+            curObject.setDir(curObject.getDir().prev());
+            drawCanvas();
+
+            canvasPane.setFieldObject(curObject);
+            canvasPane.drawAll();
+        }
+    }
+
+    public void handleHotkeys(String character) {
+        switch (character) {
+            case DECREASE_HEIGHT_BUTTON:
+                decreaseHeight();
+                break;
+            case INCREASE_HEIGHT_BUTTON:
+                increaseHeight();
+                break;
+            case DECREASE_WIDTH_BUTTON:
+                decreaseWidth();
+                break;
+            case INCREASE_WIDTH_BUTTON:
+                increaseWidth();
+                break;
+            case ROTATE_COUNTERCLOCKWISE_BUTTON:
+                rotateCounterclockwise();
+                break;
+            case ROTATE_CLOCKWISE_BUTTON:
+                rotateClockwise();
+                break;
+        }
     }
 
     private List<FieldObjectImage> loadObjects() {

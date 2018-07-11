@@ -24,6 +24,11 @@ public class WallPane extends GridPane {
     private static final Color GRID_COLOR = Color.BLACK;
     private static final double BUTTON_SIZE = 80.0d;
 
+    private static final String INCREASE_SIZE_BUTTON = "s";
+    private static final String DECREASE_SIZE_BUTTON = "a";
+    private static final String ROTATE_CLOCKWISE_BUTTON = "x";
+    private static final String ROTATE_COUNTERCLOCKWISE_BUTTON = "z";
+
     private CanvasPane canvasPane;
 
     private Canvas resizeCanvas;
@@ -59,55 +64,15 @@ public class WallPane extends GridPane {
         Label sizeLabel = new Label("Size:");
         GridPane.setHgrow(sizeLabel, Priority.ALWAYS);
         Button increaseSizeButton = new Button("+");
-        increaseSizeButton.setOnAction(e -> {
-            if (curObject.getWidth() < maxSize) {
-                curObject.setWidth(curObject.getWidth() + 1);
-                curObject.setImage(curImg.getImage(curObject.getWidth()));
-                drawCanvas();
-
-                canvasPane.setWallObject(curObject);
-            }
-        });
+        increaseSizeButton.setOnAction(e -> increaseSize());
         Button decreaseSizeButton = new Button("-");
-        decreaseSizeButton.setOnAction(e -> {
-            if (curObject.getWidth() > 1) {
-                curObject.setWidth(curObject.getWidth() - 1);
-                curObject.setImage(curImg.getImage(curObject.getWidth()));
-                drawCanvas();
-
-                canvasPane.setWallObject(curObject);
-            }
-        });
+        decreaseSizeButton.setOnAction(e -> decreaseSize());
         Label rotateLabel = new Label("Rotate:");
         GridPane.setHgrow(rotateLabel, Priority.ALWAYS);
         Button rotateClockwiseButton = new Button("\u21BB");
-        rotateClockwiseButton.setOnAction(e -> {
-            curObject.setDir(curObject.getDir().next());
-            drawCanvas();
-
-            canvasPane.setWallObject(curObject);
-
-            if (curObject.getDir() == Direction.NORTH
-                    || curObject.getDir() == Direction.SOUTH) {
-                eraseOrient.setValue("Horizontal");
-            } else {
-                eraseOrient.setValue("Vertical");
-            }
-        });
+        rotateClockwiseButton.setOnAction(e -> rotateClockwise());
         Button rotateCounterclockwiseButton = new Button("\u21BA");
-        rotateCounterclockwiseButton.setOnAction(e -> {
-            curObject.setDir(curObject.getDir().prev());
-            drawCanvas();
-
-            canvasPane.setWallObject(curObject);
-
-            if (curObject.getDir() == Direction.NORTH
-                    || curObject.getDir() == Direction.SOUTH) {
-                eraseOrient.setValue("Horizontal");
-            } else {
-                eraseOrient.setValue("Vertical");
-            }
-        });
+        rotateCounterclockwiseButton.setOnAction(e -> rotateCounterclockwise());
 
         GridPane shapeButtonPane = new GridPane();
         shapeButtonPane.add(sizeLabel, 0, 0);
@@ -174,6 +139,73 @@ public class WallPane extends GridPane {
         add(colorLabel, 0, 4);
         add(colorBox, 1, 4);
         add(buttonPane, 0, 5, 2, 1);
+    }
+
+    private void increaseSize() {
+        if (curObject.getWidth() < maxSize) {
+            curObject.setWidth(curObject.getWidth() + 1);
+            curObject.setImage(curImg.getImage(curObject.getWidth()));
+            drawCanvas();
+
+            canvasPane.setWallObject(curObject);
+        }
+    }
+
+    private void decreaseSize() {
+        if (curObject.getWidth() > 1) {
+            curObject.setWidth(curObject.getWidth() - 1);
+            curObject.setImage(curImg.getImage(curObject.getWidth()));
+            drawCanvas();
+
+            canvasPane.setWallObject(curObject);
+        }
+    }
+
+    private void rotateClockwise() {
+        curObject.setDir(curObject.getDir().next());
+        drawCanvas();
+
+        canvasPane.setWallObject(curObject);
+
+        if (curObject.getDir() == Direction.NORTH
+                || curObject.getDir() == Direction.SOUTH) {
+            eraseOrient.setValue("Horizontal");
+        } else {
+            eraseOrient.setValue("Vertical");
+        }
+    }
+
+    private void rotateCounterclockwise() {
+        {
+            curObject.setDir(curObject.getDir().prev());
+            drawCanvas();
+
+            canvasPane.setWallObject(curObject);
+
+            if (curObject.getDir() == Direction.NORTH
+                    || curObject.getDir() == Direction.SOUTH) {
+                eraseOrient.setValue("Horizontal");
+            } else {
+                eraseOrient.setValue("Vertical");
+            }
+        }
+    }
+
+    public void handleHotkeys(String character) {
+        switch (character) {
+            case DECREASE_SIZE_BUTTON:
+                decreaseSize();
+                break;
+            case INCREASE_SIZE_BUTTON:
+                increaseSize();
+                break;
+            case ROTATE_COUNTERCLOCKWISE_BUTTON:
+                rotateCounterclockwise();
+                break;
+            case ROTATE_CLOCKWISE_BUTTON:
+                rotateClockwise();
+                break;
+        }
     }
 
     private List<WallImage> loadWalls() {
