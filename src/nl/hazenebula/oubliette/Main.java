@@ -8,8 +8,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         MainPane mainPane = new MainPane(primaryStage);
+        Scene mainScene = new Scene(mainPane, 1280, 960);
+        mainPane.setupHotkeys(mainScene);
 
-        primaryStage.setScene(new Scene(mainPane, 1280, 960));
+        primaryStage.setScene(mainScene);
         primaryStage.show();
     }
 
