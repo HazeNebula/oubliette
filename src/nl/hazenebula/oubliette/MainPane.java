@@ -170,4 +170,8 @@ public class MainPane extends GridPane {
             }
         }
     }
+
+    public void setupHotkeys(Scene mainScene) {
+        toolPane.setupHotkeys(mainScene);
+    }
 }
