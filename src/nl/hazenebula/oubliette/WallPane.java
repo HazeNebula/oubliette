@@ -65,14 +65,22 @@ public class WallPane extends GridPane {
         GridPane.setHgrow(sizeLabel, Priority.ALWAYS);
         Button increaseSizeButton = new Button("+");
         increaseSizeButton.setOnAction(e -> increaseSize());
+        increaseSizeButton.setTooltip(new Tooltip(INCREASE_SIZE_BUTTON
+                .toUpperCase()));
         Button decreaseSizeButton = new Button("-");
         decreaseSizeButton.setOnAction(e -> decreaseSize());
+        decreaseSizeButton.setTooltip(new Tooltip(DECREASE_SIZE_BUTTON
+                .toUpperCase()));
         Label rotateLabel = new Label("Rotate:");
         GridPane.setHgrow(rotateLabel, Priority.ALWAYS);
         Button rotateClockwiseButton = new Button("\u21BB");
         rotateClockwiseButton.setOnAction(e -> rotateClockwise());
+        rotateClockwiseButton.setTooltip(new Tooltip(ROTATE_CLOCKWISE_BUTTON
+                .toUpperCase()));
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> rotateCounterclockwise());
+        rotateCounterclockwiseButton.setTooltip(new Tooltip(
+                ROTATE_COUNTERCLOCKWISE_BUTTON.toUpperCase()));
 
         GridPane shapeButtonPane = new GridPane();
         shapeButtonPane.add(sizeLabel, 0, 0);

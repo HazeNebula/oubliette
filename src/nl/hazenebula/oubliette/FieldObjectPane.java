@@ -64,20 +64,32 @@ public class FieldObjectPane extends GridPane {
         GridPane.setHgrow(widthLabel, Priority.ALWAYS);
         Button increaseWidthButton = new Button("+");
         increaseWidthButton.setOnAction(e -> increaseWidth());
+        increaseWidthButton.setTooltip(new Tooltip(INCREASE_WIDTH_BUTTON
+                .toUpperCase()));
         Button decreaseWidthButton = new Button("-");
         decreaseWidthButton.setOnAction(e -> decreaseWidth());
+        decreaseWidthButton.setTooltip(new Tooltip(DECREASE_WIDTH_BUTTON
+                .toUpperCase()));
         Label heightLabel = new Label("Height:");
         GridPane.setHgrow(heightLabel, Priority.ALWAYS);
         Button increaseHeightButton = new Button("+");
         increaseHeightButton.setOnAction(e -> increaseHeight());
+        increaseHeightButton.setTooltip(new Tooltip(INCREASE_HEIGHT_BUTTON
+                .toUpperCase()));
         Button decreaseHeightButton = new Button("-");
         decreaseHeightButton.setOnAction(e -> decreaseHeight());
+        decreaseHeightButton.setTooltip(new Tooltip(DECREASE_HEIGHT_BUTTON
+                .toUpperCase()));
         Label rotateLabel = new Label("Rotate:");
         GridPane.setHgrow(rotateLabel, Priority.ALWAYS);
         Button rotateClockwiseButton = new Button("\u21BB");
         rotateClockwiseButton.setOnAction(e -> rotateClockwise());
+        rotateClockwiseButton.setTooltip(new Tooltip(ROTATE_CLOCKWISE_BUTTON
+                .toUpperCase()));
         Button rotateCounterclockwiseButton = new Button("\u21BA");
         rotateCounterclockwiseButton.setOnAction(e -> rotateCounterclockwise());
+        rotateCounterclockwiseButton.setTooltip(
+                new Tooltip(ROTATE_COUNTERCLOCKWISE_BUTTON.toUpperCase()));
 
         GridPane resizeWrapper = new GridPane();
         resizeWrapper.add(resizeCanvas, 0, 0);
