@@ -4,10 +4,10 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Rectangle;
 
-public class FieldColorButton extends ToggleButton {
+public class TileColorButton extends ToggleButton {
     private final Tile tile;
 
-    public FieldColorButton(Tile tile, double size, CanvasPane canvasPane) {
+    public TileColorButton(Tile tile, double size, CanvasPane canvasPane) {
         super();
 
         this.tile = tile;
